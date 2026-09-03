@@ -2,138 +2,130 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Pythonia Legends</title>
 
 <style>
 *{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#070b18;
-  font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#080b16;
+    font-family:Arial,sans-serif;
 }
 
 body{
-  display:flex;
-  justify-content:center;
-  align-items:center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
 #game{
-  width:100%;
-  height:100%;
-  display:block;
-  image-rendering:pixelated;
-}
-
-.screen{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  color:white;
-  background:linear-gradient(#071126ee,#16091dee);
-}
-
-.box{
-  width:min(90%,620px);
-  padding:30px;
-  border-radius:26px;
-  background:#151b2df2;
-  border:3px solid #ffffff22;
-  box-shadow:0 20px 70px #000b;
-}
-
-h1{
-  font-size:clamp(42px,9vw,78px);
-  line-height:.9;
-  margin:10px 0 18px;
-  letter-spacing:2px;
-}
-
-.subtitle{
-  font-size:20px;
-  opacity:.85;
-  margin-bottom:25px;
-}
-
-button{
-  border:0;
-  border-radius:16px;
-  padding:16px 28px;
-  font-size:19px;
-  font-weight:900;
-  background:#f59e0b;
-  color:#17100a;
-  box-shadow:0 6px 0 #a85f00;
-}
-
-button:active{
-  transform:translateY(4px);
-  box-shadow:0 2px 0 #a85f00;
-}
-
-.hidden{
-  display:none!important;
+    width:100vw;
+    height:100vh;
+    display:block;
+    image-rendering:pixelated;
 }
 
 #hud{
-  position:absolute;
-  top:12px;
-  left:15px;
-  right:15px;
-  display:flex;
-  justify-content:space-between;
-  color:white;
-  font-weight:900;
-  font-size:16px;
-  text-shadow:2px 2px #000;
-  pointer-events:none;
+    position:fixed;
+    top:12px;
+    left:15px;
+    right:15px;
+    display:flex;
+    justify-content:space-between;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    text-shadow:2px 2px 0 #000;
+    z-index:5;
+}
+
+.screen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    color:white;
+    background:rgba(5,8,20,.94);
+    z-index:10;
+}
+
+.box{
+    width:min(90%,600px);
+    padding:30px;
+    border-radius:25px;
+    background:#151b2d;
+    border:3px solid rgba(255,255,255,.15);
+    box-shadow:0 20px 70px #000;
+}
+
+h1{
+    margin:10px 0 20px;
+    font-size:clamp(40px,9vw,75px);
+    line-height:.9;
+}
+
+.subtitle{
+    font-size:20px;
+    opacity:.85;
+}
+
+button{
+    border:0;
+    border-radius:16px;
+    padding:16px 28px;
+    font-size:19px;
+    font-weight:bold;
+    background:#f59e0b;
+    color:#17100a;
+    box-shadow:0 6px 0 #a85f00;
+}
+
+button:active{
+    transform:translateY(4px);
+    box-shadow:0 2px 0 #a85f00;
+}
+
+.hidden{
+    display:none!important;
 }
 
 #controls{
-  position:absolute;
-  left:15px;
-  right:15px;
-  bottom:15px;
-  display:flex;
-  justify-content:space-between;
-  pointer-events:none;
+    position:fixed;
+    left:15px;
+    right:15px;
+    bottom:15px;
+    display:flex;
+    justify-content:space-between;
+    z-index:6;
 }
 
 .pad{
-  display:flex;
-  gap:10px;
+    display:flex;
+    gap:10px;
 }
 
 .ctrl{
-  pointer-events:auto;
-  width:64px;
-  height:64px;
-  padding:0;
-  border-radius:18px;
-  background:#182238dd;
-  color:white;
-  border:2px solid #ffffff55;
-  box-shadow:0 5px 0 #0009;
-  font-size:27px;
-}
-
-.small{
-  font-size:13px;
-  opacity:.6;
-  margin-top:18px;
+    width:64px;
+    height:64px;
+    padding:0;
+    border-radius:18px;
+    background:rgba(20,30,50,.85);
+    color:white;
+    border:2px solid rgba(255,255,255,.3);
+    box-shadow:0 5px 0 #000;
+    font-size:27px;
 }
 </style>
 </head>
@@ -143,905 +135,1391 @@ button:active{
 <canvas id="game" width="960" height="540"></canvas>
 
 <div id="hud" class="hidden">
-  <div>
-    ❤️ <span id="lives">3</span>
-    &nbsp;
-    ⭐ <span id="score">0</span>
-  </div>
+    <div>
+        ❤️ <span id="lives">3</span>
+        ⭐ <span id="score">0</span>
+    </div>
 
-  <div>
-    🪙 <span id="coins">0</span>
-    &nbsp;
-    🌍 <span id="world">1</span>/4
-  </div>
+    <div>
+        🪙 <span id="coins">0</span>
+        🌍 <span id="level">1</span>/4
+    </div>
 </div>
 
 <div id="menu" class="screen">
+    <div class="box">
 
-  <div class="box">
+        <div style="font-size:60px">
+            ⚔️ 🧙 🐉
+        </div>
 
-    <div style="font-size:60px">
-      ⚔️ 🧙 🐉
+        <h1>
+            PYTHONIA<br>
+            LEGENDS
+        </h1>
+
+        <div class="subtitle">
+            Het ultieme pixel-avontuur
+        </div>
+
+        <p>
+            Verzamel munten.<br>
+            Versla monsters.<br>
+            Bereik de vlag.<br>
+            Versla de draak!
+        </p>
+
+        <br>
+
+        <button id="startButton">
+            ▶ START AVONTUUR
+        </button>
+
+        <p style="font-size:13px;opacity:.6">
+            📱 Gebruik de knoppen onderaan
+        </p>
+
     </div>
-
-    <h1>
-      PYTHONIA<br>
-      LEGENDS
-    </h1>
-
-    <div class="subtitle">
-      Het ultieme pixel-avontuur
-    </div>
-
-    <p>
-      Verzamel schatten.<br>
-      Versla monsters.<br>
-      Ontdek alle 4 werelden.
-    </p>
-
-    <br>
-
-    <button id="start">
-      ▶ START AVONTUUR
-    </button>
-
-    <div class="small">
-      📱 Speel met de knoppen onderaan je scherm
-    </div>
-
-  </div>
-
 </div>
 
 <div id="win" class="screen hidden">
+    <div class="box">
 
-  <div class="box">
+        <div style="font-size:65px">🏆</div>
 
-    <div style="font-size:65px">
-      🏆
+        <h1>GEWONNEN!</h1>
+
+        <p>
+            Je hebt Pythonia gered!
+        </p>
+
+        <p>
+            Eindscore:
+            <b id="finalScore">0</b>
+        </p>
+
+        <button onclick="location.reload()">
+            🔄 OPNIEUW
+        </button>
+
     </div>
-
-    <h1>GEWONNEN!</h1>
-
-    <p>
-      Je hebt Pythonia gered!
-    </p>
-
-    <p>
-      Eindscore:
-      <b id="finalScore">0</b>
-    </p>
-
-    <button onclick="location.reload()">
-      🔄 OPNIEUW
-    </button>
-
-  </div>
-
 </div>
 
-<div id="lose" class="screen hidden">
+<div id="gameover" class="screen hidden">
+    <div class="box">
 
-  <div class="box">
+        <div style="font-size:65px">💥</div>
 
-    <div style="font-size:65px">
-      💥
+        <h1>GAME OVER</h1>
+
+        <p>
+            De monsters waren te sterk!
+        </p>
+
+        <button onclick="location.reload()">
+            🔄 OPNIEUW
+        </button>
+
     </div>
-
-    <h1>GAME OVER</h1>
-
-    <p>
-      De monsters hebben gewonnen...
-    </p>
-
-    <button onclick="location.reload()">
-      🔄 OPNIEUW
-    </button>
-
-  </div>
-
 </div>
 
 <div id="controls" class="hidden">
 
-  <div class="pad">
-    <button class="ctrl" data-key="left">◀</button>
-    <button class="ctrl" data-key="right">▶</button>
-  </div>
+    <div class="pad">
+        <button class="ctrl" data-key="left">◀</button>
+        <button class="ctrl" data-key="right">▶</button>
+    </div>
 
-  <div class="pad">
-    <button class="ctrl" data-key="jump">⬆</button>
-    <button class="ctrl" data-key="attack">⚔️</button>
-  </div>
+    <div class="pad">
+        <button class="ctrl" data-key="jump">⬆</button>
+        <button class="ctrl" data-key="attack">⚔️</button>
+    </div>
 
 </div>
 
 <script>
 
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-const W=960;
-const H=540;
+const WIDTH = 960;
+const HEIGHT = 540;
 
-let playing=false;
+let gameRunning = false;
 
-let keys={};
+let score = 0;
+let coins = 0;
+let lives = 3;
+let level = 1;
 
-let score=0;
-let coins=0;
-let lives=3;
-let world=1;
+let camera = 0;
 
 let player;
-let enemies=[];
-let items=[];
-let platforms=[];
-let particles=[];
+let platforms = [];
+let enemies = [];
+let coinsList = [];
+let particles = [];
 
 let goal;
 let boss;
 
-let camera=0;
+let keys = {};
 
-const worlds=[
-  {
-    sky:"#172554",
-    ground:"#334155",
-    accent:"#38bdf8"
-  },
-  {
-    sky:"#3b173b",
-    ground:"#4b3028",
-    accent:"#f472b6"
-  },
-  {
-    sky:"#40200e",
-    ground:"#475569",
-    accent:"#facc15"
-  },
-  {
-    sky:"#130d2d",
-    ground:"#31204f",
-    accent:"#a78bfa"
-  }
+const worlds = [
+
+    {
+        sky:"#172554",
+        ground:"#334155",
+        accent:"#38bdf8"
+    },
+
+    {
+        sky:"#3b173b",
+        ground:"#4b3028",
+        accent:"#f472b6"
+    },
+
+    {
+        sky:"#40200e",
+        ground:"#475569",
+        accent:"#facc15"
+    },
+
+    {
+        sky:"#130d2d",
+        ground:"#31204f",
+        accent:"#a78bfa"
+    }
+
 ];
 
-function startGame(){
 
-  document.getElementById("menu")
-    .classList.add("hidden");
+/* =========================
+   START
+========================= */
 
-  document.getElementById("hud")
-    .classList.remove("hidden");
+document.getElementById("startButton").onclick = function(){
 
-  document.getElementById("controls")
-    .classList.remove("hidden");
-
-  playing=true;
-
-  score=0;
-  coins=0;
-  lives=3;
-  world=1;
-
-  createLevel();
-
-  requestAnimationFrame(loop);
-}
-
-document.getElementById("start")
-.onclick=startGame;
-
-function createLevel(){
-
-  player={
-    x:80,
-    y:390,
-    w:34,
-    h:44,
-    vx:0,
-    vy:0,
-    onGround:false,
-    direction:1,
-    attack:0,
-    invincible:0
-  };
-
-  platforms=[];
-  items=[];
-  enemies=[];
-  particles=[];
-
-  camera=0;
-
-  for(let i=0;i<20;i++){
-
-    platforms.push({
-      x:i*170,
-      y:475,
-      w:180,
-      h:65
-    });
-
-  }
-
-  for(let i=0;i<12;i++){
-
-    platforms.push({
-      x:220+i*250,
-      y:350-(i%3)*55,
-      w:125,
-      h:18
-    });
-
-  }
-
-  for(let i=0;i<18;i++){
-
-    items.push({
-      x:120+i*105,
-      y:420-(i%4)*55,
-      taken:false
-    });
-
-  }
-
-  for(let i=0;i<6;i++){
-
-    enemies.push({
-      x:400+i*400,
-      y:438,
-      w:34,
-      h:37,
-      vx:i%2?1.3:-1.3,
-      dead:false
-    });
-
-  }
-
-  goal={
-    x:3000,
-    y:405,
-    w:35,
-    h:70
-  };
-
-  boss=null;
-
-  if(world===4){
-
-    boss={
-      x:2650,
-      y:300,
-      w:110,
-      h:130,
-      hp:15,
-      maxHp:15,
-      vx:1.3,
-      alive:true
-    };
-
-  }
-
-}
-
-function jump(){
-
-  if(player.onGround){
-
-    player.vy=-11;
-    player.onGround=false;
-
-  }
-
-}
-
-function attack(){
-
-  if(player.attack<=0){
-
-    player.attack=15;
-
-  }
-
-}
-
-addEventListener("keydown",function(e){
-
-  keys[e.key.toLowerCase()]=true;
-
-  if(
-    e.key===" " ||
-    e.key==="ArrowLeft" ||
-    e.key==="ArrowRight" ||
-    e.key==="ArrowUp"
-  ){
-    e.preventDefault();
-  }
-
-});
-
-addEventListener("keyup",function(e){
-
-  keys[e.key.toLowerCase()]=false;
-
-});
-
-document.querySelectorAll(".ctrl")
-.forEach(function(button){
-
-  const key=button.dataset.key;
-
-  button.addEventListener(
-    "touchstart",
-    function(e){
-
-      e.preventDefault();
-      keys[key]=true;
-
-    },
-    {passive:false}
-  );
-
-  button.addEventListener(
-    "touchend",
-    function(e){
-
-      e.preventDefault();
-      keys[key]=false;
-
-    },
-    {passive:false}
-  );
-
-});
-
-function collision(a,b){
-
-  return(
-    a.x < b.x+b.w &&
-    a.x+a.w > b.x &&
-    a.y < b.y+b.h &&
-    a.y+a.h > b.y
-  );
-
-}
-
-function hurt(){
-
-  if(player.invincible>0)return;
-
-  lives--;
-
-  player.invincible=100;
-
-  player.x=Math.max(40,player.x-120);
-  player.y=280;
-  player.vy=0;
-
-  if(lives<=0){
-
-    playing=false;
-
-    document.getElementById("lose")
-      .classList.remove("hidden");
-
-  }
-
-}
-
-function spawnParticles(x,y){
-
-  for(let i=0;i<12;i++){
-
-    particles.push({
-
-      x:x,
-      y:y,
-
-      vx:(Math.random()-.5)*6,
-      vy:(Math.random()-.5)*6,
-
-      life:30
-
-    });
-
-  }
-
-}
-
-</script>function update(){
-
-  if(!playing)return;
-
-  if(keys.left || keys.a){
-    player.vx-=0.55;
-    player.direction=-1;
-  }
-
-  if(keys.right || keys.d){
-    player.vx+=0.55;
-    player.direction=1;
-  }
-
-  if(keys.jump || keys.w || keys["arrowup"]){
-    if(!keys.jumpPressed){
-      jump();
-      keys.jumpPressed=true;
-    }
-  }else{
-    keys.jumpPressed=false;
-  }
-
-  if(keys.attack || keys.f){
-    if(!keys.attackPressed){
-      attack();
-      keys.attackPressed=true;
-    }
-  }else{
-    keys.attackPressed=false;
-  }
-
-  player.vx*=0.82;
-
-  if(player.vx>5)player.vx=5;
-  if(player.vx<-5)player.vx=-5;
-
-  player.vy+=0.55;
-
-  player.x+=player.vx;
-  player.y+=player.vy;
-
-  player.onGround=false;
-
-  for(const p of platforms){
-
-    if(
-      player.vy>=0 &&
-      player.x+player.w>p.x &&
-      player.x<p.x+p.w &&
-      player.y+player.h>=p.y &&
-      player.y+player.h<=p.y+20
-    ){
-
-      player.y=p.y-player.h;
-      player.vy=0;
-      player.onGround=true;
-
-    }
-
-  }
-
-  if(player.y>600){
-
-    hurt();
-
-  }
-
-  if(player.attack>0)player.attack--;
-
-  if(player.invincible>0)player.invincible--;
-
-  /* MUNTEN */
-
-  for(const coin of items){
-
-    if(
-      !coin.taken &&
-      Math.hypot(
-        player.x+17-coin.x,
-        player.y+20-coin.y
-      )<30
-    ){
-
-      coin.taken=true;
-      coins++;
-      score+=100;
-
-      spawnParticles(coin.x,coin.y);
-
-    }
-
-  }
-
-  /* VIJANDEN */
-
-  for(const enemy of enemies){
-
-    if(enemy.dead)continue;
-
-    enemy.x+=enemy.vx;
-
-    if(enemy.x<100 || enemy.x>2950){
-      enemy.vx*=-1;
-    }
-
-    if(collision(player,enemy)){
-
-      if(player.attack>0){
-
-        enemy.dead=true;
-        score+=250;
-        spawnParticles(enemy.x,enemy.y);
-
-      }
-      else if(player.vy>2){
-
-        enemy.dead=true;
-        player.vy=-7;
-        score+=250;
-        spawnParticles(enemy.x,enemy.y);
-
-      }
-      else{
-
-        hurt();
-
-      }
-
-    }
-
-  }
-
-  /* EINDE WERELD */
-
-  if(player.x>goal.x-50){
-
-    if(world<4){
-
-      world++;
-      score+=1000;
-      createLevel();
-
-    }
-
-    else{
-
-      if(!boss || !boss.alive){
-
-        playing=false;
-
-        document.getElementById("finalScore")
-          .textContent=score;
-
-        document.getElementById("win")
-          .classList.remove("hidden");
-
-      }
-
-    }
-
-  }
-
-  /* CAMERA */
-
-  camera+=(player.x-300-camera)*0.08;
-
-  if(camera<0)camera=0;
-  if(camera>2100)camera=2100;
-
-  /* PARTICLES */
-
-  for(const p of particles){
-
-    p.x+=p.vx;
-    p.y+=p.vy;
-
-    p.vy+=0.12;
-
-    p.life--;
-
-  }
-
-  particles=particles.filter(p=>p.life>0);
-
-  /* HUD */
-
-  document.getElementById("lives")
-    .textContent=lives;
-
-  document.getElementById("score")
-    .textContent=score;
-
-  document.getElementById("coins")
-    .textContent=coins;
-
-  document.getElementById("world")
-    .textContent=world;
-
-}function draw(){
-
-  const w=worlds[world-1];
-
-  ctx.fillStyle=w.sky;
-  ctx.fillRect(0,0,W,H);
-
-  ctx.save();
-  ctx.translate(-camera,0);
-
-  /* ACHTERGROND */
-
-  ctx.fillStyle=w.accent;
-  ctx.globalAlpha=.18;
-
-  for(let i=0;i<20;i++){
-
-    const px=i*180;
-
-    ctx.fillRect(px,90+(i%4)*45,50,8);
-    ctx.fillRect(px+18,80+(i%4)*45,70,8);
-
-  }
-
-  ctx.globalAlpha=1;
-
-  /* PLATFORMEN */
-
-  for(const p of platforms){
-
-    ctx.fillStyle=w.ground;
-    ctx.fillRect(p.x,p.y,p.w,p.h);
-
-    ctx.fillStyle=w.accent;
-    ctx.fillRect(p.x,p.y,p.w,8);
-
-  }
-
-  /* MUNTEN */
-
-  for(const coin of items){
-
-    if(coin.taken)continue;
-
-    ctx.fillStyle="#facc15";
-
-    ctx.beginPath();
-    ctx.arc(coin.x,coin.y,10,0,Math.PI*2);
-    ctx.fill();
-
-    ctx.fillStyle="#fff7";
-
-    ctx.fillRect(
-      coin.x-2,
-      coin.y-7,
-      4,
-      9
-    );
-
-  }
-
-  /* VIJANDEN */
-
-  for(const enemy of enemies){
-
-    if(enemy.dead)continue;
-
-    ctx.fillStyle="#ef4444";
-
-    ctx.fillRect(
-      enemy.x,
-      enemy.y,
-      enemy.w,
-      enemy.h
-    );
-
-    ctx.fillStyle="#111827";
-
-    ctx.fillRect(
-      enemy.x+6,
-      enemy.y+8,
-      7,
-      7
-    );
-
-    ctx.fillRect(
-      enemy.x+21,
-      enemy.y+8,
-      7,
-      7
-    );
-
-    ctx.fillStyle="#fca5a5";
-
-    ctx.fillRect(
-      enemy.x+8,
-      enemy.y+27,
-      18,
-      4
-    );
-
-  }
-
-  /* EINDE-VLAG */
-
-  ctx.fillStyle="#e5e7eb";
-
-  ctx.fillRect(
-    goal.x,
-    goal.y,
-    5,
-    70
-  );
-
-  ctx.fillStyle=w.accent;
-
-  ctx.fillRect(
-    goal.x+5,
-    goal.y,
-    38,
-    24
-  );
-
-  /* SPELER */
-
-  if(
-    player.invincible%8<4
-  ){
-
-    /* cape */
-
-    ctx.fillStyle="#7c3aed";
-
-    ctx.fillRect(
-      player.x-5,
-      player.y+16,
-      10,
-      24
-    );
-
-    /* lichaam */
-
-    ctx.fillStyle="#38bdf8";
-
-    ctx.fillRect(
-      player.x,
-      player.y,
-      player.w,
-      player.h
-    );
-
-    /* gezicht */
-
-    ctx.fillStyle="#fde68a";
-
-    ctx.fillRect(
-      player.x+6,
-      player.y+4,
-      22,
-      20
-    );
-
-    /* haar */
-
-    ctx.fillStyle="#451a03";
-
-    ctx.fillRect(
-      player.x+5,
-      player.y+2,
-      24,
-      7
-    );
-
-    /* oog */
-
-    ctx.fillStyle="#111827";
-
-    if(player.direction>0){
-
-      ctx.fillRect(
-        player.x+22,
-        player.y+11,
-        5,
-        5
-      );
-
-    }else{
-
-      ctx.fillRect(
-        player.x+7,
-        player.y+11,
-        5,
-        5
-      );
-
-    }
-
-    /* benen */
-
-    ctx.fillStyle="#1e293b";
-
-    ctx.fillRect(
-      player.x+4,
-      player.y+34,
-      10,
-      10
-    );
-
-    ctx.fillRect(
-      player.x+20,
-      player.y+34,
-      10,
-      10
-    );
-
-    /* zwaard */
-
-    if(player.attack>0){
-
-      ctx.fillStyle="#f8fafc";
-
-      if(player.direction>0){
-
-        ctx.fillRect(
-          player.x+30,
-          player.y+14,
-          34,
-          6
-        );
-
-      }else{
-
-        ctx.fillRect(
-          player.x-30,
-          player.y+14,
-          34,
-          6
-        );
-
-      }
-
-    }
-
-  }
-
-  /* PARTICLES */
-
-  for(const p of particles){
-
-    ctx.globalAlpha=p.life/30;
-
-    ctx.fillStyle="#facc15";
-
-    ctx.fillRect(
-      p.x,
-      p.y,
-      7,
-      7
-    );
-
-  }
-
-  ctx.globalAlpha=1;
-
-  ctx.restore();
-
-}
-
-function loop(){
-
-  if(!playing)return;
-
-  update();
-  draw();
-
-  requestAnimationFrame(loop);
-
-}
-
-draw();
-
-document.getElementById("start").onclick = function(){
     document.getElementById("menu").classList.add("hidden");
+
     document.getElementById("hud").classList.remove("hidden");
+
     document.getElementById("controls").classList.remove("hidden");
 
-    playing = true;
     score = 0;
     coins = 0;
     lives = 3;
-    world = 1;
+    level = 1;
+
+    gameRunning = true;
 
     createLevel();
-    requestAnimationFrame(loop);
+
+    requestAnimationFrame(gameLoop);
+
 };
+
+
+/* =========================
+   LEVEL MAKEN
+========================= */
+
+function createLevel(){
+
+    player = {
+
+        x:80,
+        y:390,
+
+        width:34,
+        height:44,
+
+        velocityX:0,
+        velocityY:0,
+
+        direction:1,
+
+        grounded:false,
+
+        attackTimer:0,
+
+        invincible:0
+
+    };
+
+
+    platforms = [];
+    enemies = [];
+    coinsList = [];
+    particles = [];
+
+
+    /* GROND */
+
+    for(let i=0;i<20;i++){
+
+        platforms.push({
+
+            x:i*170,
+            y:475,
+            width:180,
+            height:65
+
+        });
+
+    }
+
+
+    /* HOGERE PLATFORMEN */
+
+    for(let i=0;i<12;i++){
+
+        platforms.push({
+
+            x:250+i*240,
+            y:350-(i%3)*55,
+            width:120,
+            height:18
+
+        });
+
+    }
+
+
+    /* MUNTEN */
+
+    for(let i=0;i<20;i++){
+
+        coinsList.push({
+
+            x:120+i*140,
+            y:420-(i%4)*55,
+
+            collected:false
+
+        });
+
+    }
+
+
+    /* VIJANDEN */
+
+    for(let i=0;i<7;i++){
+
+        enemies.push({
+
+            x:400+i*380,
+            y:438,
+
+            width:34,
+            height:37,
+
+            velocityX:i%2===0 ? 1.2 : -1.2,
+
+            dead:false
+
+        });
+
+    }
+
+
+    /* EINDE */
+
+    goal = {
+
+        x:3000,
+        y:405,
+        width:35,
+        height:70
+
+    };
+
+
+    /* EINDDBAAS */
+
+    boss = null;
+
+    if(level === 4){
+
+        boss = {
+
+            x:2680,
+            y:300,
+
+            width:110,
+            height:130,
+
+            health:15,
+            maxHealth:15,
+
+            velocityX:1.3,
+
+            alive:true
+
+        };
+
+    }
+
+
+    camera = 0;
+
+}
+
+
+/* =========================
+   INPUT
+========================= */
+
+window.addEventListener("keydown",function(event){
+
+    keys[event.key.toLowerCase()] = true;
+
+});
+
+window.addEventListener("keyup",function(event){
+
+    keys[event.key.toLowerCase()] = false;
+
+});
+
+
+document.querySelectorAll(".ctrl").forEach(function(button){
+
+    const key = button.dataset.key;
+
+    button.addEventListener("touchstart",function(event){
+
+        event.preventDefault();
+
+        keys[key] = true;
+
+    },{passive:false});
+
+
+    button.addEventListener("touchend",function(event){
+
+        event.preventDefault();
+
+        keys[key] = false;
+
+    },{passive:false});
+
+});
+
+
+/* =========================
+   SPRINGEN
+========================= */
+
+function jump(){
+
+    if(player.grounded){
+
+        player.velocityY = -11;
+
+        player.grounded = false;
+
+    }
+
+}
+
+
+/* =========================
+   AANVALLEN
+========================= */
+
+function attack(){
+
+    if(player.attackTimer <= 0){
+
+        player.attackTimer = 15;
+
+    }
+
+}
+
+
+/* =========================
+   SCHADE
+========================= */
+
+function playerHurt(){
+
+    if(player.invincible > 0){
+
+        return;
+
+    }
+
+
+    lives--;
+
+    player.invincible = 100;
+
+    player.x -= 100;
+
+    player.y = 250;
+
+    player.velocityY = 0;
+
+    makeParticles(
+        player.x,
+        player.y
+    );
+
+
+    if(lives <= 0){
+
+        gameRunning = false;
+
+        document.getElementById("gameover")
+        .classList.remove("hidden");
+
+    }
+
+}
+
+
+/* =========================
+   UPDATE
+========================= */
+
+function update(){
+
+    if(!gameRunning){
+
+        return;
+
+    }
+
+
+    /* BEWEGEN */
+
+    if(keys.left || keys.a){
+
+        player.velocityX -= .55;
+
+        player.direction = -1;
+
+    }
+
+
+    if(keys.right || keys.d){
+
+        player.velocityX += .55;
+
+        player.direction = 1;
+
+    }
+
+
+    /* SPRINGEN */
+
+    if(keys.jump || keys.w || keys.arrowup){
+
+        if(!keys.jumpPressed){
+
+            jump();
+
+            keys.jumpPressed = true;
+
+        }
+
+    }
+    else{
+
+        keys.jumpPressed = false;
+
+    }
+
+
+    /* AANVAL */
+
+    if(keys.attack || keys.f){
+
+        if(!keys.attackPressed){
+
+            attack();
+
+            keys.attackPressed = true;
+
+        }
+
+    }
+    else{
+
+        keys.attackPressed = false;
+
+    }
+
+
+    /* SNELHEID */
+
+    player.velocityX *= .82;
+
+
+    if(player.velocityX > 5){
+
+        player.velocityX = 5;
+
+    }
+
+
+    if(player.velocityX < -5){
+
+        player.velocityX = -5;
+
+    }
+
+
+    /* ZWAARTEKRACHT */
+
+    player.velocityY += .55;
+
+
+    player.x += player.velocityX;
+
+    player.y += player.velocityY;
+
+
+    player.grounded = false;
+
+
+    /* PLATFORM COLLISION */
+
+    for(const platform of platforms){
+
+        if(
+
+            player.velocityY >= 0 &&
+
+            player.x + player.width > platform.x &&
+
+            player.x < platform.x + platform.width &&
+
+            player.y + player.height >= platform.y &&
+
+            player.y + player.height <= platform.y + 20
+
+        ){
+
+            player.y =
+                platform.y - player.height;
+
+            player.velocityY = 0;
+
+            player.grounded = true;
+
+        }
+
+    }
+
+
+    /* VAL */
+
+    if(player.y > 600){
+
+        playerHurt();
+
+    }
+
+
+    if(player.attackTimer > 0){
+
+        player.attackTimer--;
+
+    }
+
+
+    if(player.invincible > 0){
+
+        player.invincible--;
+
+    }
+
+
+    /* MUNTEN */
+
+    for(const coin of coinsList){
+
+        if(coin.collected){
+
+            continue;
+
+        }
+
+
+        const dx =
+            player.x + 17 - coin.x;
+
+        const dy =
+            player.y + 20 - coin.y;
+
+
+        if(Math.sqrt(dx*dx+dy*dy) < 30){
+
+            coin.collected = true;
+
+            coins++;
+
+            score += 100;
+
+            makeParticles(
+                coin.x,
+                coin.y
+            );
+
+        }
+
+    }
+
+
+    /* VIJANDEN */
+
+    for(const enemy of enemies){
+
+        if(enemy.dead){
+
+            continue;
+
+        }
+
+
+        enemy.x += enemy.velocityX;
+
+
+        if(
+            enemy.x < 200 ||
+            enemy.x > 2950
+        ){
+
+            enemy.velocityX *= -1;
+
+        }
+
+
+        if(checkCollision(player,enemy)){
+
+            if(player.attackTimer > 0){
+
+                enemy.dead = true;
+
+                score += 250;
+
+                makeParticles(
+                    enemy.x,
+                    enemy.y
+                );
+
+            }
+
+            else if(player.velocityY > 2){
+
+                enemy.dead = true;
+
+                player.velocityY = -7;
+
+                score += 250;
+
+                makeParticles(
+                    enemy.x,
+                    enemy.y
+                );
+
+            }
+
+            else{
+
+                playerHurt();
+
+            }
+
+        }
+
+    }
+
+
+    /* BOSS */
+
+    if(boss && boss.alive){
+
+        boss.x += boss.velocityX;
+
+
+        if(
+            boss.x < 2500 ||
+            boss.x > 2850
+        ){
+
+            boss.velocityX *= -1;
+
+        }
+
+
+        if(checkCollision(player,boss)){
+
+            if(
+                player.attackTimer > 0 &&
+                Math.abs(player.x-boss.x) < 80
+            ){
+
+                boss.health--;
+
+                score += 200;
+
+                makeParticles(
+                    boss.x,
+                    boss.y
+                );
+
+            }
+            else{
+
+                playerHurt();
+
+            }
+
+        }
+
+
+        if(boss.health <= 0){
+
+            boss.alive = false;
+
+            score += 5000;
+
+            makeParticles(
+                boss.x,
+                boss.y
+            );
+
+        }
+
+    }
+
+
+    /* VOLGENDE WERELD */
+
+    if(player.x > goal.x - 50){
+
+        if(level < 4){
+
+            level++;
+
+            score += 1000;
+
+            createLevel();
+
+        }
+
+        else{
+
+            if(!boss || !boss.alive){
+
+                gameRunning = false;
+
+                document.getElementById("finalScore")
+                .textContent = score;
+
+                document.getElementById("win")
+                .classList.remove("hidden");
+
+            }
+
+        }
+
+    }
+
+
+    /* CAMERA */
+
+    camera +=
+        (player.x - 300 - camera) * .08;
+
+
+    if(camera < 0){
+
+        camera = 0;
+
+    }
+
+
+    if(camera > 2100){
+
+        camera = 2100;
+
+    }
+
+
+    /* PARTICLES */
+
+    for(const particle of particles){
+
+        particle.x += particle.velocityX;
+
+        particle.y += particle.velocityY;
+
+        particle.velocityY += .12;
+
+        particle.life--;
+
+    }
+
+
+    particles =
+        particles.filter(
+            particle => particle.life > 0
+        );
+
+
+    /* HUD */
+
+    document.getElementById("lives")
+        .textContent = lives;
+
+    document.getElementById("score")
+        .textContent = score;
+
+    document.getElementById("coins")
+        .textContent = coins;
+
+    document.getElementById("level")
+        .textContent = level;
+
+}
+
+
+/* =========================
+   COLLISION
+========================= */
+
+function checkCollision(a,b){
+
+    return(
+
+        a.x < b.x + b.width &&
+
+        a.x + a.width > b.x &&
+
+        a.y < b.y + b.height &&
+
+        a.y + a.height > b.y
+
+    );
+
+}
+
+
+/* =========================
+   PARTICLES
+========================= */
+
+function makeParticles(x,y){
+
+    for(let i=0;i<15;i++){
+
+        particles.push({
+
+            x:x,
+            y:y,
+
+            velocityX:
+                (Math.random()-.5)*7,
+
+            velocityY:
+                (Math.random()-.5)*7,
+
+            life:30
+
+        });
+
+    }
+
+}
+
+
+/* =========================
+   TEKENEN
+========================= */
+
+function draw(){
+
+    const world =
+        worlds[level-1];
+
+
+    /* ACHTERGROND */
+
+    ctx.fillStyle =
+        world.sky;
+
+    ctx.fillRect(
+        0,
+        0,
+        WIDTH,
+        HEIGHT
+    );
+
+
+    /* ACHTERGROND LICHTJES */
+
+    ctx.globalAlpha = .18;
+
+    ctx.fillStyle =
+        world.accent;
+
+
+    for(let i=0;i<20;i++){
+
+        const x =
+            (i*170 - camera*.25)
+            % 1100;
+
+        const y =
+            70 + (i%5)*55;
+
+
+        ctx.fillRect(
+            x,
+            y,
+            55,
+            8
+        );
+
+    }
+
+
+    ctx.globalAlpha = 1;
+
+
+    ctx.save();
+
+    ctx.translate(-camera,0);
+
+
+    /* PLATFORMEN */
+
+    for(const platform of platforms){
+
+        ctx.fillStyle =
+            world.ground;
+
+        ctx.fillRect(
+            platform.x,
+            platform.y,
+            platform.width,
+            platform.height
+        );
+
+
+        ctx.fillStyle =
+            world.accent;
+
+        ctx.fillRect(
+            platform.x,
+            platform.y,
+            platform.width,
+            8
+        );
+
+    }
+
+
+    /* MUNTEN */
+
+    for(const coin of coinsList){
+
+        if(coin.collected){
+
+            continue;
+
+        }
+
+
+        ctx.fillStyle =
+            "#facc15";
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            coin.x,
+            coin.y,
+            10,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+
+        ctx.fillStyle =
+            "#fff";
+
+        ctx.fillRect(
+            coin.x-2,
+            coin.y-7,
+            4,
+            9
+        );
+
+    }
+
+
+    /* VIJANDEN */
+
+    for(const enemy of enemies){
+
+        if(enemy.dead){
+
+            continue;
+
+        }
+
+
+        ctx.fillStyle =
+            "#ef4444";
+
+
+        ctx.fillRect(
+            enemy.x,
+            enemy.y,
+            enemy.width,
+            enemy.height
+        );
+
+
+        ctx.fillStyle =
+            "#111827";
+
+
+        ctx.fillRect(
+            enemy.x+6,
+            enemy.y+8,
+            7,
+            7
+        );
+
+
+        ctx.fillRect(
+            enemy.x+21,
+            enemy.y+8,
+            7,
+            7
+        );
+
+
+        ctx.fillStyle =
+            "#fca5a5";
+
+
+        ctx.fillRect(
+            enemy.x+8,
+            enemy.y+27,
+            18,
+            4
+        );
+
+    }
+
+
+    /* VLAG */
+
+    ctx.fillStyle =
+        "#e5e7eb";
+
+    ctx.fillRect(
+        goal.x,
+        goal.y,
+        5,
+        70
+    );
+
+
+    ctx.fillStyle =
+        world.accent;
+
+    ctx.fillRect(
+        goal.x+5,
+        goal.y,
+        40,
+        24
+    );
+
+
+    /* BOSS */
+
+    if(boss && boss.alive){
+
+        ctx.fillStyle =
+            "#7c3aed";
+
+        ctx.fillRect(
+            boss.x,
+            boss.y,
+            boss.width,
+            boss.height
+        );
+
+
+        ctx.fillStyle =
+            "#fda4af";
+
+        ctx.fillRect(
+            boss.x+15,
+            boss.y+20,
+            80,
+            50
+        );
+
+
+        ctx.fillStyle =
+            "#111827";
+
+        ctx.fillRect(
+            boss.x+25,
+            boss.y+35,
+            10,
+            10
+        );
+
+        ctx.fillRect(
+            boss.x+70,
+            boss.y+35,
+            10,
+            10
+        );
+
+
+        /* BOSS BAR */
+
+        ctx.fillStyle =
+            "#111827";
+
+        ctx.fillRect(
+            boss.x,
+            boss.y-20,
+            boss.width,
+            10
+        );
+
+
+        ctx.fillStyle =
+            "#22c55e";
+
+        ctx.fillRect(
+            boss.x,
+            boss.y-20,
+            boss.width *
+            (boss.health/boss.maxHealth),
+            10
+        );
+
+    }
+
+
+    /* SPELER */
+
+    if(
+        player.invincible % 8 < 4
+    ){
+
+        /* CAPE */
+
+        ctx.fillStyle =
+            "#7c3aed";
+
+        ctx.fillRect(
+            player.x-5,
+            player.y+16,
+            10,
+            25
+        );
+
+
+        /* LICHAAM */
+
+        ctx.fillStyle =
+            "#38bdf8";
+
+        ctx.fillRect(
+            player.x,
+            player.y,
+            player.width,
+            player.height
+        );
+
+
+        /* GEZICHT */
+
+        ctx.fillStyle =
+            "#fde68a";
+
+        ctx.fillRect(
+            player.x+6,
+            player.y+4,
+            22,
+            20
+        );
+
+
+        /* HAAR */
+
+        ctx.fillStyle =
+            "#451a03";
+
+        ctx.fillRect(
+            player.x+5,
+            player.y+2,
+            24,
+            7
+        );
+
+
+        /* OOG */
+
+        ctx.fillStyle =
+            "#111827";
+
+
+        if(player.direction > 0){
+
+            ctx.fillRect(
+                player.x+22,
+                player.y+11,
+                5,
+                5
+            );
+
+        }
+        else{
+
+            ctx.fillRect(
+                player.x+7,
+                player.y+11,
+                5,
+                5
+            );
+
+        }
+
+
+        /* BENEN */
+
+        ctx.fillStyle =
+            "#1e293b";
+
+        ctx.fillRect(
+            player.x+4,
+            player.y+34,
+            10,
+            10
+        );
+
+        ctx.fillRect(
+            player.x+20,
+            player.y+34,
+            10,
+            10
+        );
+
+
+        /* ZWAARD */
+
+        if(player.attackTimer > 0){
+
+            ctx.fillStyle =
+                "#f8fafc";
+
+
+            if(player.direction > 0){
+
+                ctx.fillRect(
+                    player.x+30,
+                    player.y+14,
+                    35,
+                    6
+                );
+
+            }
+            else{
+
+                ctx.fillRect(
+                    player.x-30,
+                    player.y+14,
+                    35,
+                    6
+                );
+
+            }
+
+        }
+
+    }
+
+
+    /* PARTICLES */
+
+    for(const particle of particles){
+
+        ctx.globalAlpha =
+            particle.life/30;
+
+        ctx.fillStyle =
+            "#facc15";
+
+        ctx.fillRect(
+            particle.x,
+            particle.y,
+            7,
+            7
+        );
+
+    }
+
+
+    ctx.globalAlpha = 1;
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   GAME LOOP
+========================= */
+
+function gameLoop(){
+
+    if(!gameRunning){
+
+        return;
+
+    }
+
+    update();
+
+    draw();
+
+    requestAnimationFrame(gameLoop);
+
+}
+
+
+/* =========================
+   EERSTE TEKENING
+========================= */
+
+ctx.fillStyle="#172554";
+
+ctx.fillRect(
+    0,
+    0,
+    WIDTH,
+    HEIGHT
+);
+
+</script>
+
+</body>
+</html>
