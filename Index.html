@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Pythonia Legends</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  touch-action: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #08101d;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+
+#menu {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  background:
+    radial-gradient(circle at 50% 25%, #285b91, #101b30 50%, #050811);
+  z-index: 10;
+}
+
+.card {
+  width: 90%;
+  max-width: 520px;
+  padding: 30px 20px;
+  border: 3px solid #55c7ff;
+  border-radius: 20px;
+  background: #0b1830ee;
+  box-shadow: 0 20px 70px #000;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(45px, 13vw, 75px);
+  color: #ffd83d;
+  text-shadow: 5px 5px #762f1b;
+  font-family: monospace;
+  font-weight: 900;
+}
+
+h2 {
+  margin: 5px 0 20px;
+  color: #62d9ff;
+  letter-spacing: 8px;
+  font-family: monospace;
+}
+
+p {
+  color: #c9dafa;
+  line-height: 1.5;
+}
+
+#start {
+  margin-top: 15px;
+  padding: 16px 28px;
+  border: 3px solid #9de8ff;
+  border-radius: 12px;
+  background: linear-gradient(#2998e8, #1258aa);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#hud {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  color: white;
+  font: bold 17px monospace;
+  text-shadow: 2px 2px #000;
+  z-index: 5;
+}
+
+#controls {
+  display: none;
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  justify-content: space-between;
+  z-index: 5;
+}
+
+.group {
+  display: flex;
+  gap: 10px;
+}
+
+.control {
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  border: 2px solid #ffffff66;
+  background: #13243ddd;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.control:active {
+  transform: translateY(4px);
+  background: #24528a;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="menu">
+  <div class="card">
+    <h1>PYTHONIA</h1>
+    <h2>LEGENDS</h2>
+
+    <p>
+      ⚔️ Verzamel munten<br>
+      👾 Versla vijanden<br>
+      ⭐ Vind sterren<br>
+      🏆 Bereik de finish
+    </p>
+
+    <button id="start">▶ START AVONTUUR</button>
+
+    <p>📱 Speciaal gemaakt voor iPhone</p>
+  </div>
+</div>
+
+<div id="hud">
+  ❤️ <span id="life">3</span>
+  &nbsp;&nbsp;
+  🪙 <span id="coin">0</span>
+  &nbsp;&nbsp;
+  ⭐ <span id="star">0</span>
+</div>
+
+<div id="controls">
+
+  <div class="group">
+    <button class="control" id="left">◀</button>
+    <button class="control" id="right">▶</button>
+  </div>
+
+  <div class="group">
+    <button class="control" id="attack">⚔</button>
+    <button class="control" id="jump">⬆</button>
+  </div>
+
+</div>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const W = 320;
+const H = 180;
+
+let running = false;
+
+let keys = {};
+
+let lives = 3;
+let coins = 0;
+let stars = 0;
+
+let camera = 0;
+
+let player = {
+  x: 35,
+  y: 100,
+  w: 14,
+  h: 21,
+  vx: 0,
+  vy: 0,
+  onGround: false
+};
+
+const platforms = [
+  {x:0,y:150,w:320,h:30},
+  {x:350,y:135,w:120,h:15},
+  {x:500,y:115,w:100,h:15},
+  {x:630,y:140,w:130,h:15},
+  {x:790,y:105,w:120,h:15},
+  {x:940,y:140,w:180,h:15},
+  {x:1160,y:115,w:130,h:15},
+  {x:1330,y:145,w:150,h:15}
+];
+
+const items = [];
+
+for(let i = 0; i < 15; i++) {
+  items.push({
+    x: 100 + i * 90,
+    y: 120 - (i % 3) * 20,
+    collected: false
+  });
+}
+
+let enemy = {
+  x: 560,
+  y: 90,
+  w: 18,
+  h: 20,
+  alive: true
+};
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+document.addEventListener("keydown", function(e) {
+  keys[e.key] = true;
+});
+
+document.addEventListener("keyup", function(e) {
+  keys[e.key] = false;
+});
+
+function button(id, key) {
+
+  const el = document.getElementById(id);
+
+  el.addEventListener("pointerdown", function(e) {
+    e.preventDefault();
+    keys[key] = true;
+  });
+
+  el.addEventListener("pointerup", function(e) {
+    e.preventDefault();
+    keys[key] = false;
+  });
+
+  el.addEventListener("pointercancel", function() {
+    keys[key] = false;
+  });
+
+  el.addEventListener("pointerleave", function() {
+    keys[key] = false;
+  });
+}
+
+button("left", "left");
+button("right", "right");
+button("attack", "attack");
+button("jump", "jump");
+
+document.getElementById("start").onclick = function() {
+
+  document.getElementById("menu").style.display = "none";
+
+  document.getElementById("hud").style.display = "block";
+
+  document.getElementById("controls").style.display = "flex";
+
+  running = true;
+};
+
+function update() {
+
+  if(!running) return;
+
+  if(keys.left || keys.ArrowLeft) {
+    player.vx -= 0.35;
+  }
+
+  if(keys.right || keys.ArrowRight) {
+    player.vx += 0.35;
+  }
+
+  player.vx *= 0.86;
+
+  player.vx = Math.max(-3, Math.min(3, player.vx));
+
+  if((keys.jump || keys.ArrowUp) && player.onGround) {
+    player.vy = -7;
+    player.onGround = false;
+  }
+
+  player.vy += 0.3;
+
+  player.x += player.vx;
+  player.y += player.vy;
+
+  player.onGround = false;
+
+  for(const p of platforms) {
+
+    if(
+      player.x + player.w > p.x &&
+      player.x < p.x + p.w &&
+      player.y + player.h >= p.y &&
+      player.y + player.h <= p.y + 12 &&
+      player.vy >= 0
+    ) {
+
+      player.y = p.y - player.h;
+      player.vy = 0;
+      player.onGround = true;
+
+    }
+  }
+
+  for(const item of items) {
+
+    if(
+      !item.collected &&
+      Math.abs(player.x - item.x) < 14 &&
+      Math.abs(player.y - item.y) < 18
+    ) {
+
+      item.collected = true;
+      coins++;
+
+      document.getElementById("coin").textContent = coins;
+    }
+  }
+
+  if(
+    enemy.alive &&
+    Math.abs(player.x - enemy.x) < 25 &&
+    Math.abs(player.y - enemy.y) < 25
+  ) {
+
+    if(keys.attack) {
+
+      enemy.alive = false;
+
+    } else {
+
+      loseLife();
+
+    }
+  }
+
+  if(player.y > 210) {
+    loseLife();
+  }
+
+  camera = Math.max(
+    0,
+    Math.min(1160, player.x - 110)
+  );
+
+  if(player.x > 1450) {
+
+    alert(
+      "🏆 GEWELDIG!\n\n" +
+      "Je hebt Pythonia Legends uitgespeeld!\n\n" +
+      "🪙 Munten: " + coins
+    );
+
+    running = false;
+
+    document.getElementById("menu").style.display = "flex";
+  }
+}
+
+function loseLife() {
+
+  lives--;
+
+  document.getElementById("life").textContent = lives;
+
+  player.x = 35;
+  player.y = 80;
+  player.vx = 0;
+  player.vy = 0;
+
+  if(lives <= 0) {
+
+    alert("💀 GAME OVER!");
+
+    location.reload();
+  }
+}
+
+function draw() {
+
+  const scale = Math.min(
+    canvas.width / W,
+    canvas.height / H
+  );
+
+  const ox = (canvas.width - W * scale) / 2;
+  const oy = (canvas.height - H * scale) / 2;
+
+  ctx.setTransform(
+    scale,
+    0,
+    0,
+    scale,
+    ox,
+    oy
+  );
+
+  ctx.imageSmoothingEnabled = false;
+
+  // SKY
+
+  ctx.fillStyle = "#102f52";
+  ctx.fillRect(0,0,W,H);
+
+  // MOON
+
+  ctx.fillStyle = "#ffe99a";
+  ctx.beginPath();
+  ctx.arc(260,30,12,0,Math.PI*2);
+  ctx.fill();
+
+  // MOUNTAINS
+
+  ctx.fillStyle = "#1b4c68";
+
+  for(let i=-1;i<8;i++) {
+
+    let mx =
+      i * 55 -
+      (camera * 0.2 % 55);
+
+    ctx.beginPath();
+
+    ctx.moveTo(mx,150);
+    ctx.lineTo(mx+28,75);
+    ctx.lineTo(mx+55,150);
+
+    ctx.fill();
+  }
+
+  ctx.save();
+
+  ctx.translate(-camera,0);
+
+  // PLATFORMS
+
+  for(const p of platforms) {
+
+    ctx.fillStyle = "#493329";
+    ctx.fillRect(
+      p.x,
+      p.y,
+      p.w,
+      p.h
+    );
+
+    ctx.fillStyle = "#65ce52";
+
+    ctx.fillRect(
+      p.x,
+      p.y,
+      p.w,
+      4
+    );
+  }
+
+  // COINS
+
+  for(const item of items) {
+
+    if(item.collected) continue;
+
+    ctx.fillStyle = "#d79618";
+
+    ctx.fillRect(
+      item.x-4,
+      item.y-6,
+      8,
+      12
+    );
+
+    ctx.fillStyle = "#ffd83d";
+
+    ctx.fillRect(
+      item.x-2,
+      item.y-5,
+      5,
+      10
+    );
+
+    ctx.fillStyle = "#fff5a6";
+
+    ctx.fillRect(
+      item.x-1,
+      item.y-4,
+      2,
+      4
+    );
+  }
+
+  // ENEMY
+
+  if(enemy.alive) {
+
+    ctx.fillStyle = "#a93655";
+
+    ctx.fillRect(
+      enemy.x,
+      enemy.y,
+      enemy.w,
+      enemy.h
+    );
+
+    ctx.fillStyle = "#ffffff";
+
+    ctx.fillRect(
+      enemy.x+4,
+      enemy.y+5,
+      3,
+      3
+    );
+
+    ctx.fillRect(
+      enemy.x+12,
+      enemy.y+5,
+      3,
+      3
+    );
+  }
+
+  // PLAYER CAPE
+
+  ctx.fillStyle = "#d83e5b";
+
+  ctx.fillRect(
+    player.x-2,
+    player.y+7,
+    5,
+    12
+  );
+
+  // BODY
+
+  ctx.fillStyle = "#2984cc";
+
+  ctx.fillRect(
+    player.x+2,
+    player.y+7,
+    10,
+    11
+  );
+
+  // HEAD
+
+  ctx.fillStyle = "#ffc18e";
+
+  ctx.fillRect(
+    player.x+3,
+    player.y,
+    9,
+    9
+  );
+
+  // HAIR
+
+  ctx.fillStyle = "#4d2b20";
+
+  ctx.fillRect(
+    player.x+2,
+    player.y,
+    10,
+    4
+  );
+
+  // EYE
+
+  ctx.fillStyle = "#111827";
+
+  ctx.fillRect(
+    player.x+10,
+    player.y+5,
+    2,
+    2
+  );
+
+  // BOOTS
+
+  ctx.fillStyle = "#70452e";
+
+  ctx.fillRect(
+    player.x+1,
+    player.y+18,
+    5,
+    3
+  );
+
+  ctx.fillRect(
+    player.x+9,
+    player.y+18,
+    5,
+    3
+  );
+
+  // SWORD
+
+  if(keys.attack) {
+
+    ctx.fillStyle = "#eef8ff";
+
+    ctx.fillRect(
+      player.x+12,
+      player.y+9,
+      16,
+      3
+    );
+
+    ctx.fillStyle = "#ffffff";
+
+    ctx.fillRect(
+      player.x+17,
+      player.y+8,
+      8,
+      1
+    );
+  }
+
+  // FINISH FLAG
+
+  ctx.fillStyle = "#eeeeee";
+
+  ctx.fillRect(
+    1450,
+    75,
+    2,
+    75
+  );
+
+  ctx.fillStyle = "#ffd43b";
+
+  ctx.fillRect(
+    1452,
+    77,
+    20,
+    12
+  );
+
+  ctx.restore();
+
+  ctx.setTransform(1,0,0,1,0,0);
+}
+
+function gameLoop() {
+
+  update();
+  draw();
+
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+</script>
+
+</body>
+</html>
