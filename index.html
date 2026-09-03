@@ -1030,3 +1030,18 @@ function loop(){
 }
 
 draw();
+
+document.getElementById("start").onclick = function(){
+    document.getElementById("menu").classList.add("hidden");
+    document.getElementById("hud").classList.remove("hidden");
+    document.getElementById("controls").classList.remove("hidden");
+
+    playing = true;
+    score = 0;
+    coins = 0;
+    lives = 3;
+    world = 1;
+
+    createLevel();
+    requestAnimationFrame(loop);
+};
