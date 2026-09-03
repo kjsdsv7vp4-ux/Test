@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Avontuur: Legend of Pythonia</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101827;font-family:Arial,sans-serif;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+#menu,#end,#levelDone{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:white;background:linear-gradient(#17365fdd,#101827ee);z-index:5}
+#menu h1,#end h1{font-size:clamp(40px,10vw,76px);margin:0 10px 8px;text-shadow:4px 4px #000}
+#menu h2{margin:0 0 28px;color:#ffd43b}
+button{border:0;border-radius:16px;padding:16px 28px;margin:7px;font-size:20px;font-weight:800;color:white;background:#1677d2;box-shadow:0 5px 0 #0b477d}
+button:active{transform:translateY(4px);box-shadow:0 1px 0 #0b477d}
+#start{background:#2aa84a;box-shadow:0 5px 0 #176a2c}
+#hud{position:fixed;top:12px;left:12px;right:12px;z-index:3;color:white;font-weight:800;font-size:18px;display:none;justify-content:space-between;text-shadow:2px 2px #000;pointer-events:none}
+#controls{position:fixed;left:0;right:0;bottom:18px;z-index:4;display:none;justify-content:space-between;padding:0 18px}
+.pad{display:flex;gap:12px}
+.ctrl{width:66px;height:66px;border-radius:20px;background:#ffffff33;border:2px solid #ffffff88;color:white;font-size:30px;font-weight:bold;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#attack{background:#b92e3c99}
+#jump{background:#2678c999}
+#levelDone{display:none;background:#101827dd}
+#end{display:none;background:#171126ee}
+.small{opacity:.85;max-width:700px;padding:0 22px;line-height:1.5}
+#linkBtn{background:#a82fd1;box-shadow:0 5px 0 #5d1675}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="menu">
+  <h1>⚔️ AVONTUUR</h1>
+  <h2>LEGEND OF PYTHONIA</h2>
+  <button id="start">SPEL STARTEN</button>
+  <button id="how">HOE SPEEL IK?</button>
+  <p id="help" class="small" style="display:none">Verzamel alle munten, versla de vijanden en bereik het einde van elk level. Gebruik de knoppen op je iPhone. 🔥</p>
+</div>
+
+<div id="hud">
+  <span id="levelText"></span><span id="scoreText"></span><span id="livesText"></span>
+</div>
+
+<div id="controls">
+  <div class="pad">
+    <div class="ctrl" id="left">◀</div>
+    <div class="ctrl" id="right">▶</div>
+  </div>
+  <div class="pad">
+    <div class="ctrl" id="attack">⚔</div>
+    <div class="ctrl" id="jump">▲</div>
+  </div>
+</div>
+
+<div id="levelDone">
+  <h1>⭐ LEVEL VOLTOOID!</h1>
+  <p id="doneText" class="small"></p>
+  <button id="next">VOLGENDE LEVEL</button>
+</div>
+
+<div id="end">
+  <h1>🎉 GEFELICITEERD!</h1>
+  <h2>Je hebt Pythonia gered!</h2>
+  <p class="small">Je hebt alle 4 levels uitgespeeld en de draak verslagen.</p>
+  <button id="linkBtn">🔗 KLIK HIER VOOR MEER!</button>
+  <button id="again">OPNIEUW SPELEN</button>
+</div>
+
+<script>
+const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");
+let W,H,scale=1,raf;
+function resize(){W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*devicePixelRatio);canvas.height=Math.floor(H*devicePixelRatio);ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
+addEventListener("resize",resize);resize();
+
+const levels=[
+ {name:"Bos van Begin",bg:"#55a85b", platforms:[[0,0,1,0]], coins:5,enemies:2},
+ {name:"Donkere Grotten",bg:"#40375e", coins:6,enemies:3},
+ {name:"Vuurkasteel",bg:"#7b4545", coins:7,enemies:3},
+ {name:"Drakenberg",bg:"#34394d", coins:8,enemies:1}
+];
+let level=0,score=0,lives=3,running=false,levelCoins=[],enemies=[],platforms=[];
+let p={x:60,y:0,w:38,h:56,vx:0,vy:0,on:false,attack:0,face:1};
+const keys={left:false,right:false,attack:false,jump:false};
+
+function makeLevel(){
+ const groundY=H-100;
+ platforms=[
+  {x:0,y:groundY,w:W,h:100},
+  {x:W*.13,y:groundY-115,w:W*.20,h:22},
+  {x:W*.39,y:groundY-205,w:W*.20,h:22},
+  {x:W*.65,y:groundY-125,w:W*.19,h:22},
+  {x:W*.82,y:groundY-270,w:W*.15,h:22}
+ ];
+ const n=levels[level].coins;
+ levelCoins=[];
+ for(let i=0;i<n;i++){
+   const plat=platforms[1+(i%4)];
+   levelCoins.push({x:plat.x+20+(i*29)%(Math.max(30,plat.w-40)),y:plat.y-24,r:10,t:Math.random()*6.28});
+ }
+ enemies=[];
+ for(let i=0;i<levels[level].enemies;i++){
+   const plat=platforms[1+(i%4)];
+   enemies.push({x:plat.x+30,y:plat.y-48,w:38,h:48,min:plat.x,max:plat.x+plat.w-38,vx:2.1});
+ }
+ p.x=35;p.y=groundY-60;p.vy=0;p.on=false;p.attack=0;
+ updateHud();
+}
+
+function updateHud(){
+ document.getElementById("levelText").textContent=`LEVEL ${level+1}: ${levels[level].name}`;
+ document.getElementById("scoreText").textContent=`🪙 ${score}`;
+ document.getElementById("livesText").textContent=`❤️ ${lives}`;
+}
+
+function beep(freq,dur=.09){
+ try{
+  const A=new (window.AudioContext||window.webkitAudioContext)();
+  const o=A.createOscillator(),g=A.createGain();
+  o.frequency.value=freq;o.type="square";g.gain.value=.05;o.connect(g);g.connect(A.destination);
+  o.start();g.gain.exponentialRampToValueAtTime(.0001,A.currentTime+dur);o.stop(A.currentTime+dur);setTimeout(()=>A.close(),300);
+ }catch(e){}
+}
+
+function rectHit(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
+function coinHit(c){return p.x<c.x+c.r&&p.x+p.w>c.x-c.r&&p.y<c.y+c.r&&p.y+p.h>c.y-c.r}
+
+function drawHero(){
+ const x=p.x,y=p.y, bob=Math.sin(Date.now()/90)*1.5;
+ ctx.save();ctx.translate(x,y+bob);ctx.scale(p.face,1);
+ ctx.fillStyle="#244dba";ctx.beginPath();ctx.moveTo(8,22);ctx.lineTo(-3,49);ctx.lineTo(12,44);ctx.fill();
+ ctx.fillStyle="#efbf86";ctx.beginPath();ctx.arc(19,13,12,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#4b2b1c";ctx.beginPath();ctx.moveTo(7,9);ctx.lineTo(13,-2);ctx.lineTo(29,1);ctx.lineTo(37,10);ctx.lineTo(27,7);ctx.lineTo(15,10);ctx.fill();
+ ctx.fillStyle="#2878d0";ctx.fillRect(8,24,23,26);
+ ctx.fillStyle="#7b4a25";ctx.fillRect(8,38,23,5);
+ ctx.fillStyle="#30334a";ctx.fillRect(9,49,8,16);ctx.fillRect(23,49,8,16);
+ ctx.strokeStyle="#eee";ctx.lineWidth=5;ctx.beginPath();
+ if(p.attack>0){ctx.moveTo(30,31);ctx.lineTo(61,5)}else{ctx.moveTo(30,28);ctx.lineTo(47,46)}
+ ctx.stroke();ctx.restore();
+}
+
+function drawEnemy(e){
+ ctx.fillStyle=level===3?"#4f9d3d":"#d4484f";
+ ctx.fillRect(e.x,e.y,e.w,e.h);
+ ctx.fillStyle="#111";ctx.fillRect(e.x+8,e.y+10,7,7);ctx.fillRect(e.x+25,e.y+10,7,7);
+ ctx.fillStyle="#ddd";ctx.fillRect(e.x+10,e.y+32,20,5);
+}
+
+function drawDragon(){
+ const x=W-170,y=H-255;
+ ctx.fillStyle="#4b9b3f";ctx.beginPath();ctx.ellipse(x,y,100,65,0,0,Math.PI*2);ctx.fill();
+ ctx.beginPath();ctx.moveTo(x-55,y-25);ctx.lineTo(x-125,y-90);ctx.lineTo(x-75,y+5);ctx.fill();
+ ctx.fillStyle="#efc34a";ctx.beginPath();ctx.arc(x+78,y-45,30,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#111";ctx.beginPath();ctx.arc(x+87,y-50,5,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#ff7b24";ctx.beginPath();ctx.moveTo(x+105,y-35);ctx.lineTo(x+175,y-10);ctx.lineTo(x+105,y-20);ctx.fill();
+}
+
+function draw(){
+ ctx.fillStyle=levels[level].bg;ctx.fillRect(0,0,W,H);
+ // achtergrond
+ ctx.fillStyle="rgba(0,0,0,.12)";
+ for(let i=0;i<9;i++){let x=(i*137)%W;ctx.fillRect(x,H-180-(i%3)*35,55,180+(i%3)*35)}
+ for(const q of platforms){ctx.fillStyle="#744b2d";ctx.fillRect(q.x,q.y,q.w,q.h);ctx.fillStyle="#55bd55";ctx.fillRect(q.x,q.y,q.w,8)}
+ for(const c of levelCoins){
+  c.t+=.05;ctx.fillStyle="#ffd43b";ctx.beginPath();ctx.ellipse(c.x,c.y,c.r*(.65+.35*Math.abs(Math.sin(c.t))),c.r,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#9b6d00";ctx.stroke();
+ }
+ for(const e of enemies)drawEnemy(e);
+ if(level===3)drawDragon();
+ drawHero();
+}
+
+function loseLife(){
+ lives--;beep(130,.2);updateHud();
+ if(lives<=0){running=false;document.getElementById("controls").style.display="none";document.getElementById("hud").style.display="none";document.getElementById("end").style.display="flex";document.querySelector("#end h1").textContent="💀 GAME OVER";document.querySelector("#end h2").textContent="Probeer het opnieuw!"}
+ else{makeLevel();}
+}
+
+function update(){
+ if(!running)return;
+ const left=keys.left,right=keys.right;
+ p.vx=(right?4.8:0)-(left?4.8:0);
+ if(p.vx!==0)p.face=p.vx>0?1:-1;
+ if(keys.jump&&p.on){p.vy=-12; p.on=false; beep(520,.08)}
+ keys.jump=false;
+ p.vy+=.55;p.x+=p.vx;p.y+=p.vy;
+ if(p.x<0)p.x=0;if(p.x+p.w>W)p.x=W-p.w;
+ p.on=false;
+ for(const q of platforms){
+   if(p.x+p.w>q.x&&p.x<q.x+q.w&&p.y+p.h<=q.y+18&&p.y+p.h+p.vy>=q.y){
+    p.y=q.y-p.h;p.vy=0;p.on=true;
+   }
+ }
+ if(p.y>H){loseLife();return}
+ if(p.attack>0)p.attack--;
+ for(const c of levelCoins){
+   if(!c.got&&coinHit(c)){c.got=true;score++;beep(880,.08);updateHud();}
+ }
+ levelCoins=levelCoins.filter(c=>!c.got);
+ for(const e of enemies){
+   e.x+=e.vx;
+   if(e.x<e.min||e.x>e.max)e.vx*=-1;
+   const hit=rectHit(p,e);
+   const sword={x:p.face>0?p.x+p.w:p.x-55,y:p.y+12,w:55,h:25};
+   if(p.attack>0&&rectHit(sword,e)){e.dead=true;beep(220,.12)}
+   else if(hit){loseLife();return}
+ }
+ enemies=enemies.filter(e=>!e.dead);
+ if(level===3 && enemies.length===0 && levelCoins.length===0){
+   running=false;winGame();return;
+ }
+ if(level!==3 && levelCoins.length===0){
+   running=false;document.getElementById("doneText").textContent=`Goed gedaan! Je hebt ${score} munten verzameld.`;
+   document.getElementById("levelDone").style.display="flex";beep(1040,.3);
+ }
+}
+
+function loop(){update();draw();raf=requestAnimationFrame(loop)}
+
+function startGame(){
+ level=0;score=0;lives=3;running=true;
+ document.getElementById("menu").style.display="none";
+ document.getElementById("end").style.display="none";
+ document.getElementById("levelDone").style.display="none";
+ document.getElementById("hud").style.display="flex";
+ document.getElementById("controls").style.display="flex";
+ makeLevel();beep(660,.12);
+}
+
+function winGame(){
+ document.getElementById("controls").style.display="none";
+ document.getElementById("hud").style.display="none";
+ document.getElementById("end").style.display="flex";
+ document.querySelector("#end h1").textContent="🎉 GEFELICITEERD!";
+ document.querySelector("#end h2").textContent="Je hebt Pythonia gered!";
+ beep(1040,.3);
+ setTimeout(()=>beep(1320,.25),160);
+}
+
+document.getElementById("start").onclick=startGame;
+document.getElementById("again").onclick=startGame;
+document.getElementById("how").onclick=()=>{let h=document.getElementById("help");h.style.display=h.style.display==="none"?"block":"none"};
+document.getElementById("next").onclick=()=>{level++;document.getElementById("levelDone").style.display="none";running=true;makeLevel()};
+
+// Vervang deze URL door je eigen link.
+document.getElementById("linkBtn").onclick=()=>window.open("https://www.google.com","_blank");
+
+function bind(id,key){
+ const el=document.getElementById(id);
+ const on=ev=>{ev.preventDefault();keys[key]=true;if(key==="attack")p.attack=10};
+ const off=ev=>{ev.preventDefault();keys[key]=false};
+ ["pointerdown","touchstart"].forEach(t=>el.addEventListener(t,on,{passive:false}));
+ ["pointerup","pointercancel","pointerleave","touchend"].forEach(t=>el.addEventListener(t,off,{passive:false}));
+}
+bind("left","left");bind("right","right");bind("jump","jump");bind("attack","attack");
+
+addEventListener("keydown",e=>{
+ if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")keys.left=true;
+ if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")keys.right=true;
+ if(e.key==="ArrowUp"||e.key===" ")keys.jump=true;
+ if(e.key.toLowerCase()==="z"||e.key.toLowerCase()==="x")p.attack=10;
+});
+addEventListener("keyup",e=>{
+ if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")keys.left=false;
+ if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")keys.right=false;
+});
+
+makeLevel();loop();
+</script>
+</body>
+</html>
