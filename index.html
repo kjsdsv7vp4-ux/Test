@@ -1,3368 +1,2682 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Pixel Realm</title>
 
 <style>
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#070b13;
-    font-family:monospace;
-    touch-action:none;
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#050914;
+  font-family:Arial,sans-serif;
 }
 
 canvas{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    image-rendering:pixelated;
+  display:block;
+  width:100%;
+  height:100%;
+  image-rendering:pixelated;
 }
 
-/* =====================================================
+/* =========================
    START SCREEN
-===================================================== */
+========================= */
 
 #menu{
-    position:fixed;
-    inset:0;
-    z-index:1000;
-    overflow:hidden;
-    background:#08111e;
+  position:fixed;
+  inset:0;
+  z-index:50;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 70% 18%,rgba(108,160,255,.25),transparent 18%),
+    linear-gradient(#081329 0%,#132a4b 48%,#315d75 100%);
+  color:white;
 }
-
-.menuSky{
-    position:absolute;
-    inset:0;
-    background:
-        linear-gradient(
-            to bottom,
-            #071322 0%,
-            #102a40 45%,
-            #28475a 70%,
-            #111b25 100%
-        );
-}
-
-/* stars */
 
 .stars{
-    position:absolute;
-    inset:0;
-    background-image:
-        radial-gradient(circle,#fff 1px,transparent 1px),
-        radial-gradient(circle,#b9d9ff 1px,transparent 1px);
-    background-size:90px 90px,140px 140px;
-    background-position:20px 10px,60px 40px;
-    opacity:.7;
-    animation:starsMove 20s linear infinite;
+  position:absolute;
+  inset:0;
+  background-image:
+    radial-gradient(circle,#fff 1px,transparent 2px),
+    radial-gradient(circle,#fff 1px,transparent 2px);
+  background-size:83px 83px,137px 137px;
+  background-position:10px 20px,40px 60px;
+  opacity:.7;
 }
-
-@keyframes starsMove{
-    from{transform:translateY(0)}
-    to{transform:translateY(40px)}
-}
-
-/* moon */
 
 .moon{
-    position:absolute;
-    width:100px;
-    height:100px;
-    right:14%;
-    top:12%;
-    border-radius:50%;
-    background:#e6edf2;
-    box-shadow:
-        0 0 35px rgba(220,240,255,.35),
-        0 0 80px rgba(150,200,255,.12);
+  position:absolute;
+  width:150px;
+  height:150px;
+  right:12%;
+  top:9%;
+  border-radius:50%;
+  background:#f6f0ce;
+  box-shadow:
+    0 0 35px rgba(255,245,190,.5),
+    0 0 100px rgba(130,180,255,.2);
 }
 
 .moon:after{
-    content:"";
-    position:absolute;
-    width:100px;
-    height:100px;
-    border-radius:50%;
-    background:#071322;
-    left:27px;
-    top:-10px;
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:#ddd6b5;
+  left:30px;
+  top:35px;
+  box-shadow:
+    48px 25px 0 #e4ddb9,
+    35px 80px 0 #d4cea9,
+    82px 65px 0 #e2dbb8;
 }
-
-/* mountains */
 
 .mountain{
-    position:absolute;
-    bottom:18%;
-    width:100%;
-    height:42%;
-    clip-path:polygon(
-        0 100%,
-        0 70%,
-        12% 45%,
-        20% 67%,
-        32% 28%,
-        45% 67%,
-        58% 38%,
-        70% 72%,
-        83% 35%,
-        100% 70%,
-        100% 100%
-    );
+  position:absolute;
+  bottom:24%;
+  width:0;
+  height:0;
+  border-left:180px solid transparent;
+  border-right:180px solid transparent;
+  border-bottom:330px solid #101b32;
 }
 
-.mountainBack{
-    background:#162b3a;
-}
-
-.mountainFront{
-    bottom:10%;
-    height:35%;
-    background:#0c1823;
-    clip-path:polygon(
-        0 100%,
-        0 62%,
-        14% 40%,
-        27% 71%,
-        39% 32%,
-        51% 67%,
-        67% 40%,
-        79% 70%,
-        91% 43%,
-        100% 60%,
-        100% 100%
-    );
-}
-
-/* ground */
+.m1{left:0}
+.m2{left:22%;transform:scale(1.35)}
+.m3{right:8%;transform:scale(.9)}
 
 .menuGround{
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    height:18%;
-    background:
-        repeating-linear-gradient(
-            90deg,
-            #182b25 0 20px,
-            #1d342a 20px 40px
-        );
-    border-top:5px solid #0a1515;
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:29%;
+  background:
+    linear-gradient(#172e2a,#0c1b19);
+  border-top:5px solid #263e39;
 }
 
-/* =====================================================
-   MENU CHARACTER
-===================================================== */
+.menuGround:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.35;
+  background-image:
+    radial-gradient(circle,#54736a 1px,transparent 2px);
+  background-size:18px 18px;
+}
 
-.menuHero{
-    position:absolute;
-    left:50%;
-    bottom:15%;
-    transform:translateX(-50%);
-    width:150px;
-    height:300px;
-    filter:drop-shadow(0 20px 15px rgba(0,0,0,.55));
-    animation:heroFloat 3s ease-in-out infinite;
+/* HERO */
+
+.hero{
+  position:absolute;
+  left:50%;
+  bottom:18%;
+  width:110px;
+  height:190px;
+  transform:translateX(-50%);
+  animation:heroFloat 2.7s ease-in-out infinite;
+  filter:drop-shadow(0 20px 12px rgba(0,0,0,.45));
 }
 
 @keyframes heroFloat{
-    0%,100%{transform:translateX(-50%) translateY(0)}
-    50%{transform:translateX(-50%) translateY(-7px)}
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  50%{transform:translateX(-50%) translateY(-7px)}
 }
-
-.heroShadow{
-    position:absolute;
-    bottom:-8px;
-    left:25px;
-    width:100px;
-    height:20px;
-    background:rgba(0,0,0,.4);
-    border-radius:50%;
-}
-
-/* cape */
 
 .heroCape{
-    position:absolute;
-    left:32px;
-    top:105px;
-    width:86px;
-    height:135px;
-    background:#641f38;
-    clip-path:polygon(
-        20% 0,
-        80% 0,
-        100% 100%,
-        0 88%
-    );
+  position:absolute;
+  width:72px;
+  height:105px;
+  left:20px;
+  top:56px;
+  background:linear-gradient(90deg,#271b48,#493178,#241936);
+  clip-path:polygon(8% 0,92% 0,100% 100%,50% 86%,0 100%);
 }
-
-.heroCapeLight{
-    position:absolute;
-    left:43px;
-    top:110px;
-    width:50px;
-    height:115px;
-    background:#8b304c;
-    clip-path:polygon(
-        25% 0,
-        100% 8%,
-        80% 100%,
-        0 85%
-    );
-}
-
-/* legs */
-
-.heroLeg{
-    position:absolute;
-    top:220px;
-    width:25px;
-    height:62px;
-    background:#202d43;
-}
-
-.heroLeg.left{left:48px}
-.heroLeg.right{left:78px}
-
-.heroBoot{
-    position:absolute;
-    top:270px;
-    width:34px;
-    height:17px;
-    background:#161d29;
-}
-
-.heroBoot.left{left:40px}
-.heroBoot.right{left:75px}
-
-/* body */
 
 .heroBody{
-    position:absolute;
-    left:40px;
-    top:100px;
-    width:70px;
-    height:125px;
-    background:#355d8c;
-    border:4px solid #17243a;
-    clip-path:polygon(
-        13% 0,
-        87% 0,
-        100% 100%,
-        0 100%
-    );
+  position:absolute;
+  left:28px;
+  top:61px;
+  width:54px;
+  height:70px;
+  background:linear-gradient(#66758b,#344154);
+  border:4px solid #1d2634;
+  border-radius:12px 12px 8px 8px;
 }
 
 .heroArmor{
-    position:absolute;
-    left:51px;
-    top:112px;
-    width:48px;
-    height:70px;
-    background:#587eaa;
-    border:3px solid #243c5b;
+  position:absolute;
+  left:34px;
+  top:68px;
+  width:42px;
+  height:36px;
+  border-radius:8px;
+  background:linear-gradient(#9ca8b8,#4d5c70);
+  border:3px solid #263142;
 }
 
 .heroBelt{
-    position:absolute;
-    left:39px;
-    top:185px;
-    width:72px;
-    height:12px;
-    background:#5b3d27;
+  position:absolute;
+  left:27px;
+  top:112px;
+  width:56px;
+  height:10px;
+  background:#573d26;
+  border:3px solid #2c1e13;
 }
 
 .heroBuckle{
-    position:absolute;
-    left:68px;
-    top:184px;
-    width:15px;
-    height:15px;
-    background:#d6a83f;
-    border:2px solid #6d4e19;
+  position:absolute;
+  left:49px;
+  top:110px;
+  width:14px;
+  height:14px;
+  background:#d7b04d;
+  border:3px solid #755d20;
 }
 
-/* head */
-
-.heroHead{
-    position:absolute;
-    left:45px;
-    top:45px;
-    width:60px;
-    height:68px;
-    background:#d79a70;
-    border:4px solid #402c2a;
+.leg{
+  position:absolute;
+  top:124px;
+  width:21px;
+  height:50px;
+  background:#273344;
+  border:4px solid #161d28;
 }
 
-/* ears */
+.leg.l{left:31px}
+.leg.r{right:31px}
 
-.heroEar{
-    position:absolute;
-    top:65px;
-    width:14px;
-    height:25px;
-    background:#c98261;
+.boot{
+  position:absolute;
+  top:165px;
+  width:31px;
+  height:20px;
+  background:#161a20;
+  border:4px solid #080a0e;
+  border-radius:4px;
 }
 
-.heroEar.left{left:34px}
-.heroEar.right{left:102px}
+.boot.l{left:22px}
+.boot.r{right:22px}
 
-/* hair */
-
-.heroHair{
-    position:absolute;
-    left:39px;
-    top:32px;
-    width:72px;
-    height:45px;
-    background:#29201e;
-    z-index:3;
-    clip-path:polygon(
-        0 20%,
-        15% 0,
-        32% 10%,
-        48% 0,
-        62% 10%,
-        78% 0,
-        100% 20%,
-        92% 65%,
-        75% 50%,
-        60% 75%,
-        45% 52%,
-        25% 75%,
-        8% 55%
-    );
+.head{
+  position:absolute;
+  left:29px;
+  top:17px;
+  width:52px;
+  height:51px;
+  border-radius:13px;
+  background:linear-gradient(145deg,#f1c29a,#b97854);
+  border:4px solid #4d2d29;
+  z-index:4;
 }
 
-/* eyes */
-
-.heroEye{
-    position:absolute;
-    top:72px;
-    width:9px;
-    height:7px;
-    background:#111820;
-    z-index:5;
+.hair{
+  position:absolute;
+  left:25px;
+  top:9px;
+  width:61px;
+  height:35px;
+  background:#171922;
+  border:4px solid #08090e;
+  clip-path:polygon(
+    0 50%,8% 12%,30% 0,51% 10%,74% 0,
+    100% 23%,91% 65%,72% 46%,54% 67%,
+    36% 47%,19% 70%
+  );
+  z-index:6;
 }
 
-.heroEye.left{left:57px}
-.heroEye.right{left:85px}
-
-/* nose */
-
-.heroNose{
-    position:absolute;
-    left:72px;
-    top:80px;
-    width:8px;
-    height:8px;
-    background:#bc765b;
-    z-index:5;
+.eye{
+  position:absolute;
+  top:40px;
+  width:8px;
+  height:8px;
+  background:#10151e;
+  border-radius:2px;
+  z-index:7;
 }
 
-/* scarf */
+.eye.l{left:42px}
+.eye.r{left:62px}
 
-.heroScarf{
-    position:absolute;
-    left:43px;
-    top:101px;
-    width:64px;
-    height:15px;
-    background:#b83f52;
-    z-index:5;
+.sword{
+  position:absolute;
+  right:-28px;
+  top:68px;
+  width:13px;
+  height:93px;
+  background:linear-gradient(90deg,#cbd6e5,#ffffff,#9caabd);
+  transform:rotate(28deg);
+  border:2px solid #556275;
+  box-shadow:0 0 8px rgba(200,230,255,.45);
+  z-index:2;
 }
 
-/* sword */
-
-.heroSword{
-    position:absolute;
-    left:108px;
-    top:115px;
-    width:13px;
-    height:115px;
-    background:#dceaf1;
-    border:3px solid #6d7f8d;
-    transform:rotate(-18deg);
-    transform-origin:top;
+.sword:after{
+  content:"";
+  position:absolute;
+  left:-11px;
+  top:66px;
+  width:35px;
+  height:8px;
+  background:#c79a43;
+  border:3px solid #654d24;
 }
-
-.heroSword:after{
-    content:"";
-    position:absolute;
-    left:-13px;
-    top:98px;
-    width:36px;
-    height:8px;
-    background:#9b6b37;
-}
-
-/* =====================================================
-   TITLE
-===================================================== */
 
 .menuContent{
-    position:absolute;
-    left:50%;
-    top:8%;
-    transform:translateX(-50%);
-    width:min(600px,90%);
-    text-align:center;
-    color:white;
+  position:absolute;
+  z-index:20;
+  left:50%;
+  top:10%;
+  transform:translateX(-50%);
+  text-align:center;
+  width:min(90%,700px);
 }
 
-.smallTitle{
-    color:#a8c5d9;
-    font-size:11px;
-    letter-spacing:5px;
-    margin-bottom:10px;
+.logo{
+  font-size:clamp(45px,9vw,100px);
+  font-weight:1000;
+  letter-spacing:8px;
+  text-shadow:
+    0 5px #1c2742,
+    0 10px 0 #080d18,
+    0 0 35px rgba(118,177,255,.55);
+  margin:0;
 }
 
-.gameTitle{
-    font-family:Georgia,serif;
-    font-weight:900;
-    font-size:clamp(48px,11vw,88px);
-    line-height:.78;
-    letter-spacing:5px;
-    color:#f3f5ee;
-    text-shadow:
-        5px 5px #162536,
-        8px 8px #080e17;
+.subtitle{
+  margin-top:5px;
+  color:#c9d9ef;
+  letter-spacing:6px;
+  font-size:13px;
 }
-
-.gameTitle span{
-    display:block;
-    color:#d8a849;
-    font-size:.68em;
-    margin-top:10px;
-}
-
-.titleLine{
-    width:170px;
-    height:3px;
-    background:#d8a849;
-    margin:18px auto;
-    box-shadow:0 0 10px #d8a849;
-}
-
-/* buttons */
 
 .menuButtons{
-    width:min(330px,90%);
-    margin:auto;
+  margin-top:30px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:center;
 }
 
-.menuButton{
-    width:100%;
-    height:53px;
-    margin:7px 0;
-    border:4px solid #111824;
-    background:linear-gradient(#526984,#35475d);
-    color:#fff;
-    font:bold 13px monospace;
-    box-shadow:0 6px #090e16;
-    transition:.12s;
+.menuBtn{
+  width:min(330px,80vw);
+  padding:16px 20px;
+  border:3px solid #8297b9;
+  background:linear-gradient(#384d70,#202d46);
+  color:white;
+  font-weight:900;
+  font-size:16px;
+  letter-spacing:2px;
+  cursor:pointer;
+  box-shadow:
+    inset 0 2px rgba(255,255,255,.15),
+    0 7px 0 #0b101b;
+  transition:.15s;
 }
 
-.menuButton:hover{
-    filter:brightness(1.18);
+.menuBtn:hover{
+  transform:translateY(-3px);
+  filter:brightness(1.2);
 }
 
-.menuButton:active{
-    transform:translateY(5px);
-    box-shadow:0 1px #090e16;
+.menuBtn:active{
+  transform:translateY(4px);
+  box-shadow:0 2px 0 #0b101b;
 }
 
-.menuButton.main{
-    background:linear-gradient(#d9a94f,#a97928);
-    color:#1a140a;
+.version{
+  position:absolute;
+  bottom:10px;
+  right:14px;
+  color:#75859c;
+  font-size:11px;
 }
 
-.menuFooter{
-    color:#6e8598;
-    font-size:8px;
-    margin-top:15px;
-}
-
-/* =====================================================
+/* =========================
    HUD
-===================================================== */
+========================= */
 
 #hud{
-    position:fixed;
-    top:12px;
-    left:12px;
-    z-index:20;
-    color:#fff;
-    text-shadow:3px 3px #111;
-    pointer-events:none;
+  position:fixed;
+  z-index:10;
+  top:12px;
+  left:12px;
+  width:260px;
+  padding:10px;
+  background:rgba(7,12,20,.84);
+  border:2px solid #536783;
+  box-shadow:0 8px 20px rgba(0,0,0,.35);
+  color:white;
+  display:none;
 }
 
 .name{
-    font-size:14px;
-    margin-bottom:5px;
+  font-weight:900;
+  margin-bottom:6px;
 }
 
 .bar{
-    width:180px;
-    height:17px;
-    border:3px solid #111722;
-    background:#242b37;
-    position:relative;
-    margin-bottom:5px;
+  width:100%;
+  height:12px;
+  background:#202735;
+  border:2px solid #111722;
+  margin-bottom:5px;
 }
 
-.barFill{
-    height:100%;
+.fill{
+  height:100%;
 }
 
-#hpBar{background:#db4653}
-#xpBar{background:#4eb9e5}
-
-.barText{
-    position:absolute;
-    inset:0;
-    text-align:center;
-    font-size:8px;
-    line-height:11px;
+.hp{
+  background:linear-gradient(90deg,#db3e50,#ff6670);
 }
 
-.coins{
-    color:#ffd55c;
-    font-size:13px;
+.xp{
+  background:linear-gradient(90deg,#48a8ff,#a3e4ff);
 }
 
-/* top buttons */
-
-#topButtons{
-    position:fixed;
-    right:12px;
-    top:12px;
-    z-index:30;
-    display:flex;
-    gap:7px;
+.hudStats{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:#ccd7e8;
 }
 
-.topButton{
-    width:46px;
-    height:46px;
-    border:3px solid #10151e;
-    background:#394a60;
-    color:#fff;
-    font-size:18px;
-    box-shadow:0 5px #080c13;
+.topButtons{
+  position:fixed;
+  z-index:11;
+  top:12px;
+  right:12px;
+  display:none;
+  gap:8px;
 }
 
-.topButton:active{
-    transform:translateY(4px);
-    box-shadow:0 1px #080c13;
+.topBtn{
+  background:rgba(7,12,20,.88);
+  border:2px solid #536783;
+  color:white;
+  padding:10px;
+  font-weight:bold;
 }
 
-/* joystick */
+/* =========================
+   MOBILE CONTROLS
+========================= */
 
-#joystick{
-    position:fixed;
-    bottom:25px;
-    left:25px;
-    width:140px;
-    height:140px;
-    border-radius:50%;
-    background:rgba(26,34,47,.7);
-    border:4px solid rgba(255,255,255,.15);
-    z-index:30;
+#controls{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:15;
+  pointer-events:none;
 }
 
-#stick{
-    position:absolute;
-    left:35px;
-    top:35px;
-    width:66px;
-    height:66px;
-    border-radius:50%;
-    background:#8a9aae;
-    border:4px solid #d9e2ec;
-    box-shadow:0 6px #414c5d;
+.joystick{
+  position:absolute;
+  left:25px;
+  bottom:25px;
+  width:130px;
+  height:130px;
+  border-radius:50%;
+  background:rgba(255,255,255,.09);
+  border:3px solid rgba(255,255,255,.2);
+  pointer-events:auto;
 }
 
-/* actions */
+.stick{
+  position:absolute;
+  width:58px;
+  height:58px;
+  left:36px;
+  top:36px;
+  border-radius:50%;
+  background:rgba(190,220,255,.35);
+  border:3px solid rgba(255,255,255,.4);
+}
 
-#actions{
-    position:fixed;
-    right:22px;
-    bottom:25px;
-    z-index:30;
-    display:flex;
-    gap:10px;
+.actions{
+  position:absolute;
+  right:25px;
+  bottom:25px;
+  display:flex;
+  gap:12px;
+  pointer-events:auto;
 }
 
 .action{
-    width:64px;
-    height:64px;
-    border-radius:50%;
-    border:4px solid #111722;
-    background:#596b82;
-    color:white;
-    font-size:22px;
-    box-shadow:0 7px #090d14;
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  border:3px solid #9db2cf;
+  background:rgba(20,31,49,.9);
+  color:white;
+  font-weight:900;
+  font-size:14px;
 }
 
-.action:active{
-    transform:translateY(5px);
-    box-shadow:0 2px #090d14;
-}
-
-/* windows */
+/* =========================
+   WINDOWS
+========================= */
 
 .window{
-    position:fixed;
-    inset:0;
-    z-index:100;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    background:rgba(2,5,10,.75);
+  position:fixed;
+  z-index:30;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(500px,90vw);
+  max-height:75vh;
+  overflow:auto;
+  display:none;
+  background:rgba(10,17,29,.97);
+  border:3px solid #657b9e;
+  color:white;
+  padding:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
 }
 
-.panel{
-    width:min(430px,90%);
-    max-height:80vh;
-    overflow:auto;
-    background:#202c3d;
-    border:5px solid #101620;
-    box-shadow:0 8px #080b10;
-    padding:20px;
-    color:white;
-}
-
-.panel h2{
-    text-align:center;
-    margin-bottom:15px;
-}
-
-.close{
-    float:right;
-    width:32px;
-    height:32px;
-    border:0;
-    background:#893f4a;
-    color:white;
-    font-size:18px;
+.window h2{
+  margin-top:0;
 }
 
 .item{
-    display:flex;
-    gap:12px;
-    align-items:center;
-    padding:12px;
-    margin:6px 0;
-    background:#2c394c;
-    border:2px solid #45556c;
+  padding:12px;
+  border:2px solid #36465e;
+  margin:7px 0;
+  background:#151f30;
 }
 
-.itemIcon{
-    font-size:24px;
+.close{
+  float:right;
+  background:#9d3845;
+  color:white;
+  border:0;
+  padding:7px 12px;
 }
 
-.itemText{
-    flex:1;
-}
-
-.itemName{
-    font-weight:bold;
-}
-
-.itemDesc{
-    color:#9fb0c1;
-    font-size:9px;
-    margin-top:4px;
-}
-
-.quest{
-    background:#2c394c;
-    border:2px solid #52637a;
-    padding:12px;
-}
-
-.questTitle{
-    color:#ffd45a;
-    font-size:13px;
-}
-
-.questText{
-    margin-top:7px;
-    font-size:10px;
-    color:#c5d0db;
-}
-
-.questReward{
-    margin-top:8px;
-    color:#65db82;
-    font-size:10px;
-}
-
-/* dialogue */
+/* =========================
+   DIALOGUE
+========================= */
 
 #dialogue{
-    position:fixed;
-    left:50%;
-    bottom:18px;
-    transform:translateX(-50%);
-    width:min(600px,92%);
-    z-index:80;
-    display:none;
-}
-
-.dialogueBox{
-    background:#1c2737;
-    border:4px solid #0d131d;
-    box-shadow:0 7px #080b10;
-    padding:15px;
-    color:#fff;
-}
-
-.dialogueName{
-    color:#ffd65b;
-    margin-bottom:7px;
-    font-size:13px;
-}
-
-.dialogueText{
-    font-size:11px;
-    line-height:1.6;
+  position:fixed;
+  z-index:25;
+  left:50%;
+  bottom:35px;
+  transform:translateX(-50%);
+  width:min(700px,90vw);
+  padding:18px;
+  background:rgba(7,12,20,.94);
+  border:3px solid #60779b;
+  color:white;
+  display:none;
 }
 
 #message{
-    position:fixed;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    z-index:200;
-    padding:10px 16px;
-    background:rgba(9,13,20,.94);
-    border:3px solid #687a90;
-    color:white;
-    font-size:11px;
-    opacity:0;
-    pointer-events:none;
-}
-
-@media(max-width:500px){
-    .moon{
-        width:70px;
-        height:70px;
-        right:8%;
-    }
-
-    .moon:after{
-        width:70px;
-        height:70px;
-    }
-
-    .menuHero{
-        transform:translateX(-50%) scale(.75);
-        transform-origin:bottom center;
-    }
-
-    .gameTitle{
-        font-size:52px;
-    }
-
-    .bar{
-        width:145px;
-    }
-
-    #joystick{
-        width:125px;
-        height:125px;
-    }
-
-    #stick{
-        left:30px;
-        top:30px;
-    }
-
-    .action{
-        width:58px;
-        height:58px;
-    }
+  position:fixed;
+  z-index:40;
+  left:50%;
+  top:20%;
+  transform:translateX(-50%);
+  padding:12px 20px;
+  background:rgba(5,9,15,.9);
+  color:white;
+  border:2px solid #7289ad;
+  display:none;
 }
 </style>
 </head>
 
 <body>
 
-<!-- =====================================================
-     START SCREEN
-===================================================== -->
+<!-- =========================
+     MENU
+========================= -->
 
 <div id="menu">
 
-    <div class="menuSky"></div>
+  <div class="stars"></div>
+  <div class="moon"></div>
 
-    <div class="stars"></div>
+  <div class="mountain m1"></div>
+  <div class="mountain m2"></div>
+  <div class="mountain m3"></div>
 
-    <div class="moon"></div>
+  <div class="menuGround"></div>
 
-    <div class="mountain mountainBack"></div>
-    <div class="mountain mountainFront"></div>
+  <div class="hero">
+    <div class="heroCape"></div>
+    <div class="heroBody"></div>
+    <div class="heroArmor"></div>
+    <div class="heroBelt"></div>
+    <div class="heroBuckle"></div>
+    <div class="leg l"></div>
+    <div class="leg r"></div>
+    <div class="boot l"></div>
+    <div class="boot r"></div>
+    <div class="head"></div>
+    <div class="hair"></div>
+    <div class="eye l"></div>
+    <div class="eye r"></div>
+    <div class="sword"></div>
+  </div>
 
-    <div class="menuGround"></div>
+  <div class="menuContent">
+    <h1 class="logo">PIXEL REALM</h1>
+    <div class="subtitle">THE LOST ISLANDS</div>
 
-    <!-- detailed hero -->
-
-    <div class="menuHero">
-
-        <div class="heroShadow"></div>
-
-        <div class="heroCape"></div>
-        <div class="heroCapeLight"></div>
-
-        <div class="heroLeg left"></div>
-        <div class="heroLeg right"></div>
-
-        <div class="heroBoot left"></div>
-        <div class="heroBoot right"></div>
-
-        <div class="heroBody"></div>
-        <div class="heroArmor"></div>
-
-        <div class="heroBelt"></div>
-        <div class="heroBuckle"></div>
-
-        <div class="heroEar left"></div>
-        <div class="heroEar right"></div>
-
-        <div class="heroHead"></div>
-        <div class="heroHair"></div>
-
-        <div class="heroEye left"></div>
-        <div class="heroEye right"></div>
-
-        <div class="heroNose"></div>
-
-        <div class="heroScarf"></div>
-
-        <div class="heroSword"></div>
-
+    <div class="menuButtons">
+      <button class="menuBtn" onclick="newGame()">NEW ADVENTURE</button>
+      <button class="menuBtn" onclick="loadGame()">LOAD ADVENTURE</button>
+      <button class="menuBtn" onclick="showControls()">CONTROLS</button>
     </div>
+  </div>
 
-    <div class="menuContent">
-
-        <div class="smallTitle">
-            THE ADVENTURE BEGINS
-        </div>
-
-        <div class="gameTitle">
-            PIXEL
-            <span>REALM</span>
-        </div>
-
-        <div class="titleLine"></div>
-
-        <div class="menuButtons">
-
-            <button
-                class="menuButton main"
-                onclick="startGame()">
-                ▶ &nbsp; NEW ADVENTURE
-            </button>
-
-            <button
-                class="menuButton"
-                onclick="loadGame()">
-                💾 &nbsp; LOAD ADVENTURE
-            </button>
-
-            <button
-                class="menuButton"
-                onclick="showControls()">
-                🎮 &nbsp; CONTROLS
-            </button>
-
-        </div>
-
-        <div class="menuFooter">
-            PIXEL REALM • VERSION 3.0
-        </div>
-
-    </div>
-
+  <div class="version">VERSION 2.0</div>
 </div>
 
-<!-- =====================================================
-     GAME
-===================================================== -->
 
 <canvas id="game"></canvas>
+
 
 <!-- HUD -->
 
 <div id="hud">
+  <div class="name">
+    <span id="playerName">Knight</span>
+    — Lv.<span id="level">1</span>
+  </div>
 
-    <div class="name">
-        HERO • LVL <span id="level">1</span>
-    </div>
+  <div class="bar">
+    <div id="hp" class="fill hp"></div>
+  </div>
 
-    <div class="bar">
-        <div
-            class="barFill"
-            id="hpBar"
-            style="width:100%">
-        </div>
+  <div class="bar">
+    <div id="xp" class="fill xp"></div>
+  </div>
 
-        <div class="barText">
-            ❤️ <span id="hpText">100/100</span>
-        </div>
-    </div>
-
-    <div class="bar">
-
-        <div
-            class="barFill"
-            id="xpBar"
-            style="width:0%">
-        </div>
-
-        <div class="barText">
-            XP <span id="xpText">0/100</span>
-        </div>
-
-    </div>
-
-    <div class="coins">
-        🪙 <span id="coinText">50</span>
-    </div>
-
+  <div class="hudStats">
+    <span>💰 <b id="coins">0</b></span>
+    <span>⭐ <b id="xpText">0</b>/<b id="xpMax">100</b></span>
+  </div>
 </div>
 
-<!-- buttons -->
 
-<div id="topButtons">
-
-    <button
-        class="topButton"
-        onclick="openInventory()">
-        🎒
-    </button>
-
-    <button
-        class="topButton"
-        onclick="openQuests()">
-        📜
-    </button>
-
-    <button
-        class="topButton"
-        onclick="togglePause()">
-        Ⅱ
-    </button>
-
+<div class="topButtons" id="topButtons">
+  <button class="topBtn" onclick="openWindow('inventory')">🎒</button>
+  <button class="topBtn" onclick="openWindow('quests')">📜</button>
+  <button class="topBtn" onclick="pauseGame()">Ⅱ</button>
 </div>
 
-<!-- joystick -->
 
-<div id="joystick">
-    <div id="stick"></div>
+<!-- WINDOWS -->
+
+<div class="window" id="inventory">
+  <button class="close" onclick="closeWindows()">X</button>
+  <h2>🎒 Inventory</h2>
+
+  <div class="item">⚔️ Ancient Sword</div>
+  <div class="item">🛡️ Traveler Armor</div>
+  <div class="item">🧪 Healing Potion × <span id="potions">3</span></div>
+  <div class="item">💎 Crystal × <span id="crystals">0</span></div>
 </div>
 
-<!-- actions -->
 
-<div id="actions">
+<div class="window" id="quests">
+  <button class="close" onclick="closeWindows()">X</button>
+  <h2>📜 Quests</h2>
 
-    <button
-        class="action"
-        onclick="attack()">
-        ⚔
-    </button>
+  <div class="item">
+    <b>The First Island</b><br>
+    Explore the village.
+  </div>
 
-    <button
-        class="action"
-        onclick="dash()">
-        ➤
-    </button>
+  <div class="item">
+    <b>Monster Hunter</b><br>
+    Defeat 5 monsters.
+  </div>
 
+  <div class="item">
+    <b>The Lost Islands</b><br>
+    Unlock the next island.
+  </div>
 </div>
 
-<!-- message -->
+
+<div id="dialogue">
+  <b id="dialogueName">NPC</b>
+  <div id="dialogueText"></div>
+</div>
 
 <div id="message"></div>
 
-<!-- =====================================================
-     INVENTORY
-===================================================== -->
 
-<div class="window" id="inventory">
+<!-- MOBILE -->
 
-    <div class="panel">
+<div id="controls">
 
-        <button
-            class="close"
-            onclick="closeWindows()">
-            ×
-        </button>
+  <div class="joystick" id="joystick">
+    <div class="stick" id="stick"></div>
+  </div>
 
-        <h2>🎒 INVENTORY</h2>
-
-        <div class="item">
-            <div class="itemIcon">⚔️</div>
-
-            <div class="itemText">
-                <div class="itemName">
-                    Knight Sword
-                </div>
-
-                <div class="itemDesc">
-                    Een sterk zwaard voor avonturiers.
-                </div>
-            </div>
-        </div>
-
-        <div class="item">
-            <div class="itemIcon">🧪</div>
-
-            <div class="itemText">
-                <div class="itemName">
-                    Health Potion
-                </div>
-
-                <div class="itemDesc">
-                    Herstelt 30 HP.
-                </div>
-            </div>
-        </div>
-
-        <div class="item">
-            <div class="itemIcon">💎</div>
-
-            <div class="itemText">
-                <div class="itemName">
-                    Blue Crystal
-                </div>
-
-                <div class="itemDesc">
-                    Een mysterieuze magische crystal.
-                </div>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- =====================================================
-     QUESTS
-===================================================== -->
-
-<div class="window" id="quests">
-
-    <div class="panel">
-
-        <button
-            class="close"
-            onclick="closeWindows()">
-            ×
-        </button>
-
-        <h2>📜 QUESTS</h2>
-
-        <div class="quest">
-
-            <div class="questTitle">
-                THE FOREST THREAT
-            </div>
-
-            <div class="questText">
-                Versla 5 monsters in het donkere bos.
-            </div>
-
-            <div class="questReward">
-                Beloning: 100 XP + 25 🪙
-            </div>
-
-        </div>
-
-        <br>
-
-        <div class="quest">
-
-            <div class="questTitle">
-                THE LOST CRYSTAL
-            </div>
-
-            <div class="questText">
-                Vind de mysterieuze blauwe crystal.
-            </div>
-
-            <div class="questReward">
-                Beloning: 200 XP + zeldzaam item
-            </div>
-
-        </div>
-
-    </div>
-</div>
-
-<!-- dialogue -->
-
-<div id="dialogue">
-
-    <div class="dialogueBox">
-
-        <div
-            class="dialogueName"
-            id="dialogueName">
-            NPC
-        </div>
-
-        <div
-            class="dialogueText"
-            id="dialogueText">
-            Hallo!
-        </div>
-
-    </div>
+  <div class="actions">
+    <button class="action" id="attackBtn">⚔️</button>
+    <button class="action" id="dashBtn">💨</button>
+  </div>
 
 </div>
+
 
 <script>
-"use strict";
 
-/* =====================================================
-   CANVAS
-===================================================== */
+/* =========================================================
+   PIXEL REALM 2.0
+========================================================= */
 
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-ctx.imageSmoothingEnabled=false;
-
-let W=innerWidth;
-let H=innerHeight;
+let W,H;
 
 function resize(){
-
-    W=innerWidth;
-    H=innerHeight;
-
-    const dpr=Math.min(
-        devicePixelRatio||1,
-        2
-    );
-
-    canvas.width=W*dpr;
-    canvas.height=H*dpr;
-
-    canvas.style.width=W+"px";
-    canvas.style.height=H+"px";
-
-    ctx.setTransform(
-        dpr,0,0,dpr,0,0
-    );
-
-    ctx.imageSmoothingEnabled=false;
+  W=canvas.width=innerWidth;
+  H=canvas.height=innerHeight;
 }
 
 addEventListener("resize",resize);
 resize();
 
-/* =====================================================
-   WORLD
-===================================================== */
+
+/* =========================================================
+   GAME SETTINGS
+========================================================= */
 
 const TILE=32;
-const MAP_W=150;
-const MAP_H=150;
 
-const world=[];
+const MAP_W=260;
+const MAP_H=260;
 
-function noise(x,y){
+const WORLD_W=MAP_W*TILE;
+const WORLD_H=MAP_H*TILE;
 
-    const n=Math.sin(
-        x*127.1+
-        y*311.7
-    )*43758.5453;
+let running=false;
+let paused=false;
 
-    return n-Math.floor(n);
-}
-
-for(let y=0;y<MAP_H;y++){
-
-    world[y]=[];
-
-    for(let x=0;x<MAP_W;x++){
-
-        const r=noise(x,y);
-
-        let tile="grass";
-
-        if(
-            x<3||
-            y<3||
-            x>=MAP_W-3||
-            y>=MAP_H-3
-        ){
-            tile="water";
-        }
-        else if(r<.035){
-            tile="water";
-        }
-        else if(r<.07){
-            tile="sand";
-        }
-        else if(r>.95){
-            tile="stone";
-        }
-
-        world[y][x]=tile;
-    }
-}
-
-/* village */
-
-for(let y=55;y<70;y++){
-    for(let x=55;x<70;x++){
-        world[y][x]="grass";
-    }
-}
-
-/* roads */
-
-for(let x=40;x<85;x++){
-    world[62][x]="sand";
-}
-
-for(let y=40;y<85;y++){
-    world[y][62]="sand";
-}
-
-/* =====================================================
-   HOUSES
-===================================================== */
-
-const houses=[
-    {x:53,y:56,w:6,h:5},
-    {x:65,y:56,w:6,h:5},
-    {x:53,y:66,w:6,h:5},
-    {x:65,y:66,w:6,h:5}
-];
-
-/* =====================================================
-   OBJECTS
-===================================================== */
-
-const objects=[];
-
-function addObject(
-    type,
-    x,
-    y
-){
-
-    objects.push({
-        type,
-        x:x*TILE+16,
-        y:y*TILE+16
-    });
-}
-
-for(let i=0;i<330;i++){
-
-    const x=
-        5+
-        Math.floor(
-            Math.random()*(MAP_W-10)
-        );
-
-    const y=
-        5+
-        Math.floor(
-            Math.random()*(MAP_H-10)
-        );
-
-    if(
-        world[y][x]==="grass" &&
-        (
-            Math.abs(x-62)>13||
-            Math.abs(y-62)>13
-        )
-    ){
-
-        addObject(
-            Math.random()<.72
-            ?"tree"
-            :"rock",
-            x,
-            y
-        );
-    }
-}
-
-/* =====================================================
-   NPCS
-===================================================== */
-
-const npcs=[
-    {
-        name:"Elder Rowan",
-        x:62*TILE+16,
-        y:50*TILE+16,
-        text:
-        "Welkom, held. De monsters in het bos worden sterker. We hebben jouw hulp nodig."
-    },
-    {
-        name:"Mira",
-        x:73*TILE+16,
-        y:62*TILE+16,
-        text:
-        "Ergens diep in het bos ligt een oude blauwe crystal. Niemand durft hem te zoeken."
-    },
-    {
-        name:"Blacksmith",
-        x:50*TILE+16,
-        y:62*TILE+16,
-        text:
-        "Een echte avonturier heeft altijd zijn zwaard bij zich."
-    }
-];
-
-/* =====================================================
-   MONSTERS
-===================================================== */
-
-const monsters=[];
-
-function spawnMonster(x,y){
-
-    monsters.push({
-        x:x*TILE+16,
-        y:y*TILE+16,
-        hp:50,
-        maxHp:50,
-        speed:32,
-        alive:true,
-        cooldown:0,
-        flash:0
-    });
-}
-
-for(let i=0;i<22;i++){
-
-    let x=
-        10+
-        Math.floor(
-            Math.random()*120
-        );
-
-    let y=
-        10+
-        Math.floor(
-            Math.random()*120
-        );
-
-    if(
-        Math.abs(x-62)<18 &&
-        Math.abs(y-62)<18
-    ){
-        i--;
-        continue;
-    }
-
-    spawnMonster(x,y);
-}
-
-/* =====================================================
-   PLAYER
-===================================================== */
-
-const player={
-
-    x:62*TILE+16,
-    y:62*TILE+16,
-
-    speed:145,
-
-    dir:1,
-
-    frame:0,
-
-    moving:false,
-
-    attacking:false,
-
-    attackTimer:0,
-
-    dashTimer:0,
-
-    hp:100,
-
-    maxHp:100,
-
-    level:1,
-
-    xp:0,
-
-    xpNeed:100,
-
-    coins:50
+let camera={
+  x:0,
+  y:0,
+  shake:0
 };
 
-/* =====================================================
-   KEYBOARD
-===================================================== */
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player={
+  x:WORLD_W/2,
+  y:WORLD_H/2,
+
+  vx:0,
+  vy:0,
+
+  speed:190,
+
+  hp:100,
+  maxHp:100,
+
+  level:1,
+  xp:0,
+  xpMax:100,
+
+  coins:25,
+
+  attackTimer:0,
+  attackCooldown:0,
+
+  dashTimer:0,
+  dashCooldown:0,
+
+  direction:"down",
+
+  anim:0,
+  walk:0,
+
+  monstersKilled:0
+};
+
+
+/* =========================================================
+   ISLANDS
+========================================================= */
+
+const islands=[
+  {
+    id:0,
+    name:"Emerald Island",
+    x:WORLD_W/2,
+    y:WORLD_H/2,
+    radius:1800,
+    unlocked:true,
+    color:"#48795b"
+  },
+  {
+    id:1,
+    name:"Frost Island",
+    x:WORLD_W/2+4000,
+    y:WORLD_H/2-700,
+    radius:1700,
+    unlocked:false,
+    color:"#7ba9ba"
+  },
+  {
+    id:2,
+    name:"Volcano Island",
+    x:WORLD_W/2-4300,
+    y:WORLD_H/2+900,
+    radius:1800,
+    unlocked:false,
+    color:"#8c4c3d"
+  },
+  {
+    id:3,
+    name:"Sky Island",
+    x:WORLD_W/2+300,
+    y:WORLD_H/2+4700,
+    radius:1600,
+    unlocked:false,
+    color:"#7285a5"
+  },
+  {
+    id:4,
+    name:"Shadow Island",
+    x:WORLD_W/2-3900,
+    y:WORLD_H/2-2800,
+    radius:1900,
+    unlocked:false,
+    color:"#40395d"
+  }
+];
+
+
+/* =========================================================
+   WORLD
+========================================================= */
+
+const objects=[];
+const npcs=[];
+const monsters=[];
+const particles=[];
+const trees=[];
+const rocks=[];
+
+function dist(a,b,c,d){
+  return Math.hypot(a-c,b-d);
+}
+
+function islandAt(x,y){
+
+  for(const island of islands){
+
+    if(
+      dist(x,y,island.x,island.y)
+      < island.radius
+    ){
+      return island;
+    }
+
+  }
+
+  return null;
+}
+
+
+/* =========================================================
+   WORLD GENERATION
+========================================================= */
+
+function generateWorld(){
+
+  trees.length=0;
+  rocks.length=0;
+  npcs.length=0;
+  monsters.length=0;
+
+  for(const island of islands){
+
+    for(let i=0;i<190;i++){
+
+      const a=Math.random()*Math.PI*2;
+      const r=Math.random()*island.radius*.9;
+
+      const x=island.x+Math.cos(a)*r;
+      const y=island.y+Math.sin(a)*r;
+
+      trees.push({
+        x,
+        y,
+        island:island.id,
+        size:.8+Math.random()*.7
+      });
+
+    }
+
+    for(let i=0;i<100;i++){
+
+      const a=Math.random()*Math.PI*2;
+      const r=Math.random()*island.radius*.9;
+
+      rocks.push({
+        x:island.x+Math.cos(a)*r,
+        y:island.y+Math.sin(a)*r,
+        island:island.id
+      });
+
+    }
+
+  }
+
+
+  /* NPCs */
+
+  npcs.push(
+    {
+      x:WORLD_W/2-160,
+      y:WORLD_H/2-100,
+      name:"Elder Rowan",
+      color:"#d5a45b",
+      text:"Welcome to Emerald Island, warrior!"
+    },
+    {
+      x:WORLD_W/2+160,
+      y:WORLD_H/2+100,
+      name:"Mira",
+      color:"#bb77d7",
+      text:"The other islands are waiting for you."
+    },
+    {
+      x:WORLD_W/2+300,
+      y:WORLD_H/2-180,
+      name:"Captain",
+      color:"#6e9bd1",
+      text:"Become stronger and unlock the sea."
+    }
+  );
+
+
+  /* monsters */
+
+  for(let i=0;i<35;i++){
+
+    const island=islands[0];
+
+    monsters.push({
+      x:island.x+(Math.random()-.5)*3000,
+      y:island.y+(Math.random()-.5)*3000,
+
+      hp:40,
+      maxHp:40,
+
+      speed:55,
+
+      alive:true,
+
+      anim:Math.random()*10
+    });
+
+  }
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
 
 const keys={};
 
 addEventListener("keydown",e=>{
 
-    keys[e.key.toLowerCase()]=true;
+  keys[e.key.toLowerCase()]=true;
 
-    if(e.key===" "){
-        attack();
-    }
+  if(e.key===" "){
+    attack();
+  }
 
-    if(e.key.toLowerCase()==="e"){
-        interact();
-    }
+  if(e.key.toLowerCase()==="e"){
+    interact();
+  }
+
 });
 
 addEventListener("keyup",e=>{
-    keys[e.key.toLowerCase()]=false;
+  keys[e.key.toLowerCase()]=false;
 });
 
-/* =====================================================
-   JOYSTICK
-===================================================== */
-
-const joystick=
-document.getElementById("joystick");
-
-const stick=
-document.getElementById("stick");
 
 let joyX=0;
 let joyY=0;
-let joyActive=false;
 
-function joystickMove(
-    clientX,
-    clientY
-){
+const joystick=document.getElementById("joystick");
+const stick=document.getElementById("stick");
 
-    const r=
-        joystick.getBoundingClientRect();
+function joystickMove(e){
 
-    const cx=
-        r.left+r.width/2;
+  const rect=joystick.getBoundingClientRect();
 
-    const cy=
-        r.top+r.height/2;
+  let x=e.clientX-rect.left-65;
+  let y=e.clientY-rect.top-65;
 
-    let dx=
-        clientX-cx;
+  const max=45;
 
-    let dy=
-        clientY-cy;
+  const length=Math.hypot(x,y);
 
-    const max=50;
+  if(length>max){
+    x=x/length*max;
+    y=y/length*max;
+  }
 
-    const length=
-        Math.hypot(dx,dy);
+  joyX=x/max;
+  joyY=y/max;
 
-    if(length>max){
-
-        dx=
-            dx/length*max;
-
-        dy=
-            dy/length*max;
-    }
-
-    joyX=dx/max;
-    joyY=dy/max;
-
-    stick.style.transform=
-        `translate(${dx}px,${dy}px)`;
+  stick.style.transform=
+    `translate(${x}px,${y}px)`;
 }
 
-joystick.addEventListener(
-    "pointerdown",
-    e=>{
-        joyActive=true;
+joystick.addEventListener("pointermove",joystickMove);
 
-        joystick.setPointerCapture(
-            e.pointerId
-        );
+joystick.addEventListener("pointerdown",e=>{
+  joystick.setPointerCapture(e.pointerId);
+  joystickMove(e);
+});
 
-        joystickMove(
-            e.clientX,
-            e.clientY
-        );
+joystick.addEventListener("pointerup",()=>{
+  joyX=0;
+  joyY=0;
+  stick.style.transform="translate(0,0)";
+});
+
+
+document.getElementById("attackBtn")
+.addEventListener("pointerdown",attack);
+
+document.getElementById("dashBtn")
+.addEventListener("pointerdown",dash);
+
+
+/* =========================================================
+   MOVEMENT
+========================================================= */
+
+function updateMovement(dt){
+
+  let x=0;
+  let y=0;
+
+  if(keys["w"]||keys["arrowup"])y--;
+  if(keys["s"]||keys["arrowdown"])y++;
+  if(keys["a"]||keys["arrowleft"])x--;
+  if(keys["d"]||keys["arrowright"])x++;
+
+  x+=joyX;
+  y+=joyY;
+
+  const len=Math.hypot(x,y);
+
+  if(len>0){
+
+    x/=len;
+    y/=len;
+
+    player.vx=x*player.speed;
+    player.vy=y*player.speed;
+
+    player.walk+=dt*10;
+
+    if(Math.abs(x)>Math.abs(y)){
+      player.direction=x>0?"right":"left";
+    }else{
+      player.direction=y>0?"down":"up";
     }
-);
 
-joystick.addEventListener(
-    "pointermove",
-    e=>{
-        if(joyActive){
-            joystickMove(
-                e.clientX,
-                e.clientY
-            );
-        }
-    }
-);
+  }else{
 
-function resetJoystick(){
+    player.vx*=.8;
+    player.vy*=.8;
 
-    joyActive=false;
+  }
 
-    joyX=0;
-    joyY=0;
+  player.x+=player.vx*dt;
+  player.y+=player.vy*dt;
 
-    stick.style.transform=
-        "translate(0,0)";
+  player.x=Math.max(100,Math.min(WORLD_W-100,player.x));
+  player.y=Math.max(100,Math.min(WORLD_H-100,player.y));
+
+  player.anim+=dt;
 }
 
-joystick.addEventListener(
-    "pointerup",
-    resetJoystick
-);
 
-joystick.addEventListener(
-    "pointercancel",
-    resetJoystick
-);
-
-/* =====================================================
-   COLLISION
-===================================================== */
-
-function blocked(x,y){
-
-    const tx=
-        Math.floor(x/TILE);
-
-    const ty=
-        Math.floor(y/TILE);
-
-    if(
-        tx<0||
-        ty<0||
-        tx>=MAP_W||
-        ty>=MAP_H
-    ){
-        return true;
-    }
-
-    if(
-        world[ty][tx]==="water"
-    ){
-        return true;
-    }
-
-    for(const h of houses){
-
-        if(
-            x>h.x*TILE &&
-            x<(h.x+h.w)*TILE &&
-            y>h.y*TILE &&
-            y<(h.y+h.h)*TILE
-        ){
-            return true;
-        }
-    }
-
-    for(const o of objects){
-
-        if(o.type!=="tree")
-            continue;
-
-        if(
-            Math.hypot(
-                x-o.x,
-                y-o.y
-            )<18
-        ){
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/* =====================================================
+/* =========================================================
    ATTACK
-===================================================== */
+========================================================= */
 
 function attack(){
 
-    if(player.attacking)
-        return;
+  if(!running||paused)return;
+  if(player.attackCooldown>0)return;
 
-    player.attacking=true;
-    player.attackTimer=.28;
+  player.attackTimer=.28;
+  player.attackCooldown=.45;
 
-    for(const m of monsters){
+  camera.shake=5;
 
-        if(!m.alive)
-            continue;
+  for(const m of monsters){
 
-        const distance=
-            Math.hypot(
-                player.x-m.x,
-                player.y-m.y
-            );
+    if(!m.alive)continue;
 
-        if(distance<62){
+    if(
+      dist(player.x,player.y,m.x,m.y)<95
+    ){
 
-            m.hp-=25;
-            m.flash=.12;
+      m.hp-=35;
 
-            particles(
-                m.x,
-                m.y,
-                "#ffffff",
-                8
-            );
+      burst(m.x,m.y,8);
 
-            if(m.hp<=0){
+      if(m.hp<=0){
 
-                m.alive=false;
+        m.alive=false;
 
-                player.coins+=
-                    5+
-                    Math.floor(
-                        Math.random()*10
-                    );
+        player.monstersKilled++;
 
-                gainXP(25);
+        gainXP(30);
 
-                showMessage(
-                    "+25 XP   🪙 COINS"
-                );
-            }
-        }
+        player.coins+=5;
+
+        message("+5 coins  +30 XP");
+
+      }
+
     }
+
+  }
 }
 
-/* =====================================================
+
+/* =========================================================
    DASH
-===================================================== */
+========================================================= */
 
 function dash(){
 
-    if(player.dashTimer>0)
-        return;
+  if(!running||paused)return;
+  if(player.dashCooldown>0)return;
 
-    player.dashTimer=.8;
+  let dx=player.vx;
+  let dy=player.vy;
 
-    const nx=
-        player.x+
-        player.dir*80;
+  let len=Math.hypot(dx,dy);
 
-    if(!blocked(nx,player.y)){
+  if(len<1){
+    if(player.direction==="left")dx=-1;
+    if(player.direction==="right")dx=1;
+    if(player.direction==="up")dy=-1;
+    if(player.direction==="down")dy=1;
 
-        player.x=nx;
+    len=Math.hypot(dx,dy);
+  }
 
-        particles(
-            player.x,
-            player.y,
-            "#b9eaff",
-            15
-        );
-    }
+  dx/=len;
+  dy/=len;
+
+  player.x+=dx*170;
+  player.y+=dy*170;
+
+  player.dashCooldown=1.2;
+
+  camera.shake=10;
+
+  burst(player.x,player.y,15);
 }
 
-/* =====================================================
+
+/* =========================================================
    XP
-===================================================== */
+========================================================= */
 
 function gainXP(amount){
 
-    player.xp+=amount;
+  player.xp+=amount;
 
-    while(
-        player.xp>=player.xpNeed
-    ){
+  while(player.xp>=player.xpMax){
 
-        player.xp-=
-            player.xpNeed;
+    player.xp-=player.xpMax;
 
-        player.level++;
+    player.level++;
 
-        player.xpNeed=
-            Math.floor(
-                player.xpNeed*1.35
-            );
+    player.xpMax=
+      Math.floor(player.xpMax*1.35);
 
-        player.maxHp+=20;
-        player.hp=
-            player.maxHp;
+    player.maxHp+=15;
+    player.hp=player.maxHp;
 
-        showMessage(
-            "⭐ LEVEL UP!  LEVEL "+
-            player.level
-        );
-    }
+    message("LEVEL UP!  Level "+player.level);
+
+  }
 }
 
-/* =====================================================
-   PARTICLES
-===================================================== */
 
-const particleList=[];
-
-function particles(
-    x,
-    y,
-    color,
-    amount
-){
-
-    for(let i=0;i<amount;i++){
-
-        particleList.push({
-
-            x:x,
-            y:y,
-
-            vx:
-                (Math.random()-.5)
-                *120,
-
-            vy:
-                (Math.random()-.5)
-                *120,
-
-            life:.5,
-
-            color:color
-        });
-    }
-}
-
-/* =====================================================
+/* =========================================================
    NPC INTERACTION
-===================================================== */
+========================================================= */
 
 function interact(){
 
-    for(const npc of npcs){
+  for(const n of npcs){
 
-        const distance=
-            Math.hypot(
-                player.x-npc.x,
-                player.y-npc.y
-            );
+    if(dist(player.x,player.y,n.x,n.y)<90){
 
-        if(distance<70){
+      document.getElementById("dialogueName")
+      .textContent=n.name;
 
-            document.getElementById(
-                "dialogueName"
-            ).textContent=
-                npc.name;
+      document.getElementById("dialogueText")
+      .textContent=n.text;
 
-            document.getElementById(
-                "dialogueText"
-            ).textContent=
-                npc.text;
+      document.getElementById("dialogue")
+      .style.display="block";
 
-            document.getElementById(
-                "dialogue"
-            ).style.display=
-                "block";
-
-            return;
-        }
+      return;
     }
+
+  }
+
 }
 
-document.getElementById(
-    "dialogue"
-).addEventListener(
-    "pointerdown",
-    ()=>{
-        document.getElementById(
-            "dialogue"
-        ).style.display="none";
-    }
-);
 
-/* =====================================================
-   CAMERA
-===================================================== */
-
-const camera={
-    x:0,
-    y:0
-};
-
-/* =====================================================
-   GAME STATE
-===================================================== */
-
-let paused=true;
-
-/* =====================================================
-   UPDATE
-===================================================== */
-
-let last=performance.now();
-
-function update(now){
-
-    const dt=
-        Math.min(
-            (now-last)/1000,
-            .033
-        );
-
-    last=now;
-
-    if(!paused){
-
-        let dx=0;
-        let dy=0;
-
-        if(
-            keys["w"]||
-            keys["arrowup"]
-        )
-            dy--;
-
-        if(
-            keys["s"]||
-            keys["arrowdown"]
-        )
-            dy++;
-
-        if(
-            keys["a"]||
-            keys["arrowleft"]
-        )
-            dx--;
-
-        if(
-            keys["d"]||
-            keys["arrowright"]
-        )
-            dx++;
-
-        dx+=joyX;
-        dy+=joyY;
-
-        const len=
-            Math.hypot(dx,dy);
-
-        player.moving=
-            len>.08;
-
-        if(len>1){
-
-            dx/=len;
-            dy/=len;
-        }
-
-        if(player.moving){
-
-            if(dx!==0)
-                player.dir=
-                    dx>0?1:-1;
-
-            const nx=
-                player.x+
-                dx*
-                player.speed*
-                dt;
-
-            const ny=
-                player.y+
-                dy*
-                player.speed*
-                dt;
-
-            if(
-                !blocked(
-                    nx,
-                    player.y
-                )
-            ){
-                player.x=nx;
-            }
-
-            if(
-                !blocked(
-                    player.x,
-                    ny
-                )
-            ){
-                player.y=ny;
-            }
-
-            player.frame+=dt*9;
-
-            if(
-                Math.random()<.15
-            ){
-                particles(
-                    player.x,
-                    player.y+17,
-                    "#c4c5a5",
-                    1
-                );
-            }
-        }
-
-        if(player.attacking){
-
-            player.attackTimer-=dt;
-
-            if(
-                player.attackTimer<=0
-            ){
-                player.attacking=false;
-            }
-        }
-
-        if(player.dashTimer>0)
-            player.dashTimer-=dt;
-
-        updateMonsters(dt);
-
-        for(
-            let i=
-                particleList.length-1;
-            i>=0;
-            i--
-        ){
-
-            const p=
-                particleList[i];
-
-            p.life-=dt;
-
-            p.x+=p.vx*dt;
-            p.y+=p.vy*dt;
-
-            p.vx*=.95;
-            p.vy*=.95;
-
-            if(p.life<=0)
-                particleList.splice(i,1);
-        }
-
-        const targetX=
-            player.x-W/2;
-
-        const targetY=
-            player.y-H/2;
-
-        camera.x+=
-            (targetX-camera.x)
-            *Math.min(1,dt*7);
-
-        camera.y+=
-            (targetY-camera.y)
-            *Math.min(1,dt*7);
-
-        camera.x=Math.max(
-            0,
-            Math.min(
-                camera.x,
-                MAP_W*TILE-W
-            )
-        );
-
-        camera.y=Math.max(
-            0,
-            Math.min(
-                camera.y,
-                MAP_H*TILE-H
-            )
-        );
-
-        updateHUD();
-        render();
-    }
-
-    requestAnimationFrame(update);
-}
-
-/* =====================================================
-   MONSTER AI
-===================================================== */
+/* =========================================================
+   MONSTERS
+========================================================= */
 
 function updateMonsters(dt){
 
-    for(const m of monsters){
+  for(const m of monsters){
 
-        if(!m.alive)
-            continue;
+    if(!m.alive)continue;
 
-        if(m.flash>0)
-            m.flash-=dt;
+    const d=dist(
+      player.x,
+      player.y,
+      m.x,
+      m.y
+    );
 
-        const dx=
-            player.x-m.x;
+    if(d<450){
 
-        const dy=
-            player.y-m.y;
+      const dx=(player.x-m.x)/d;
+      const dy=(player.y-m.y)/d;
 
-        const distance=
-            Math.hypot(dx,dy);
+      m.x+=dx*m.speed*dt;
+      m.y+=dy*m.speed*dt;
 
-        if(distance<190){
+      m.anim+=dt*5;
 
-            const nx=
-                m.x+
-                dx/distance*
-                m.speed*
-                dt;
-
-            const ny=
-                m.y+
-                dy/distance*
-                m.speed*
-                dt;
-
-            if(
-                !blocked(
-                    nx,
-                    m.y
-                )
-            ){
-                m.x=nx;
-            }
-
-            if(
-                !blocked(
-                    m.x,
-                    ny
-                )
-            ){
-                m.y=ny;
-            }
-        }
-
-        if(m.cooldown>0)
-            m.cooldown-=dt;
-
-        if(
-            distance<35&&
-            m.cooldown<=0
-        ){
-
-            player.hp-=8;
-
-            m.cooldown=1;
-
-            particles(
-                player.x,
-                player.y,
-                "#e44e59",
-                5
-            );
-
-            if(player.hp<=0){
-
-                player.hp=
-                    player.maxHp;
-
-                player.x=
-                    62*TILE+16;
-
-                player.y=
-                    62*TILE+16;
-
-                player.coins=
-                    Math.max(
-                        0,
-                        player.coins-10
-                    );
-
-                showMessage(
-                    "💀 JE BENT VERSLAGEN"
-                );
-            }
-        }
     }
+
+  }
+
 }
 
-/* =====================================================
-   DRAW TILE
-===================================================== */
 
-function drawTile(
-    type,
-    x,
-    y
-){
+/* =========================================================
+   PARTICLES
+========================================================= */
 
-    if(type==="grass"){
+function burst(x,y,count){
 
-        ctx.fillStyle="#4b9753";
-        ctx.fillRect(
-            x,y,TILE,TILE
-        );
+  for(let i=0;i<count;i++){
 
-        ctx.fillStyle="#5ba75e";
+    const a=Math.random()*Math.PI*2;
+    const s=40+Math.random()*120;
 
-        for(let i=0;i<3;i++){
+    particles.push({
+      x,
+      y,
+      vx:Math.cos(a)*s,
+      vy:Math.sin(a)*s,
+      life:.5+Math.random()*.5,
+      max:.8
+    });
 
-            ctx.fillRect(
-                x+
-                Math.floor(
-                    noise(
-                        x+i,
-                        y
-                    )*28
-                ),
-                y+
-                Math.floor(
-                    noise(
-                        y+i,
-                        x
-                    )*27
-                ),
-                2,
-                4
-            );
-        }
+  }
 
-        ctx.fillStyle="#3b7e45";
-
-        ctx.fillRect(
-            x,
-            y+29,
-            TILE,
-            3
-        );
-    }
-
-    if(type==="sand"){
-
-        ctx.fillStyle="#d0b36c";
-
-        ctx.fillRect(
-            x,y,TILE,TILE
-        );
-
-        ctx.fillStyle="#e4c77b";
-
-        for(let i=0;i<4;i++){
-
-            ctx.fillRect(
-                x+
-                Math.random()*27,
-                y+
-                Math.random()*27,
-                2,
-                2
-            );
-        }
-    }
-
-    if(type==="stone"){
-
-        ctx.fillStyle="#646d74";
-
-        ctx.fillRect(
-            x,y,TILE,TILE
-        );
-
-        ctx.fillStyle="#7d868d";
-
-        ctx.fillRect(
-            x+4,y+6,9,3
-        );
-
-        ctx.fillRect(
-            x+19,y+19,8,3
-        );
-    }
-
-    if(type==="water"){
-
-        ctx.fillStyle="#2876aa";
-
-        ctx.fillRect(
-            x,y,TILE,TILE
-        );
-
-        ctx.fillStyle="#4198c5";
-
-        ctx.fillRect(
-            x+3,y+8,13,2
-        );
-
-        ctx.fillRect(
-            x+18,y+20,10,2
-        );
-
-        ctx.fillStyle="#23628c";
-
-        ctx.fillRect(
-            x,y+29,TILE,3
-        );
-    }
 }
 
-/* =====================================================
-   HOUSE
-===================================================== */
+function updateParticles(dt){
 
-function drawHouse(h){
+  for(let i=particles.length-1;i>=0;i--){
 
-    const x=
-        h.x*TILE-camera.x;
+    const p=particles[i];
 
-    const y=
-        h.y*TILE-camera.y;
+    p.x+=p.vx*dt;
+    p.y+=p.vy*dt;
 
-    const w=
-        h.w*TILE;
+    p.vx*=.94;
+    p.vy*=.94;
 
-    const hh=
-        h.h*TILE;
+    p.life-=dt;
 
-    ctx.fillStyle=
-        "rgba(0,0,0,.25)";
+    if(p.life<=0)
+      particles.splice(i,1);
 
-    ctx.fillRect(
-        x+5,
-        y+hh-1,
-        w,
-        8
-    );
+  }
 
-    /* walls */
-
-    ctx.fillStyle="#bf7d50";
-
-    ctx.fillRect(
-        x,
-        y+22,
-        w,
-        hh-22
-    );
-
-    /* roof */
-
-    ctx.fillStyle="#713c42";
-
-    ctx.fillRect(
-        x-6,
-        y+15,
-        w+12,
-        17
-    );
-
-    ctx.fillStyle="#914d4e";
-
-    ctx.fillRect(
-        x+8,
-        y+5,
-        w-16,
-        13
-    );
-
-    /* door */
-
-    ctx.fillStyle="#4b3025";
-
-    ctx.fillRect(
-        x+w/2-10,
-        y+hh-35,
-        20,
-        35
-    );
-
-    ctx.fillStyle="#d7a84e";
-
-    ctx.fillRect(
-        x+w/2+4,
-        y+hh-18,
-        3,
-        3
-    );
-
-    /* windows */
-
-    ctx.fillStyle="#76bdd0";
-
-    ctx.fillRect(
-        x+12,
-        y+38,
-        19,
-        15
-    );
-
-    ctx.fillRect(
-        x+w-31,
-        y+38,
-        19,
-        15
-    );
-
-    ctx.fillStyle="#efd789";
-
-    ctx.fillRect(
-        x+20,
-        y+38,
-        3,
-        15
-    );
-
-    ctx.fillRect(
-        x+12,
-        y+44,
-        19,
-        3
-    );
 }
 
-/* =====================================================
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(dt){
+
+  const targetX=
+    player.x-W/2;
+
+  const targetY=
+    player.y-H/2;
+
+  camera.x+=(targetX-camera.x)*Math.min(1,dt*7);
+  camera.y+=(targetY-camera.y)*Math.min(1,dt*7);
+
+  camera.x=Math.max(
+    0,
+    Math.min(WORLD_W-W,camera.x)
+  );
+
+  camera.y=Math.max(
+    0,
+    Math.min(WORLD_H-H,camera.y)
+  );
+
+  if(camera.shake>0){
+    camera.shake*=.82;
+  }
+
+}
+
+
+/* =========================================================
+   DRAW WORLD
+========================================================= */
+
+function drawWorld(){
+
+  ctx.fillStyle="#07111a";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.save();
+
+  let sx=0;
+  let sy=0;
+
+  if(camera.shake>.3){
+
+    sx=(Math.random()-.5)*camera.shake;
+    sy=(Math.random()-.5)*camera.shake;
+
+  }
+
+  ctx.translate(
+    -Math.floor(camera.x)+sx,
+    -Math.floor(camera.y)+sy
+  );
+
+
+  /* ocean */
+
+  ctx.fillStyle="#123d5a";
+  ctx.fillRect(0,0,WORLD_W,WORLD_H);
+
+
+  /* islands */
+
+  for(const island of islands){
+
+    if(!island.unlocked &&
+       dist(
+         player.x,
+         player.y,
+         island.x,
+         island.y
+       )<island.radius+600){
+
+      drawIsland(island,true);
+
+    }else{
+
+      drawIsland(island,false);
+
+    }
+
+  }
+
+
+  /* trees */
+
+  for(const t of trees){
+
+    const island=islands[t.island];
+
+    if(island.unlocked)
+      drawTree(t);
+
+  }
+
+
+  /* rocks */
+
+  for(const r of rocks){
+
+    const island=islands[r.island];
+
+    if(island.unlocked)
+      drawRock(r);
+
+  }
+
+
+  /* houses */
+
+  drawVillage();
+
+
+  /* NPC */
+
+  for(const n of npcs)
+    drawNPC(n);
+
+
+  /* monsters */
+
+  for(const m of monsters){
+
+    if(m.alive)
+      drawMonster(m);
+
+  }
+
+
+  /* particles */
+
+  for(const p of particles){
+
+    ctx.globalAlpha=
+      Math.max(0,p.life/p.max);
+
+    ctx.fillStyle="#fff2a8";
+
+    ctx.fillRect(
+      p.x-3,
+      p.y-3,
+      6,
+      6
+    );
+
+  }
+
+  ctx.globalAlpha=1;
+
+
+  drawPlayer();
+
+  ctx.restore();
+
+
+  /* island unlock indicator */
+
+  drawIslandIndicators();
+
+}
+
+
+/* =========================================================
+   ISLAND
+========================================================= */
+
+function drawIsland(island,locked){
+
+  ctx.beginPath();
+
+  ctx.arc(
+    island.x,
+    island.y,
+    island.radius,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle=
+    locked ? "#344555" : island.color;
+
+  ctx.fill();
+
+  ctx.lineWidth=45;
+  ctx.strokeStyle=
+    locked ? "#213241" : "#d2b675";
+
+  ctx.stroke();
+
+
+  /* beach */
+
+  ctx.beginPath();
+
+  ctx.arc(
+    island.x,
+    island.y,
+    island.radius-30,
+    0,
+    Math.PI*2
+  );
+
+  ctx.lineWidth=35;
+  ctx.strokeStyle="#d6bd79";
+  ctx.stroke();
+
+
+  /* paths */
+
+  ctx.strokeStyle=
+    locked ? "#3c4a52" : "#8c7651";
+
+  ctx.lineWidth=55;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    island.x-island.radius*.7,
+    island.y
+  );
+
+  ctx.lineTo(
+    island.x+island.radius*.7,
+    island.y
+  );
+
+  ctx.stroke();
+
+}
+
+
+/* =========================================================
+   VILLAGE
+========================================================= */
+
+function drawVillage(){
+
+  const x=WORLD_W/2;
+  const y=WORLD_H/2;
+
+  drawHouse(x-300,y-220,150,120);
+  drawHouse(x+130,y-250,150,120);
+  drawHouse(x-320,y+120,150,120);
+  drawHouse(x+150,y+150,150,120);
+
+  /* town square */
+
+  ctx.fillStyle="#8d7857";
+
+  ctx.fillRect(
+    x-100,
+    y-100,
+    200,
+    200
+  );
+
+  ctx.fillStyle="#bba27b";
+
+  ctx.beginPath();
+  ctx.arc(x,y,45,0,Math.PI*2);
+  ctx.fill();
+
+}
+
+function drawHouse(x,y,w,h){
+
+  ctx.fillStyle="#2a2523";
+  ctx.fillRect(x+8,y+15,w,h);
+
+  ctx.fillStyle="#b55b45";
+
+  ctx.beginPath();
+
+  ctx.moveTo(x-10,y+15);
+  ctx.lineTo(x+w/2,y-60);
+  ctx.lineTo(x+w+10,y+15);
+
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle="#80634c";
+
+  ctx.fillRect(
+    x+10,
+    y+15,
+    w-20,
+    h-15
+  );
+
+  ctx.fillStyle="#36291f";
+
+  ctx.fillRect(
+    x+w/2-20,
+    y+h-55,
+    40,
+    55
+  );
+
+  ctx.fillStyle="#9ed4df";
+
+  ctx.fillRect(
+    x+25,
+    y+40,
+    25,
+    25
+  );
+
+  ctx.fillRect(
+    x+w-50,
+    y+40,
+    25,
+    25
+  );
+
+}
+
+
+/* =========================================================
    TREE
-===================================================== */
+========================================================= */
 
-function drawTree(o){
+function drawTree(t){
 
-    const x=
-        Math.floor(
-            o.x-camera.x
-        );
+  ctx.save();
 
-    const y=
-        Math.floor(
-            o.y-camera.y
-        );
+  ctx.translate(t.x,t.y);
 
-    ctx.fillStyle=
-        "rgba(0,0,0,.25)";
+  const s=t.size;
 
-    ctx.fillRect(
-        x-20,
-        y+14,
-        40,
-        7
-    );
+  ctx.fillStyle="#4b301e";
 
-    ctx.fillStyle="#6d422a";
+  ctx.fillRect(
+    -8*s,
+    -10*s,
+    16*s,
+    52*s
+  );
 
-    ctx.fillRect(
-        x-6,
-        y-2,
-        12,
-        22
-    );
+  ctx.fillStyle="#183f2b";
 
-    ctx.fillStyle="#985d39";
+  ctx.beginPath();
 
-    ctx.fillRect(
-        x-2,
-        y,
-        4,
-        17
-    );
+  ctx.arc(
+    0,
+    -20*s,
+    33*s,
+    0,
+    Math.PI*2
+  );
 
-    ctx.fillStyle="#225b37";
+  ctx.fill();
 
-    ctx.fillRect(
-        x-20,
-        y-19,
-        40,
-        29
-    );
+  ctx.fillStyle="#28613c";
 
-    ctx.fillRect(
-        x-14,
-        y-29,
-        28,
-        36
-    );
+  ctx.beginPath();
 
-    ctx.fillStyle="#31834b";
+  ctx.arc(
+    -20*s,
+    -2*s,
+    25*s,
+    0,
+    Math.PI*2
+  );
 
-    ctx.fillRect(
-        x-14,
-        y-23,
-        28,
-        25
-    );
+  ctx.fill();
 
-    ctx.fillRect(
-        x-20,
-        y-11,
-        11,
-        13
-    );
+  ctx.beginPath();
 
-    ctx.fillRect(
-        x+9,
-        y-13,
-        11,
-        14
-    );
+  ctx.arc(
+    20*s,
+    -4*s,
+    25*s,
+    0,
+    Math.PI*2
+  );
 
-    ctx.fillStyle="#54aa60";
+  ctx.fill();
 
-    ctx.fillRect(
-        x-10,
-        y-22,
-        7,
-        6
-    );
+  ctx.restore();
 
-    ctx.fillRect(
-        x+3,
-        y-18,
-        7,
-        5
-    );
 }
 
-/* =====================================================
+
+/* =========================================================
    ROCK
-===================================================== */
+========================================================= */
 
-function drawRock(o){
+function drawRock(r){
 
-    const x=
-        Math.floor(
-            o.x-camera.x
-        );
+  ctx.fillStyle="#68727b";
 
-    const y=
-        Math.floor(
-            o.y-camera.y
-        );
+  ctx.beginPath();
 
-    ctx.fillStyle=
-        "rgba(0,0,0,.2)";
+  ctx.moveTo(r.x-18,r.y+8);
+  ctx.lineTo(r.x-10,r.y-15);
+  ctx.lineTo(r.x+13,r.y-18);
+  ctx.lineTo(r.x+22,r.y+10);
+  ctx.closePath();
 
-    ctx.fillRect(
-        x-12,
-        y+7,
-        24,
-        5
-    );
+  ctx.fill();
 
-    ctx.fillStyle="#59616a";
+  ctx.fillStyle="#87919a";
 
-    ctx.fillRect(
-        x-10,
-        y-6,
-        20,
-        13
-    );
+  ctx.fillRect(
+    r.x-6,
+    r.y-10,
+    10,
+    6
+  );
 
-    ctx.fillRect(
-        x-6,
-        y-10,
-        12,
-        5
-    );
-
-    ctx.fillStyle="#818a90";
-
-    ctx.fillRect(
-        x-6,
-        y-7,
-        7,
-        4
-    );
 }
 
-/* =====================================================
+
+/* =========================================================
    NPC
-===================================================== */
+========================================================= */
 
 function drawNPC(n){
 
-    const x=
-        Math.floor(
-            n.x-camera.x
-        );
+  ctx.save();
 
-    const y=
-        Math.floor(
-            n.y-camera.y
-        );
+  ctx.translate(n.x,n.y);
 
-    ctx.fillStyle=
-        "rgba(0,0,0,.3)";
+  ctx.fillStyle="#20222a";
+  ctx.fillRect(-12,18,24,28);
 
-    ctx.fillRect(
-        x-12,
-        y+13,
-        24,
-        5
-    );
+  ctx.fillStyle=n.color;
+  ctx.fillRect(-16,-8,32,35);
 
-    /* robe */
+  ctx.fillStyle="#e5b48b";
 
-    ctx.fillStyle="#7256a5";
+  ctx.beginPath();
+  ctx.arc(0,-18,16,0,Math.PI*2);
+  ctx.fill();
 
-    ctx.fillRect(
-        x-10,
-        y-2,
-        20,
-        20
-    );
+  ctx.fillStyle="#241c21";
 
-    /* head */
+  ctx.fillRect(-15,-30,30,10);
 
-    ctx.fillStyle="#d59a72";
+  ctx.fillStyle="white";
+  ctx.font="bold 12px Arial";
+  ctx.textAlign="center";
 
-    ctx.fillRect(
-        x-8,
-        y-17,
-        16,
-        15
-    );
+  ctx.fillText(
+    n.name,
+    0,
+    -42
+  );
 
-    /* hair */
+  ctx.restore();
 
-    ctx.fillStyle="#392923";
-
-    ctx.fillRect(
-        x-9,
-        y-20,
-        18,
-        8
-    );
-
-    /* eyes */
-
-    ctx.fillStyle="#111820";
-
-    ctx.fillRect(
-        x-5,
-        y-12,
-        3,
-        3
-    );
-
-    ctx.fillRect(
-        x+3,
-        y-12,
-        3,
-        3
-    );
-
-    /* quest marker */
-
-    const near=
-        Math.hypot(
-            player.x-n.x,
-            player.y-n.y
-        )<100;
-
-    if(near){
-
-        ctx.fillStyle="#ffd451";
-
-        ctx.fillRect(
-            x-4,
-            y-32,
-            8,
-            8
-        );
-
-        ctx.fillStyle="#111";
-
-        ctx.fillRect(
-            x-1,
-            y-30,
-            2,
-            4
-        );
-
-        ctx.fillRect(
-            x-1,
-            y-25,
-            2,
-            2
-        );
-    }
 }
 
-/* =====================================================
+
+/* =========================================================
    MONSTER
-===================================================== */
+========================================================= */
 
 function drawMonster(m){
 
-    if(!m.alive)
-        return;
+  ctx.save();
 
-    const x=
-        Math.floor(
-            m.x-camera.x
-        );
+  ctx.translate(
+    m.x,
+    m.y+Math.sin(m.anim)*2
+  );
 
-    const y=
-        Math.floor(
-            m.y-camera.y
-        );
+  ctx.fillStyle="#281d31";
 
-    ctx.fillStyle=
-        "rgba(0,0,0,.3)";
+  ctx.beginPath();
+  ctx.ellipse(0,8,25,28,0,0,Math.PI*2);
+  ctx.fill();
 
-    ctx.fillRect(
-        x-14,
-        y+11,
-        28,
-        6
-    );
+  ctx.fillStyle="#794b92";
 
-    ctx.fillStyle=
-        m.flash>0
-        ?"white"
-        :"#763d58";
+  ctx.beginPath();
+  ctx.arc(0,-18,22,0,Math.PI*2);
+  ctx.fill();
 
-    ctx.fillRect(
-        x-13,
-        y-10,
-        26,
-        24
-    );
+  ctx.fillStyle="#ff5c66";
 
-    ctx.fillRect(
-        x-9,
-        y-17,
-        18,
-        10
-    );
+  ctx.fillRect(-11,-20,7,7);
+  ctx.fillRect(4,-20,7,7);
 
-    /* horns */
+  ctx.fillStyle="#15121b";
 
-    ctx.fillStyle="#55303f";
+  ctx.fillRect(-18,20,12,10);
+  ctx.fillRect(6,20,12,10);
 
-    ctx.fillRect(
-        x-16,
-        y-17,
-        6,
-        11
-    );
+  /* HP */
 
-    ctx.fillRect(
-        x+10,
-        y-17,
-        6,
-        11
-    );
+  ctx.fillStyle="#1c2027";
 
-    /* eyes */
+  ctx.fillRect(
+    -25,
+    -52,
+    50,
+    7
+  );
 
-    ctx.fillStyle="#ffd34f";
+  ctx.fillStyle="#e34b58";
 
-    ctx.fillRect(
-        x-7,
-        y-10,
-        5,
-        4
-    );
+  ctx.fillRect(
+    -25,
+    -52,
+    50*(m.hp/m.maxHp),
+    7
+  );
 
-    ctx.fillRect(
-        x+2,
-        y-10,
-        5,
-        4
-    );
+  ctx.restore();
 
-    /* hp */
-
-    ctx.fillStyle="#131820";
-
-    ctx.fillRect(
-        x-16,
-        y-26,
-        32,
-        4
-    );
-
-    ctx.fillStyle="#e44d58";
-
-    ctx.fillRect(
-        x-15,
-        y-25,
-        30*(m.hp/m.maxHp),
-        2
-    );
 }
 
-/* =====================================================
-   PLAYER IN GAME
-===================================================== */
+
+/* =========================================================
+   PLAYER — DETAILED
+========================================================= */
 
 function drawPlayer(){
 
-    const x=
-        Math.floor(
-            player.x-camera.x
-        );
+  const moving=
+    Math.abs(player.vx)+
+    Math.abs(player.vy)>10;
 
-    const y=
-        Math.floor(
-            player.y-camera.y
-        );
+  const bob=
+    moving
+    ? Math.sin(player.walk)*3
+    : Math.sin(player.anim*2)*1;
 
-    const bob=
-        player.moving
-        ?Math.sin(
-            player.frame*2
-        )*2
-        :0;
+  const legMove=
+    moving
+    ? Math.sin(player.walk)*5
+    : 0;
 
-    const py=y+bob;
+  ctx.save();
 
-    /* shadow */
+  ctx.translate(
+    player.x,
+    player.y+bob
+  );
 
-    ctx.fillStyle=
-        "rgba(0,0,0,.35)";
 
-    ctx.fillRect(
-        x-14,
-        y+17,
-        28,
-        6
+  /* shadow */
+
+  ctx.fillStyle="rgba(0,0,0,.35)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    0,
+    29,
+    28,
+    11,
+    0,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* cape */
+
+  ctx.fillStyle="#211735";
+
+  ctx.beginPath();
+
+  ctx.moveTo(-27,-18);
+  ctx.lineTo(27,-18);
+  ctx.lineTo(35,58);
+  ctx.lineTo(0,44);
+  ctx.lineTo(-35,58);
+
+  ctx.closePath();
+
+  ctx.fill();
+
+  ctx.fillStyle="#463070";
+
+  ctx.beginPath();
+
+  ctx.moveTo(-21,-15);
+  ctx.lineTo(20,-15);
+  ctx.lineTo(26,44);
+  ctx.lineTo(0,34);
+  ctx.lineTo(-26,44);
+
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  /* legs */
+
+  ctx.fillStyle="#222c3b";
+
+  ctx.fillRect(
+    -19+legMove,
+    10,
+    16,
+    39
+  );
+
+  ctx.fillRect(
+    3-legMove,
+    10,
+    16,
+    39
+  );
+
+
+  /* boots */
+
+  ctx.fillStyle="#12171f";
+
+  ctx.fillRect(
+    -24+legMove,
+    43,
+    22,
+    13
+  );
+
+  ctx.fillRect(
+    2-legMove,
+    43,
+    22,
+    13
+  );
+
+  ctx.fillStyle="#57677d";
+
+  ctx.fillRect(
+    -20+legMove,
+    44,
+    15,
+    5
+  );
+
+  ctx.fillRect(
+    6-legMove,
+    44,
+    15,
+    5
+  );
+
+
+  /* body */
+
+  ctx.fillStyle="#344254";
+
+  ctx.fillRect(
+    -28,
+    -30,
+    56,
+    49
+  );
+
+  /* armor */
+
+  ctx.fillStyle="#9ba8b8";
+
+  ctx.fillRect(
+    -23,
+    -25,
+    46,
+    29
+  );
+
+  ctx.fillStyle="#657386";
+
+  ctx.fillRect(
+    -18,
+    -19,
+    36,
+    22
+  );
+
+
+  /* armor center */
+
+  ctx.fillStyle="#d0d9e5";
+
+  ctx.fillRect(
+    -3,
+    -24,
+    6,
+    28
+  );
+
+
+  /* shoulders */
+
+  ctx.fillStyle="#748399";
+
+  ctx.fillRect(
+    -34,
+    -28,
+    12,
+    22
+  );
+
+  ctx.fillRect(
+    22,
+    -28,
+    12,
+    22
+  );
+
+
+  /* belt */
+
+  ctx.fillStyle="#4b3020";
+
+  ctx.fillRect(
+    -30,
+    3,
+    60,
+    9
+  );
+
+  ctx.fillStyle="#e0bd59";
+
+  ctx.fillRect(
+    -7,
+    1,
+    14,
+    13
+  );
+
+
+  /* neck */
+
+  ctx.fillStyle="#c58c68";
+
+  ctx.fillRect(
+    -9,
+    -39,
+    18,
+    13
+  );
+
+
+  /* face */
+
+  ctx.fillStyle="#dba27d";
+
+  ctx.fillRect(
+    -24,
+    -73,
+    48,
+    38
+  );
+
+  ctx.fillStyle="#efbb91";
+
+  ctx.fillRect(
+    -18,
+    -68,
+    34,
+    26
+  );
+
+
+  /* ears */
+
+  ctx.fillStyle="#bd805f";
+
+  ctx.fillRect(-29,-65,7,15);
+  ctx.fillRect(22,-65,7,15);
+
+
+  /* hair */
+
+  ctx.fillStyle="#161922";
+
+  ctx.beginPath();
+
+  ctx.moveTo(-27,-69);
+  ctx.lineTo(-21,-84);
+  ctx.lineTo(-7,-88);
+  ctx.lineTo(3,-83);
+  ctx.lineTo(17,-89);
+  ctx.lineTo(28,-75);
+  ctx.lineTo(21,-52);
+  ctx.lineTo(13,-64);
+  ctx.lineTo(4,-52);
+  ctx.lineTo(-4,-65);
+  ctx.lineTo(-16,-53);
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  /* hair highlights */
+
+  ctx.fillStyle="#353b49";
+
+  ctx.fillRect(
+    -17,
+    -76,
+    10,
+    5
+  );
+
+  ctx.fillRect(
+    7,
+    -79,
+    10,
+    5
+  );
+
+
+  /* eyes */
+
+  ctx.fillStyle="#101721";
+
+  ctx.fillRect(
+    -15,
+    -57,
+    7,
+    7
+  );
+
+  ctx.fillRect(
+    8,
+    -57,
+    7,
+    7
+  );
+
+
+  /* eye shine */
+
+  ctx.fillStyle="#dcefff";
+
+  ctx.fillRect(
+    -13,
+    -56,
+    2,
+    2
+  );
+
+  ctx.fillRect(
+    10,
+    -56,
+    2,
+    2
+  );
+
+
+  /* nose */
+
+  ctx.fillStyle="#a86e55";
+
+  ctx.fillRect(
+    -2,
+    -51,
+    5,
+    7
+  );
+
+
+  /* mouth */
+
+  ctx.fillStyle="#703f3b";
+
+  ctx.fillRect(
+    -7,
+    -43,
+    14,
+    3
+  );
+
+
+  /* sword */
+
+  let swordAngle=0;
+
+  if(player.direction==="left")
+    swordAngle=-1.2;
+
+  if(player.direction==="right")
+    swordAngle=1.2;
+
+  if(player.direction==="up")
+    swordAngle=0;
+
+  if(player.direction==="down")
+    swordAngle=0;
+
+  if(player.attackTimer>0){
+
+    swordAngle=
+      Math.sin(
+        (player.attackTimer/.28)*Math.PI
+      )*1.8;
+
+  }
+
+  ctx.save();
+
+  ctx.rotate(swordAngle);
+
+  ctx.translate(
+    35,
+    -4
+  );
+
+  /* handle */
+
+  ctx.fillStyle="#6b4529";
+
+  ctx.fillRect(
+    -5,
+    15,
+    10,
+    20
+  );
+
+  /* guard */
+
+  ctx.fillStyle="#d2ad51";
+
+  ctx.fillRect(
+    -18,
+    11,
+    36,
+    7
+  );
+
+  /* blade */
+
+  ctx.fillStyle="#dce9f7";
+
+  ctx.beginPath();
+
+  ctx.moveTo(-6,-80);
+  ctx.lineTo(7,-80);
+  ctx.lineTo(10,12);
+  ctx.lineTo(0,22);
+  ctx.lineTo(-10,12);
+
+  ctx.closePath();
+
+  ctx.fill();
+
+  ctx.fillStyle="#ffffff";
+
+  ctx.fillRect(
+    -2,
+    -73,
+    4,
+    67
+  );
+
+  ctx.restore();
+
+
+  /* attack glow */
+
+  if(player.attackTimer>0){
+
+    ctx.strokeStyle=
+      "rgba(190,225,255,.7)";
+
+    ctx.lineWidth=5;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      75,
+      -1.3,
+      .8
     );
 
-    /* cape */
+    ctx.stroke();
 
-    ctx.fillStyle="#642038";
+  }
 
-    ctx.fillRect(
-        x-11,
-        py-3,
-        22,
-        23
-    );
+  ctx.restore();
 
-    /* boots */
-
-    ctx.fillStyle="#151d2a";
-
-    ctx.fillRect(
-        x-9,
-        py+14,
-        7,
-        9
-    );
-
-    ctx.fillRect(
-        x+2,
-        py+14,
-        7,
-        9
-    );
-
-    /* legs */
-
-    ctx.fillStyle="#25344a";
-
-    ctx.fillRect(
-        x-8,
-        py+7,
-        7,
-        12
-    );
-
-    ctx.fillRect(
-        x+1,
-        py+7,
-        7,
-        12
-    );
-
-    /* body */
-
-    ctx.fillStyle="#355c8b";
-
-    ctx.fillRect(
-        x-11,
-        py-5,
-        22,
-        17
-    );
-
-    ctx.fillStyle="#638bb3";
-
-    ctx.fillRect(
-        x-5,
-        py-2,
-        10,
-        10
-    );
-
-    /* belt */
-
-    ctx.fillStyle="#5b3d27";
-
-    ctx.fillRect(
-        x-11,
-        py+7,
-        22,
-        4
-    );
-
-    ctx.fillStyle="#d6a83f";
-
-    ctx.fillRect(
-        x-2,
-        py+6,
-        5,
-        6
-    );
-
-    /* neck */
-
-    ctx.fillStyle="#bd7659";
-
-    ctx.fillRect(
-        x-4,
-        py-11,
-        8,
-        8
-    );
-
-    /* head */
-
-    ctx.fillStyle="#d89a70";
-
-    ctx.fillRect(
-        x-9,
-        py-20,
-        18,
-        16
-    );
-
-    /* hair */
-
-    ctx.fillStyle="#29201e";
-
-    ctx.fillRect(
-        x-10,
-        py-23,
-        20,
-        9
-    );
-
-    ctx.fillRect(
-        x-7,
-        py-26,
-        14,
-        4
-    );
-
-    /* eye */
-
-    ctx.fillStyle="#101720";
-
-    if(player.dir>0){
-
-        ctx.fillRect(
-            x+4,
-            py-15,
-            3,
-            3
-        );
-
-    }else{
-
-        ctx.fillRect(
-            x-7,
-            py-15,
-            3,
-            3
-        );
-    }
-
-    /* sword */
-
-    if(player.attacking){
-
-        ctx.save();
-
-        ctx.translate(
-            x,
-            py-4
-        );
-
-        if(player.dir<0)
-            ctx.scale(-1,1);
-
-        ctx.rotate(-.65);
-
-        ctx.fillStyle="#e5f0f4";
-
-        ctx.fillRect(
-            11,
-            -25,
-            5,
-            32
-        );
-
-        ctx.fillStyle="#8fa3b0";
-
-        ctx.fillRect(
-            11,
-            -25,
-            2,
-            32
-        );
-
-        ctx.fillStyle="#9a6935";
-
-        ctx.fillRect(
-            5,
-            5,
-            18,
-            5
-        );
-
-        ctx.restore();
-
-    }else{
-
-        ctx.fillStyle="#dce8ef";
-
-        ctx.fillRect(
-            x+
-            player.dir*12,
-            py-1,
-            4,
-            21
-        );
-    }
 }
 
-/* =====================================================
-   PARTICLES DRAW
-===================================================== */
 
-function drawParticleList(){
+/* =========================================================
+   ISLAND INDICATORS
+========================================================= */
 
-    for(const p of particleList){
+function drawIslandIndicators(){
 
-        ctx.globalAlpha=
-            Math.max(
-                0,
-                p.life/.5
-            );
+  for(const island of islands){
 
-        ctx.fillStyle=p.color;
+    if(island.unlocked)continue;
 
-        ctx.fillRect(
-            p.x-camera.x,
-            p.y-camera.y,
-            4,
-            4
-        );
-    }
+    const sx=island.x-camera.x;
+    const sy=island.y-camera.y;
 
-    ctx.globalAlpha=1;
+    if(
+      sx<-300||
+      sx>W+300||
+      sy<-300||
+      sy>H+300
+    )continue;
+
+    ctx.fillStyle="rgba(0,0,0,.75)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      sx,
+      sy,
+      70,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle="white";
+    ctx.font="bold 16px Arial";
+    ctx.textAlign="center";
+
+    ctx.fillText(
+      "🔒 "+island.name,
+      sx,
+      sy-5
+    );
+
+    ctx.font="12px Arial";
+
+    ctx.fillText(
+      "Reach Level "+(island.id*5+3),
+      sx,
+      sy+18
+    );
+
+  }
+
 }
 
-/* =====================================================
-   RENDER
-===================================================== */
 
-function render(){
+/* =========================================================
+   UPDATE
+========================================================= */
 
-    ctx.clearRect(
-        0,
-        0,
-        W,
-        H
-    );
+let last=performance.now();
 
-    ctx.fillStyle="#162d3f";
+function loop(now){
 
-    ctx.fillRect(
-        0,
-        0,
-        W,
-        H
-    );
+  const dt=
+    Math.min(.033,(now-last)/1000);
 
-    const sx=
-        Math.floor(
-            camera.x/TILE
-        )-2;
+  last=now;
 
-    const sy=
-        Math.floor(
-            camera.y/TILE
-        )-2;
+  if(running&&!paused){
 
-    const ex=
-        Math.ceil(
-            (camera.x+W)/TILE
-        )+2;
+    player.attackTimer=
+      Math.max(0,player.attackTimer-dt);
 
-    const ey=
-        Math.ceil(
-            (camera.y+H)/TILE
-        )+2;
+    player.attackCooldown=
+      Math.max(0,player.attackCooldown-dt);
 
-    /* map */
+    player.dashCooldown=
+      Math.max(0,player.dashCooldown-dt);
 
-    for(
-        let y=Math.max(0,sy);
-        y<Math.min(MAP_H,ey);
-        y++
-    ){
+    updateMovement(dt);
+    updateMonsters(dt);
+    updateParticles(dt);
+    updateCamera(dt);
 
-        for(
-            let x=Math.max(0,sx);
-            x<Math.min(MAP_W,ex);
-            x++
-        ){
+    checkIslandUnlock();
 
-            drawTile(
-                world[y][x],
-                x*TILE-camera.x,
-                y*TILE-camera.y
-            );
-        }
-    }
+  }
 
-    /* houses */
+  drawWorld();
+  updateHUD();
 
-    for(const h of houses)
-        drawHouse(h);
+  requestAnimationFrame(loop);
 
-    /* objects behind */
-
-    for(const o of objects){
-
-        if(o.y<player.y){
-
-            if(o.type==="tree")
-                drawTree(o);
-
-            else
-                drawRock(o);
-        }
-    }
-
-    /* monsters behind */
-
-    for(const m of monsters){
-
-        if(m.y<player.y)
-            drawMonster(m);
-    }
-
-    /* NPC behind */
-
-    for(const n of npcs){
-
-        if(n.y<player.y)
-            drawNPC(n);
-    }
-
-    drawPlayer();
-
-    /* foreground */
-
-    for(const o of objects){
-
-        if(o.y>=player.y){
-
-            if(o.type==="tree")
-                drawTree(o);
-
-            else
-                drawRock(o);
-        }
-    }
-
-    for(const m of monsters){
-
-        if(m.y>=player.y)
-            drawMonster(m);
-    }
-
-    for(const n of npcs){
-
-        if(n.y>=player.y)
-            drawNPC(n);
-    }
-
-    drawParticleList();
-
-    /* vignette */
-
-    const g=
-        ctx.createRadialGradient(
-            W/2,
-            H/2,
-            Math.min(W,H)*.2,
-            W/2,
-            H/2,
-            Math.max(W,H)*.75
-        );
-
-    g.addColorStop(
-        0,
-        "rgba(0,0,0,0)"
-    );
-
-    g.addColorStop(
-        1,
-        "rgba(0,0,0,.36)"
-    );
-
-    ctx.fillStyle=g;
-
-    ctx.fillRect(
-        0,
-        0,
-        W,
-        H
-    );
 }
 
-/* =====================================================
+requestAnimationFrame(loop);
+
+
+/* =========================================================
+   ISLAND UNLOCK
+========================================================= */
+
+function checkIslandUnlock(){
+
+  for(const island of islands){
+
+    if(island.unlocked)continue;
+
+    const requiredLevel=
+      island.id*5+3;
+
+    if(player.level>=requiredLevel){
+
+      island.unlocked=true;
+
+      message(
+        "🏝️ "+island.name+
+        " UNLOCKED!"
+      );
+
+      burst(
+        island.x,
+        island.y,
+        50
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
    HUD
-===================================================== */
+========================================================= */
 
 function updateHUD(){
 
-    document.getElementById(
-        "level"
-    ).textContent=
-        player.level;
+  document.getElementById("level")
+  .textContent=player.level;
 
-    document.getElementById(
-        "coinText"
-    ).textContent=
-        player.coins;
+  document.getElementById("coins")
+  .textContent=player.coins;
 
-    document.getElementById(
-        "hpText"
-    ).textContent=
-        Math.max(
-            0,
-            Math.floor(player.hp)
-        )+
-        "/"+
-        player.maxHp;
+  document.getElementById("xpText")
+  .textContent=player.xp;
 
-    document.getElementById(
-        "xpText"
-    ).textContent=
-        player.xp+
-        "/"+
-        player.xpNeed;
+  document.getElementById("xpMax")
+  .textContent=player.xpMax;
 
-    document.getElementById(
-        "hpBar"
-    ).style.width=
-        Math.max(
-            0,
-            player.hp/
-            player.maxHp*
-            100
-        )+"%";
+  document.getElementById("hp")
+  .style.width=
+    (player.hp/player.maxHp*100)+"%";
 
-    document.getElementById(
-        "xpBar"
-    ).style.width=
-        player.xp/
-        player.xpNeed*
-        100+
-        "%";
+  document.getElementById("xp")
+  .style.width=
+    (player.xp/player.xpMax*100)+"%";
+
 }
 
-/* =====================================================
+
+/* =========================================================
    WINDOWS
-===================================================== */
+========================================================= */
 
-function openInventory(){
+function openWindow(id){
 
-    document.getElementById(
-        "inventory"
-    ).style.display="flex";
-}
+  document.getElementById(id)
+  .style.display="block";
 
-function openQuests(){
-
-    document.getElementById(
-        "quests"
-    ).style.display="flex";
 }
 
 function closeWindows(){
 
-    document.getElementById(
-        "inventory"
-    ).style.display="none";
+  document.querySelectorAll(".window")
+  .forEach(w=>w.style.display="none");
 
-    document.getElementById(
-        "quests"
-    ).style.display="none";
 }
 
-/* =====================================================
-   MENU
-===================================================== */
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+let messageTimer;
+
+function message(text){
+
+  const el=
+    document.getElementById("message");
+
+  el.textContent=text;
+  el.style.display="block";
+
+  clearTimeout(messageTimer);
+
+  messageTimer=setTimeout(()=>{
+    el.style.display="none";
+  },1800);
+
+}
+
+
+/* =========================================================
+   NEW GAME
+========================================================= */
+
+function newGame(){
+
+  localStorage.removeItem("pixelRealmSave");
+
+  player.x=WORLD_W/2;
+  player.y=WORLD_H/2;
+
+  player.hp=100;
+  player.maxHp=100;
+
+  player.level=1;
+  player.xp=0;
+  player.xpMax=100;
+
+  player.coins=25;
+  player.monstersKilled=0;
+
+  for(let i=0;i<islands.length;i++){
+    islands[i].unlocked=i===0;
+  }
+
+  startGame();
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
 
 function startGame(){
 
-    document.getElementById(
-        "menu"
-    ).style.display="none";
+  running=true;
+  paused=false;
 
-    paused=false;
+  document.getElementById("menu")
+  .style.display="none";
 
-    showMessage(
-        "WELCOME TO PIXEL REALM"
-    );
+  document.getElementById("hud")
+  .style.display="block";
+
+  document.getElementById("topButtons")
+  .style.display="flex";
+
+  document.getElementById("controls")
+  .style.display=
+    "ontouchstart" in window
+    ? "block"
+    : "none";
+
+  generateWorld();
+
+  saveGame();
+
 }
+
+
+/* =========================================================
+   SAVE
+========================================================= */
 
 function saveGame(){
 
-    localStorage.setItem(
-        "pixelRealmSave",
-        JSON.stringify({
-            x:player.x,
-            y:player.y,
-            hp:player.hp,
-            maxHp:player.maxHp,
-            level:player.level,
-            xp:player.xp,
-            xpNeed:player.xpNeed,
-            coins:player.coins
-        })
-    );
+  const data={
+    x:player.x,
+    y:player.y,
+    hp:player.hp,
+    maxHp:player.maxHp,
+    level:player.level,
+    xp:player.xp,
+    xpMax:player.xpMax,
+    coins:player.coins,
+    monstersKilled:player.monstersKilled,
+    islands:islands.map(i=>i.unlocked)
+  };
+
+  localStorage.setItem(
+    "pixelRealmSave",
+    JSON.stringify(data)
+  );
+
 }
+
+
+/* =========================================================
+   LOAD
+========================================================= */
 
 function loadGame(){
 
-    const save=
-        localStorage.getItem(
-            "pixelRealmSave"
-        );
+  const save=
+    localStorage.getItem("pixelRealmSave");
 
-    if(!save){
+  if(!save){
 
-        showMessage(
-            "NO SAVE FOUND"
-        );
+    message("NO SAVE FOUND");
 
-        return;
-    }
+    return;
+  }
 
-    const data=
-        JSON.parse(save);
+  const d=JSON.parse(save);
 
-    Object.assign(
-        player,
-        data
+  player.x=d.x;
+  player.y=d.y;
+
+  player.hp=d.hp;
+  player.maxHp=d.maxHp;
+
+  player.level=d.level;
+  player.xp=d.xp;
+  player.xpMax=d.xpMax;
+
+  player.coins=d.coins;
+  player.monstersKilled=
+    d.monstersKilled||0;
+
+  if(d.islands){
+
+    d.islands.forEach(
+      (v,i)=>{
+        if(islands[i])
+          islands[i].unlocked=v;
+      }
     );
 
-    document.getElementById(
-        "menu"
-    ).style.display="none";
+  }
 
-    paused=false;
+  startGame();
 
-    showMessage(
-        "SAVE LOADED!"
-    );
 }
 
-setInterval(
-    saveGame,
-    5000
-);
 
-addEventListener(
-    "beforeunload",
-    saveGame
-);
+/* autosave */
 
-function togglePause(){
+setInterval(()=>{
+  if(running&&!paused)
+    saveGame();
+},5000);
 
-    paused=!paused;
 
-    showMessage(
-        paused
-        ?"PAUSED"
-        :"RESUMED"
-    );
+/* =========================================================
+   PAUSE
+========================================================= */
+
+function pauseGame(){
+
+  paused=!paused;
+
+  if(paused){
+
+    message("PAUSED");
+
+  }
+
 }
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
 
 function showControls(){
 
-    alert(
-`PIXEL REALM CONTROLS
+  alert(
+`CONTROLS
 
-📱 MOBIEL
-Joystick = bewegen
-⚔ = aanvallen
-➤ = dash
-🎒 = inventory
-📜 = quests
+WASD / ARROWS
+Move
 
-💻 PC
-WASD / pijltjes = bewegen
-SPACE = aanvallen
-E = praten`
-    );
+SPACE
+Attack
+
+E
+Talk to NPC
+
+SHIFT
+Dash
+
+Mobile:
+Joystick = Move
+⚔️ = Attack
+💨 = Dash`
+  );
+
 }
 
-/* =====================================================
-   MESSAGE
-===================================================== */
 
-let messageTimeout;
-
-function showMessage(text){
-
-    const el=
-        document.getElementById(
-            "message"
-        );
-
-    el.textContent=text;
-    el.style.opacity="1";
-
-    clearTimeout(
-        messageTimeout
-    );
-
-    messageTimeout=
-        setTimeout(
-            ()=>{
-                el.style.opacity="0";
-            },
-            1800
-        );
-}
-
-/* =====================================================
+/* =========================================================
    INITIAL
-===================================================== */
+========================================================= */
 
-render();
-
-requestAnimationFrame(update);
+generateWorld();
 
 </script>
 
