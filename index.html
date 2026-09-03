@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Pixel Realm</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Pixel Realm — Lost Islands</title>
 
 <style>
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
+  user-select:none;
 }
 
 html,body{
@@ -18,7 +18,7 @@ html,body{
   height:100%;
   overflow:hidden;
   background:#050914;
-  font-family:Arial,sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
 canvas{
@@ -28,58 +28,77 @@ canvas{
   image-rendering:pixelated;
 }
 
-/* =========================
+/* =====================================================
    START SCREEN
-========================= */
+===================================================== */
 
 #menu{
   position:fixed;
   inset:0;
-  z-index:50;
+  z-index:100;
   overflow:hidden;
-  background:
-    radial-gradient(circle at 70% 18%,rgba(108,160,255,.25),transparent 18%),
-    linear-gradient(#081329 0%,#132a4b 48%,#315d75 100%);
   color:white;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(92,160,240,.22),transparent 25%),
+    linear-gradient(
+      180deg,
+      #030713 0%,
+      #08152a 38%,
+      #18364d 68%,
+      #081313 100%
+    );
 }
 
 .stars{
   position:absolute;
   inset:0;
+  opacity:.75;
   background-image:
     radial-gradient(circle,#fff 1px,transparent 2px),
+    radial-gradient(circle,#b9d9ff 1px,transparent 2px),
     radial-gradient(circle,#fff 1px,transparent 2px);
-  background-size:83px 83px,137px 137px;
-  background-position:10px 20px,40px 60px;
-  opacity:.7;
+  background-size:91px 91px,157px 157px,223px 223px;
+  background-position:12px 20px,50px 70px,90px 40px;
+  animation:starsMove 35s linear infinite;
+}
+
+@keyframes starsMove{
+  from{background-position:12px 20px,50px 70px,90px 40px}
+  to{background-position:-120px 100px,-80px 150px,-160px 120px}
 }
 
 .moon{
   position:absolute;
-  width:150px;
-  height:150px;
+  width:155px;
+  height:155px;
   right:12%;
   top:9%;
   border-radius:50%;
   background:#f6f0ce;
   box-shadow:
-    0 0 35px rgba(255,245,190,.5),
-    0 0 100px rgba(130,180,255,.2);
+    0 0 35px rgba(255,245,190,.55),
+    0 0 100px rgba(120,180,255,.25);
+  animation:moonGlow 4s ease-in-out infinite;
+}
+
+@keyframes moonGlow{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.15)}
 }
 
 .moon:after{
   content:"";
   position:absolute;
-  width:22px;
-  height:22px;
+  width:23px;
+  height:23px;
   border-radius:50%;
-  background:#ddd6b5;
-  left:30px;
+  background:#d9d2ae;
+  left:31px;
   top:35px;
   box-shadow:
-    48px 25px 0 #e4ddb9,
-    35px 80px 0 #d4cea9,
-    82px 65px 0 #e2dbb8;
+    49px 25px 0 #e1dab6,
+    37px 82px 0 #d3cca6,
+    83px 65px 0 #e0d9b4;
 }
 
 .mountain{
@@ -87,23 +106,22 @@ canvas{
   bottom:24%;
   width:0;
   height:0;
-  border-left:180px solid transparent;
-  border-right:180px solid transparent;
-  border-bottom:330px solid #101b32;
+  border-left:190px solid transparent;
+  border-right:190px solid transparent;
+  border-bottom:340px solid #0b1529;
 }
 
-.m1{left:0}
+.m1{left:-40px}
 .m2{left:22%;transform:scale(1.35)}
-.m3{right:8%;transform:scale(.9)}
+.m3{right:-60px;transform:scale(.95)}
 
 .menuGround{
   position:absolute;
   bottom:0;
   width:100%;
   height:29%;
-  background:
-    linear-gradient(#172e2a,#0c1b19);
-  border-top:5px solid #263e39;
+  background:linear-gradient(#172f2d,#071312);
+  border-top:4px solid #304b45;
 }
 
 .menuGround:before{
@@ -112,11 +130,11 @@ canvas{
   inset:0;
   opacity:.35;
   background-image:
-    radial-gradient(circle,#54736a 1px,transparent 2px);
-  background-size:18px 18px;
+    radial-gradient(circle,#688b7d 1px,transparent 2px);
+  background-size:19px 19px;
 }
 
-/* HERO */
+/* MENU CHARACTER */
 
 .hero{
   position:absolute;
@@ -126,12 +144,12 @@ canvas{
   height:190px;
   transform:translateX(-50%);
   animation:heroFloat 2.7s ease-in-out infinite;
-  filter:drop-shadow(0 20px 12px rgba(0,0,0,.45));
+  filter:drop-shadow(0 20px 12px rgba(0,0,0,.5));
 }
 
 @keyframes heroFloat{
   0%,100%{transform:translateX(-50%) translateY(0)}
-  50%{transform:translateX(-50%) translateY(-7px)}
+  50%{transform:translateX(-50%) translateY(-8px)}
 }
 
 .heroCape{
@@ -140,7 +158,7 @@ canvas{
   height:105px;
   left:20px;
   top:56px;
-  background:linear-gradient(90deg,#271b48,#493178,#241936);
+  background:linear-gradient(90deg,#211633,#50357d,#1d152c);
   clip-path:polygon(8% 0,92% 0,100% 100%,50% 86%,0 100%);
 }
 
@@ -150,8 +168,8 @@ canvas{
   top:61px;
   width:54px;
   height:70px;
-  background:linear-gradient(#66758b,#344154);
-  border:4px solid #1d2634;
+  background:linear-gradient(#738197,#303d51);
+  border:4px solid #172131;
   border-radius:12px 12px 8px 8px;
 }
 
@@ -162,7 +180,7 @@ canvas{
   width:42px;
   height:36px;
   border-radius:8px;
-  background:linear-gradient(#9ca8b8,#4d5c70);
+  background:linear-gradient(#c7d2df,#526278);
   border:3px solid #263142;
 }
 
@@ -172,8 +190,8 @@ canvas{
   top:112px;
   width:56px;
   height:10px;
-  background:#573d26;
-  border:3px solid #2c1e13;
+  background:#51351f;
+  border:3px solid #291b11;
 }
 
 .heroBuckle{
@@ -182,8 +200,8 @@ canvas{
   top:110px;
   width:14px;
   height:14px;
-  background:#d7b04d;
-  border:3px solid #755d20;
+  background:#dfba54;
+  border:3px solid #70581e;
 }
 
 .leg{
@@ -203,9 +221,8 @@ canvas{
   top:165px;
   width:31px;
   height:20px;
-  background:#161a20;
+  background:#15191f;
   border:4px solid #080a0e;
-  border-radius:4px;
 }
 
 .boot.l{left:22px}
@@ -218,7 +235,7 @@ canvas{
   width:52px;
   height:51px;
   border-radius:13px;
-  background:linear-gradient(145deg,#f1c29a,#b97854);
+  background:linear-gradient(145deg,#f2c49b,#b87654);
   border:4px solid #4d2d29;
   z-index:4;
 }
@@ -229,7 +246,7 @@ canvas{
   top:9px;
   width:61px;
   height:35px;
-  background:#171922;
+  background:#151820;
   border:4px solid #08090e;
   clip-path:polygon(
     0 50%,8% 12%,30% 0,51% 10%,74% 0,
@@ -258,10 +275,10 @@ canvas{
   top:68px;
   width:13px;
   height:93px;
-  background:linear-gradient(90deg,#cbd6e5,#ffffff,#9caabd);
+  background:linear-gradient(90deg,#aebed2,#fff,#8496ab);
   transform:rotate(28deg);
-  border:2px solid #556275;
-  box-shadow:0 0 8px rgba(200,230,255,.45);
+  border:2px solid #4d5c70;
+  box-shadow:0 0 12px rgba(190,225,255,.55);
   z-index:2;
 }
 
@@ -272,34 +289,40 @@ canvas{
   top:66px;
   width:35px;
   height:8px;
-  background:#c79a43;
-  border:3px solid #654d24;
+  background:#d0aa50;
+  border:3px solid #624c23;
 }
 
 .menuContent{
   position:absolute;
   z-index:20;
   left:50%;
-  top:10%;
+  top:9%;
   transform:translateX(-50%);
   text-align:center;
-  width:min(90%,700px);
+  width:min(90%,760px);
 }
 
 .logo{
-  font-size:clamp(45px,9vw,100px);
+  margin:0;
+  font-size:clamp(43px,9vw,100px);
   font-weight:1000;
   letter-spacing:8px;
   text-shadow:
-    0 5px #1c2742,
-    0 10px 0 #080d18,
-    0 0 35px rgba(118,177,255,.55);
-  margin:0;
+    0 4px #26334e,
+    0 9px #080d18,
+    0 0 35px rgba(115,181,255,.55);
+  animation:logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
 }
 
 .subtitle{
   margin-top:5px;
-  color:#c9d9ef;
+  color:#cbdcf3;
   letter-spacing:6px;
   font-size:13px;
 }
@@ -308,97 +331,112 @@ canvas{
   margin-top:30px;
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:13px;
   align-items:center;
 }
 
 .menuBtn{
-  width:min(330px,80vw);
+  width:min(340px,82vw);
   padding:16px 20px;
-  border:3px solid #8297b9;
-  background:linear-gradient(#384d70,#202d46);
+  border:2px solid #7894bc;
+  border-radius:7px;
+  background:linear-gradient(#415a80,#1e2d48);
   color:white;
   font-weight:900;
-  font-size:16px;
+  font-size:15px;
   letter-spacing:2px;
   cursor:pointer;
   box-shadow:
-    inset 0 2px rgba(255,255,255,.15),
-    0 7px 0 #0b101b;
+    inset 0 2px rgba(255,255,255,.16),
+    0 7px 0 #090e18,
+    0 0 0 rgba(100,180,255,0);
   transition:.15s;
 }
 
 .menuBtn:hover{
   transform:translateY(-3px);
-  filter:brightness(1.2);
+  box-shadow:
+    inset 0 2px rgba(255,255,255,.2),
+    0 7px 0 #090e18,
+    0 0 28px rgba(100,180,255,.3);
 }
 
 .menuBtn:active{
   transform:translateY(4px);
-  box-shadow:0 2px 0 #0b101b;
 }
 
 .version{
   position:absolute;
   bottom:10px;
   right:14px;
-  color:#75859c;
+  color:#708299;
   font-size:11px;
 }
 
-/* =========================
+/* =====================================================
    HUD
-========================= */
+===================================================== */
 
 #hud{
   position:fixed;
-  z-index:10;
+  z-index:20;
   top:12px;
   left:12px;
-  width:260px;
-  padding:10px;
-  background:rgba(7,12,20,.84);
-  border:2px solid #536783;
-  box-shadow:0 8px 20px rgba(0,0,0,.35);
+  width:270px;
+  padding:11px;
+  border:2px solid rgba(139,174,218,.55);
+  border-radius:8px;
+  background:linear-gradient(
+    135deg,
+    rgba(7,14,25,.94),
+    rgba(20,31,48,.82)
+  );
+  backdrop-filter:blur(12px);
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.45),
+    inset 0 1px rgba(255,255,255,.08);
   color:white;
   display:none;
 }
 
 .name{
   font-weight:900;
-  margin-bottom:6px;
+  margin-bottom:7px;
 }
 
 .bar{
   width:100%;
   height:12px;
-  background:#202735;
-  border:2px solid #111722;
-  margin-bottom:5px;
+  background:#171d27;
+  border:2px solid #090d14;
+  margin-bottom:6px;
+  overflow:hidden;
+  border-radius:3px;
 }
 
 .fill{
   height:100%;
+  transition:width .2s;
 }
 
 .hp{
-  background:linear-gradient(90deg,#db3e50,#ff6670);
+  background:linear-gradient(90deg,#d8374d,#ff6872);
 }
 
 .xp{
-  background:linear-gradient(90deg,#48a8ff,#a3e4ff);
+  background:linear-gradient(90deg,#378fea,#a4e6ff);
 }
 
 .hudStats{
   display:flex;
   justify-content:space-between;
   font-size:12px;
-  color:#ccd7e8;
+  color:#d4dfed;
 }
 
 .topButtons{
   position:fixed;
-  z-index:11;
+  z-index:21;
   top:12px;
   right:12px;
   display:none;
@@ -406,22 +444,23 @@ canvas{
 }
 
 .topBtn{
-  background:rgba(7,12,20,.88);
-  border:2px solid #536783;
+  background:rgba(7,13,23,.9);
+  border:2px solid #60799e;
+  border-radius:6px;
   color:white;
-  padding:10px;
+  padding:10px 12px;
   font-weight:bold;
 }
 
-/* =========================
-   MOBILE CONTROLS
-========================= */
+/* =====================================================
+   MOBILE
+===================================================== */
 
 #controls{
   display:none;
   position:fixed;
   inset:0;
-  z-index:15;
+  z-index:25;
   pointer-events:none;
 }
 
@@ -432,9 +471,10 @@ canvas{
   width:130px;
   height:130px;
   border-radius:50%;
-  background:rgba(255,255,255,.09);
-  border:3px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);
+  border:3px solid rgba(255,255,255,.18);
   pointer-events:auto;
+  touch-action:none;
 }
 
 .stick{
@@ -444,8 +484,8 @@ canvas{
   left:36px;
   top:36px;
   border-radius:50%;
-  background:rgba(190,220,255,.35);
-  border:3px solid rgba(255,255,255,.4);
+  background:rgba(190,220,255,.32);
+  border:3px solid rgba(255,255,255,.38);
 }
 
 .actions{
@@ -465,16 +505,16 @@ canvas{
   background:rgba(20,31,49,.9);
   color:white;
   font-weight:900;
-  font-size:14px;
+  font-size:16px;
 }
 
-/* =========================
+/* =====================================================
    WINDOWS
-========================= */
+===================================================== */
 
 .window{
   position:fixed;
-  z-index:30;
+  z-index:40;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
@@ -482,11 +522,12 @@ canvas{
   max-height:75vh;
   overflow:auto;
   display:none;
-  background:rgba(10,17,29,.97);
-  border:3px solid #657b9e;
+  background:rgba(8,15,27,.97);
+  border:3px solid #647d9f;
+  border-radius:8px;
   color:white;
   padding:20px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  box-shadow:0 25px 70px rgba(0,0,0,.65);
 }
 
 .window h2{
@@ -495,57 +536,64 @@ canvas{
 
 .item{
   padding:12px;
-  border:2px solid #36465e;
+  border:2px solid #354760;
   margin:7px 0;
-  background:#151f30;
+  background:linear-gradient(90deg,#121d2d,#18253a);
+  border-radius:5px;
 }
 
 .close{
   float:right;
-  background:#9d3845;
+  background:#963d4b;
   color:white;
   border:0;
+  border-radius:4px;
   padding:7px 12px;
 }
 
-/* =========================
-   DIALOGUE
-========================= */
+/* =====================================================
+   DIALOGUE / MESSAGE
+===================================================== */
 
 #dialogue{
   position:fixed;
-  z-index:25;
+  z-index:35;
   left:50%;
   bottom:35px;
   transform:translateX(-50%);
   width:min(700px,90vw);
   padding:18px;
-  background:rgba(7,12,20,.94);
   border:3px solid #60779b;
+  border-radius:7px;
+  background:rgba(7,12,20,.94);
+  backdrop-filter:blur(10px);
   color:white;
   display:none;
 }
 
 #message{
   position:fixed;
-  z-index:40;
+  z-index:60;
   left:50%;
-  top:20%;
+  top:18%;
   transform:translateX(-50%);
-  padding:12px 20px;
-  background:rgba(5,9,15,.9);
+  padding:12px 22px;
+  border:2px solid #7893ba;
+  border-radius:6px;
+  background:rgba(5,9,15,.92);
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
   color:white;
-  border:2px solid #7289ad;
   display:none;
+  font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
-<!-- =========================
+<!-- =====================================================
      MENU
-========================= -->
+===================================================== -->
 
 <div id="menu">
 
@@ -586,19 +634,19 @@ canvas{
     </div>
   </div>
 
-  <div class="version">VERSION 2.0</div>
+  <div class="version">PIXEL REALM 3.0</div>
 </div>
-
 
 <canvas id="game"></canvas>
 
-
-<!-- HUD -->
+<!-- =====================================================
+     HUD
+===================================================== -->
 
 <div id="hud">
+
   <div class="name">
-    <span id="playerName">Knight</span>
-    — Lv.<span id="level">1</span>
+    ⚔️ Knight — Lv.<span id="level">1</span>
   </div>
 
   <div class="bar">
@@ -613,8 +661,8 @@ canvas{
     <span>💰 <b id="coins">0</b></span>
     <span>⭐ <b id="xpText">0</b>/<b id="xpMax">100</b></span>
   </div>
-</div>
 
+</div>
 
 <div class="topButtons" id="topButtons">
   <button class="topBtn" onclick="openWindow('inventory')">🎒</button>
@@ -622,40 +670,54 @@ canvas{
   <button class="topBtn" onclick="pauseGame()">Ⅱ</button>
 </div>
 
-
-<!-- WINDOWS -->
+<!-- =====================================================
+     INVENTORY
+===================================================== -->
 
 <div class="window" id="inventory">
   <button class="close" onclick="closeWindows()">X</button>
+
   <h2>🎒 Inventory</h2>
 
   <div class="item">⚔️ Ancient Sword</div>
   <div class="item">🛡️ Traveler Armor</div>
-  <div class="item">🧪 Healing Potion × <span id="potions">3</span></div>
-  <div class="item">💎 Crystal × <span id="crystals">0</span></div>
+  <div class="item">
+    🧪 Healing Potion × <span id="potions">3</span>
+  </div>
+  <div class="item">
+    💎 Crystal × <span id="crystals">0</span>
+  </div>
 </div>
 
+<!-- =====================================================
+     QUESTS
+===================================================== -->
 
 <div class="window" id="quests">
   <button class="close" onclick="closeWindows()">X</button>
+
   <h2>📜 Quests</h2>
 
   <div class="item">
-    <b>The First Island</b><br>
-    Explore the village.
+    <b>🌿 The First Island</b><br>
+    Explore Emerald Island.
   </div>
 
   <div class="item">
-    <b>Monster Hunter</b><br>
+    <b>⚔️ Monster Hunter</b><br>
     Defeat 5 monsters.
   </div>
 
   <div class="item">
-    <b>The Lost Islands</b><br>
-    Unlock the next island.
+    <b>🏝️ The Lost Islands</b><br>
+    Level up and unlock new islands.
+  </div>
+
+  <div class="item">
+    <b>🌌 The Unknown</b><br>
+    Discover every island.
   </div>
 </div>
-
 
 <div id="dialogue">
   <b id="dialogueName">NPC</b>
@@ -664,8 +726,9 @@ canvas{
 
 <div id="message"></div>
 
-
-<!-- MOBILE -->
+<!-- =====================================================
+     MOBILE
+===================================================== -->
 
 <div id="controls">
 
@@ -680,17 +743,17 @@ canvas{
 
 </div>
 
-
 <script>
 
-/* =========================================================
-   PIXEL REALM 2.0
-========================================================= */
+/* =====================================================
+   PIXEL REALM 3.0
+===================================================== */
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
 
-let W,H;
+let W=0;
+let H=0;
 
 function resize(){
   W=canvas.width=innerWidth;
@@ -701,20 +764,24 @@ addEventListener("resize",resize);
 resize();
 
 
-/* =========================================================
-   GAME SETTINGS
-========================================================= */
+/* =====================================================
+   SETTINGS
+===================================================== */
 
 const TILE=32;
 
-const MAP_W=260;
-const MAP_H=260;
+const MAP_W=300;
+const MAP_H=300;
 
 const WORLD_W=MAP_W*TILE;
 const WORLD_H=MAP_H*TILE;
 
+const PLAYER_SCALE=.62;
+
 let running=false;
 let paused=false;
+
+let visualTime=0;
 
 let camera={
   x:0,
@@ -723,11 +790,12 @@ let camera={
 };
 
 
-/* =========================================================
+/* =====================================================
    PLAYER
-========================================================= */
+===================================================== */
 
 const player={
+
   x:WORLD_W/2,
   y:WORLD_H/2,
 
@@ -748,106 +816,99 @@ const player={
   attackTimer:0,
   attackCooldown:0,
 
-  dashTimer:0,
   dashCooldown:0,
 
   direction:"down",
 
-  anim:0,
   walk:0,
+  anim:0,
 
   monstersKilled:0
 };
 
 
-/* =========================================================
+/* =====================================================
    ISLANDS
-========================================================= */
+===================================================== */
 
 const islands=[
+
   {
     id:0,
     name:"Emerald Island",
     x:WORLD_W/2,
     y:WORLD_H/2,
-    radius:1800,
+    radius:1900,
     unlocked:true,
-    color:"#48795b"
+    color:"#4b815b"
   },
+
   {
     id:1,
     name:"Frost Island",
-    x:WORLD_W/2+4000,
-    y:WORLD_H/2-700,
-    radius:1700,
+    x:WORLD_W/2+4800,
+    y:WORLD_H/2-900,
+    radius:1800,
     unlocked:false,
-    color:"#7ba9ba"
+    color:"#719daf"
   },
+
   {
     id:2,
     name:"Volcano Island",
-    x:WORLD_W/2-4300,
-    y:WORLD_H/2+900,
-    radius:1800,
+    x:WORLD_W/2-4800,
+    y:WORLD_H/2+1100,
+    radius:1900,
     unlocked:false,
-    color:"#8c4c3d"
+    color:"#914f3e"
   },
+
   {
     id:3,
     name:"Sky Island",
-    x:WORLD_W/2+300,
-    y:WORLD_H/2+4700,
-    radius:1600,
+    x:WORLD_W/2+600,
+    y:WORLD_H/2+5200,
+    radius:1700,
     unlocked:false,
-    color:"#7285a5"
+    color:"#7284a6"
   },
+
   {
     id:4,
     name:"Shadow Island",
-    x:WORLD_W/2-3900,
-    y:WORLD_H/2-2800,
-    radius:1900,
+    x:WORLD_W/2-4500,
+    y:WORLD_H/2-3200,
+    radius:2000,
     unlocked:false,
-    color:"#40395d"
+    color:"#463d61"
   }
+
 ];
 
 
-/* =========================================================
-   WORLD
-========================================================= */
+/* =====================================================
+   OBJECTS
+===================================================== */
 
-const objects=[];
+const trees=[];
+const rocks=[];
 const npcs=[];
 const monsters=[];
 const particles=[];
-const trees=[];
-const rocks=[];
+
+
+/* =====================================================
+   RANDOM
+===================================================== */
 
 function dist(a,b,c,d){
   return Math.hypot(a-c,b-d);
 }
 
-function islandAt(x,y){
 
-  for(const island of islands){
-
-    if(
-      dist(x,y,island.x,island.y)
-      < island.radius
-    ){
-      return island;
-    }
-
-  }
-
-  return null;
-}
-
-
-/* =========================================================
+/* =====================================================
    WORLD GENERATION
-========================================================= */
+===================================================== */
 
 function generateWorld(){
 
@@ -858,24 +919,21 @@ function generateWorld(){
 
   for(const island of islands){
 
-    for(let i=0;i<190;i++){
+    for(let i=0;i<230;i++){
 
       const a=Math.random()*Math.PI*2;
-      const r=Math.random()*island.radius*.9;
-
-      const x=island.x+Math.cos(a)*r;
-      const y=island.y+Math.sin(a)*r;
+      const r=Math.random()*island.radius*.87;
 
       trees.push({
-        x,
-        y,
+        x:island.x+Math.cos(a)*r,
+        y:island.y+Math.sin(a)*r,
         island:island.id,
-        size:.8+Math.random()*.7
+        size:.75+Math.random()*.7
       });
 
     }
 
-    for(let i=0;i<100;i++){
+    for(let i=0;i<110;i++){
 
       const a=Math.random()*Math.PI*2;
       const r=Math.random()*island.radius*.9;
@@ -895,38 +953,53 @@ function generateWorld(){
 
   npcs.push(
     {
-      x:WORLD_W/2-160,
-      y:WORLD_H/2-100,
+      x:WORLD_W/2-180,
+      y:WORLD_H/2-130,
       name:"Elder Rowan",
-      color:"#d5a45b",
-      text:"Welcome to Emerald Island, warrior!"
+      color:"#d2a158",
+      text:"Welcome to Emerald Island, young warrior."
     },
+
     {
-      x:WORLD_W/2+160,
-      y:WORLD_H/2+100,
+      x:WORLD_W/2+180,
+      y:WORLD_H/2+120,
       name:"Mira",
-      color:"#bb77d7",
-      text:"The other islands are waiting for you."
+      color:"#b66bd2",
+      text:"There are four mysterious islands beyond the sea."
     },
+
     {
-      x:WORLD_W/2+300,
-      y:WORLD_H/2-180,
+      x:WORLD_W/2+330,
+      y:WORLD_H/2-190,
       name:"Captain",
-      color:"#6e9bd1",
-      text:"Become stronger and unlock the sea."
+      color:"#668fc6",
+      text:"Grow stronger. The next island awaits."
     }
   );
 
 
-  /* monsters */
+  spawnMonsters();
 
-  for(let i=0;i<35;i++){
+}
+
+
+/* =====================================================
+   MONSTERS
+===================================================== */
+
+function spawnMonsters(){
+
+  for(let i=0;i<45;i++){
 
     const island=islands[0];
 
+    const a=Math.random()*Math.PI*2;
+    const r=500+Math.random()*1100;
+
     monsters.push({
-      x:island.x+(Math.random()-.5)*3000,
-      y:island.y+(Math.random()-.5)*3000,
+
+      x:island.x+Math.cos(a)*r,
+      y:island.y+Math.sin(a)*r,
 
       hp:40,
       maxHp:40,
@@ -936,15 +1009,17 @@ function generateWorld(){
       alive:true,
 
       anim:Math.random()*10
+
     });
 
   }
+
 }
 
 
-/* =========================================================
+/* =====================================================
    INPUT
-========================================================= */
+===================================================== */
 
 const keys={};
 
@@ -953,11 +1028,16 @@ addEventListener("keydown",e=>{
   keys[e.key.toLowerCase()]=true;
 
   if(e.key===" "){
+    e.preventDefault();
     attack();
   }
 
   if(e.key.toLowerCase()==="e"){
     interact();
+  }
+
+  if(e.key.toLowerCase()==="shift"){
+    dash();
   }
 
 });
@@ -966,6 +1046,10 @@ addEventListener("keyup",e=>{
   keys[e.key.toLowerCase()]=false;
 });
 
+
+/* =====================================================
+   JOYSTICK
+===================================================== */
 
 let joyX=0;
 let joyY=0;
@@ -981,7 +1065,6 @@ function joystickMove(e){
   let y=e.clientY-rect.top-65;
 
   const max=45;
-
   const length=Math.hypot(x,y);
 
   if(length>max){
@@ -996,10 +1079,12 @@ function joystickMove(e){
     `translate(${x}px,${y}px)`;
 }
 
-joystick.addEventListener("pointermove",joystickMove);
-
 joystick.addEventListener("pointerdown",e=>{
   joystick.setPointerCapture(e.pointerId);
+  joystickMove(e);
+});
+
+joystick.addEventListener("pointermove",e=>{
   joystickMove(e);
 });
 
@@ -1009,7 +1094,6 @@ joystick.addEventListener("pointerup",()=>{
   stick.style.transform="translate(0,0)";
 });
 
-
 document.getElementById("attackBtn")
 .addEventListener("pointerdown",attack);
 
@@ -1017,9 +1101,9 @@ document.getElementById("dashBtn")
 .addEventListener("pointerdown",dash);
 
 
-/* =========================================================
+/* =====================================================
    MOVEMENT
-========================================================= */
+===================================================== */
 
 function updateMovement(dt){
 
@@ -1054,46 +1138,56 @@ function updateMovement(dt){
 
   }else{
 
-    player.vx*=.8;
-    player.vy*=.8;
+    player.vx*=.80;
+    player.vy*=.80;
 
   }
 
   player.x+=player.vx*dt;
   player.y+=player.vy*dt;
 
-  player.x=Math.max(100,Math.min(WORLD_W-100,player.x));
-  player.y=Math.max(100,Math.min(WORLD_H-100,player.y));
+  player.x=Math.max(100,
+    Math.min(WORLD_W-100,player.x));
+
+  player.y=Math.max(100,
+    Math.min(WORLD_H-100,player.y));
 
   player.anim+=dt;
+
 }
 
 
-/* =========================================================
+/* =====================================================
    ATTACK
-========================================================= */
+===================================================== */
 
 function attack(){
 
   if(!running||paused)return;
+
   if(player.attackCooldown>0)return;
 
   player.attackTimer=.28;
   player.attackCooldown=.45;
 
-  camera.shake=5;
+  camera.shake=7;
+
+  burst(player.x,player.y,5);
 
   for(const m of monsters){
 
     if(!m.alive)continue;
 
-    if(
-      dist(player.x,player.y,m.x,m.y)<95
-    ){
+    if(dist(
+      player.x,
+      player.y,
+      m.x,
+      m.y
+    )<105){
 
       m.hp-=35;
 
-      burst(m.x,m.y,8);
+      burst(m.x,m.y,10);
 
       if(m.hp<=0){
 
@@ -1101,27 +1195,53 @@ function attack(){
 
         player.monstersKilled++;
 
-        gainXP(30);
-
         player.coins+=5;
 
-        message("+5 coins  +30 XP");
+        gainXP(30);
+
+        message("+5 coins  •  +30 XP");
+
+        setTimeout(()=>{
+          respawnMonster(m);
+        },4000);
 
       }
 
     }
 
   }
+
 }
 
 
-/* =========================================================
+/* =====================================================
+   MONSTER RESPAWN
+===================================================== */
+
+function respawnMonster(m){
+
+  const island=islands[0];
+
+  const a=Math.random()*Math.PI*2;
+  const r=600+Math.random()*1000;
+
+  m.x=island.x+Math.cos(a)*r;
+  m.y=island.y+Math.sin(a)*r;
+
+  m.hp=m.maxHp;
+  m.alive=true;
+
+}
+
+
+/* =====================================================
    DASH
-========================================================= */
+===================================================== */
 
 function dash(){
 
   if(!running||paused)return;
+
   if(player.dashCooldown>0)return;
 
   let dx=player.vx;
@@ -1130,31 +1250,34 @@ function dash(){
   let len=Math.hypot(dx,dy);
 
   if(len<1){
+
     if(player.direction==="left")dx=-1;
     if(player.direction==="right")dx=1;
     if(player.direction==="up")dy=-1;
     if(player.direction==="down")dy=1;
 
     len=Math.hypot(dx,dy);
+
   }
 
   dx/=len;
   dy/=len;
 
-  player.x+=dx*170;
-  player.y+=dy*170;
+  player.x+=dx*180;
+  player.y+=dy*180;
 
   player.dashCooldown=1.2;
 
-  camera.shake=10;
+  camera.shake=11;
 
-  burst(player.x,player.y,15);
+  burst(player.x,player.y,20);
+
 }
 
 
-/* =========================================================
+/* =====================================================
    XP
-========================================================= */
+===================================================== */
 
 function gainXP(amount){
 
@@ -1172,21 +1295,27 @@ function gainXP(amount){
     player.maxHp+=15;
     player.hp=player.maxHp;
 
-    message("LEVEL UP!  Level "+player.level);
+    message("✨ LEVEL UP!  LEVEL "+player.level);
 
   }
+
 }
 
 
-/* =========================================================
-   NPC INTERACTION
-========================================================= */
+/* =====================================================
+   INTERACTION
+===================================================== */
 
 function interact(){
 
   for(const n of npcs){
 
-    if(dist(player.x,player.y,n.x,n.y)<90){
+    if(dist(
+      player.x,
+      player.y,
+      n.x,
+      n.y
+    )<100){
 
       document.getElementById("dialogueName")
       .textContent=n.name;
@@ -1198,6 +1327,7 @@ function interact(){
       .style.display="block";
 
       return;
+
     }
 
   }
@@ -1205,9 +1335,9 @@ function interact(){
 }
 
 
-/* =========================================================
-   MONSTERS
-========================================================= */
+/* =====================================================
+   MONSTER AI
+===================================================== */
 
 function updateMonsters(dt){
 
@@ -1222,7 +1352,7 @@ function updateMonsters(dt){
       m.y
     );
 
-    if(d<450){
+    if(d<500){
 
       const dx=(player.x-m.x)/d;
       const dy=(player.y-m.y)/d;
@@ -1239,24 +1369,29 @@ function updateMonsters(dt){
 }
 
 
-/* =========================================================
+/* =====================================================
    PARTICLES
-========================================================= */
+===================================================== */
 
 function burst(x,y,count){
 
   for(let i=0;i<count;i++){
 
     const a=Math.random()*Math.PI*2;
-    const s=40+Math.random()*120;
+    const s=40+Math.random()*140;
 
     particles.push({
+
       x,
       y,
+
       vx:Math.cos(a)*s,
       vy:Math.sin(a)*s,
-      life:.5+Math.random()*.5,
-      max:.8
+
+      life:.45+Math.random()*.55,
+
+      max:1
+
     });
 
   }
@@ -1285,20 +1420,22 @@ function updateParticles(dt){
 }
 
 
-/* =========================================================
+/* =====================================================
    CAMERA
-========================================================= */
+===================================================== */
 
 function updateCamera(dt){
 
-  const targetX=
-    player.x-W/2;
+  const targetX=player.x-W/2;
+  const targetY=player.y-H/2;
 
-  const targetY=
-    player.y-H/2;
+  camera.x+=
+    (targetX-camera.x)*
+    Math.min(1,dt*7);
 
-  camera.x+=(targetX-camera.x)*Math.min(1,dt*7);
-  camera.y+=(targetY-camera.y)*Math.min(1,dt*7);
+  camera.y+=
+    (targetY-camera.y)*
+    Math.min(1,dt*7);
 
   camera.x=Math.max(
     0,
@@ -1310,20 +1447,31 @@ function updateCamera(dt){
     Math.min(WORLD_H-H,camera.y)
   );
 
-  if(camera.shake>0){
+  if(camera.shake>0)
     camera.shake*=.82;
-  }
 
 }
 
 
-/* =========================================================
-   DRAW WORLD
-========================================================= */
+/* =====================================================
+   WORLD
+===================================================== */
 
 function drawWorld(){
 
-  ctx.fillStyle="#07111a";
+  const ocean=
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      H
+    );
+
+  ocean.addColorStop(0,"#06192c");
+  ocean.addColorStop(.5,"#0b3b56");
+  ocean.addColorStop(1,"#051925");
+
+  ctx.fillStyle=ocean;
   ctx.fillRect(0,0,W,H);
 
   ctx.save();
@@ -1331,7 +1479,7 @@ function drawWorld(){
   let sx=0;
   let sy=0;
 
-  if(camera.shake>.3){
+  if(camera.shake>.2){
 
     sx=(Math.random()-.5)*camera.shake;
     sy=(Math.random()-.5)*camera.shake;
@@ -1344,42 +1492,28 @@ function drawWorld(){
   );
 
 
-  /* ocean */
-
-  ctx.fillStyle="#123d5a";
-  ctx.fillRect(0,0,WORLD_W,WORLD_H);
-
-
   /* islands */
 
   for(const island of islands){
 
-    if(!island.unlocked &&
-       dist(
-         player.x,
-         player.y,
-         island.x,
-         island.y
-       )<island.radius+600){
-
-      drawIsland(island,true);
-
-    }else{
-
-      drawIsland(island,false);
-
-    }
+    drawIsland(
+      island,
+      !island.unlocked
+    );
 
   }
+
+
+  /* water */
+
+  drawWaterDetails();
 
 
   /* trees */
 
   for(const t of trees){
 
-    const island=islands[t.island];
-
-    if(island.unlocked)
+    if(islands[t.island].unlocked)
       drawTree(t);
 
   }
@@ -1389,15 +1523,13 @@ function drawWorld(){
 
   for(const r of rocks){
 
-    const island=islands[r.island];
-
-    if(island.unlocked)
+    if(islands[r.island].unlocked)
       drawRock(r);
 
   }
 
 
-  /* houses */
+  /* village */
 
   drawVillage();
 
@@ -1425,7 +1557,10 @@ function drawWorld(){
     ctx.globalAlpha=
       Math.max(0,p.life/p.max);
 
-    ctx.fillStyle="#fff2a8";
+    ctx.fillStyle="#ffeaa0";
+
+    ctx.shadowBlur=10;
+    ctx.shadowColor="#fff0a0";
 
     ctx.fillRect(
       p.x-3,
@@ -1433,6 +1568,8 @@ function drawWorld(){
       6,
       6
     );
+
+    ctx.shadowBlur=0;
 
   }
 
@@ -1444,18 +1581,149 @@ function drawWorld(){
   ctx.restore();
 
 
-  /* island unlock indicator */
+  /* VIGNETTE */
 
-  drawIslandIndicators();
+  const vignette=
+    ctx.createRadialGradient(
+      W/2,
+      H/2,
+      Math.min(W,H)*.18,
+      W/2,
+      H/2,
+      Math.max(W,H)*.78
+    );
+
+  vignette.addColorStop(
+    0,
+    "rgba(0,0,0,0)"
+  );
+
+  vignette.addColorStop(
+    1,
+    "rgba(0,5,15,.50)"
+  );
+
+  ctx.fillStyle=vignette;
+  ctx.fillRect(0,0,W,H);
 
 }
 
 
-/* =========================================================
+/* =====================================================
+   WATER
+===================================================== */
+
+function drawWaterDetails(){
+
+  const left=
+    Math.floor(camera.x/80)*80-80;
+
+  const top=
+    Math.floor(camera.y/80)*80-80;
+
+  for(
+    let x=left;
+    x<camera.x+W+100;
+    x+=80
+  ){
+
+    for(
+      let y=top;
+      y<camera.y+H+100;
+      y+=80
+    ){
+
+      const wave=
+        Math.sin(
+          visualTime*2+
+          x*.02+
+          y*.015
+        );
+
+      ctx.strokeStyle=
+        `rgba(145,225,240,${.07+wave*.025})`;
+
+      ctx.lineWidth=2;
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x+10,
+        y+35+wave*4
+      );
+
+      ctx.quadraticCurveTo(
+        x+25,
+        y+28+wave*4,
+        x+40,
+        y+35+wave*4
+      );
+
+      ctx.stroke();
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
    ISLAND
-========================================================= */
+===================================================== */
 
 function drawIsland(island,locked){
+
+  const pulse=
+    Math.sin(
+      visualTime*1.4+island.id
+    )*3;
+
+
+  /* shadow */
+
+  ctx.save();
+
+  ctx.globalAlpha=.35;
+
+  ctx.fillStyle="#020812";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    island.x+25,
+    island.y+35,
+    island.radius+30,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.restore();
+
+
+  /* outer */
+
+  ctx.beginPath();
+
+  ctx.arc(
+    island.x,
+    island.y,
+    island.radius+20+pulse,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle=
+    locked
+      ? "#293e4c"
+      : "#c8ac67";
+
+  ctx.fill();
+
+
+  /* beach */
 
   ctx.beginPath();
 
@@ -1468,147 +1736,363 @@ function drawIsland(island,locked){
   );
 
   ctx.fillStyle=
-    locked ? "#344555" : island.color;
+    locked
+      ? "#354b53"
+      : "#dec57d";
 
   ctx.fill();
 
-  ctx.lineWidth=45;
-  ctx.strokeStyle=
-    locked ? "#213241" : "#d2b675";
 
-  ctx.stroke();
-
-
-  /* beach */
+  /* land */
 
   ctx.beginPath();
 
   ctx.arc(
     island.x,
     island.y,
-    island.radius-30,
+    island.radius-38,
     0,
     Math.PI*2
   );
 
-  ctx.lineWidth=35;
-  ctx.strokeStyle="#d6bd79";
-  ctx.stroke();
+  ctx.fillStyle=
+    locked
+      ? "#354a50"
+      : island.color;
+
+  ctx.fill();
+
+
+  /* land gradient */
+
+  const gradient=
+    ctx.createRadialGradient(
+      island.x-island.radius*.25,
+      island.y-island.radius*.25,
+      20,
+      island.x,
+      island.y,
+      island.radius
+    );
+
+  gradient.addColorStop(
+    0,
+    locked
+      ? "#51666a"
+      : "rgba(255,255,255,.10)"
+  );
+
+  gradient.addColorStop(
+    1,
+    "rgba(0,0,0,.23)"
+  );
+
+  ctx.fillStyle=gradient;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    island.x,
+    island.y,
+    island.radius-45,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
 
 
   /* paths */
 
-  ctx.strokeStyle=
-    locked ? "#3c4a52" : "#8c7651";
+  if(!locked){
 
-  ctx.lineWidth=55;
+    ctx.lineCap="round";
 
-  ctx.beginPath();
+    ctx.strokeStyle="rgba(83,64,45,.6)";
+    ctx.lineWidth=60;
 
-  ctx.moveTo(
-    island.x-island.radius*.7,
-    island.y
-  );
+    ctx.beginPath();
 
-  ctx.lineTo(
-    island.x+island.radius*.7,
-    island.y
-  );
+    ctx.moveTo(
+      island.x-island.radius*.7,
+      island.y
+    );
 
-  ctx.stroke();
+    ctx.quadraticCurveTo(
+      island.x,
+      island.y+100,
+      island.x+island.radius*.7,
+      island.y
+    );
+
+    ctx.stroke();
+
+    ctx.strokeStyle="rgba(188,161,107,.3)";
+    ctx.lineWidth=32;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      island.x-island.radius*.7,
+      island.y
+    );
+
+    ctx.quadraticCurveTo(
+      island.x,
+      island.y+100,
+      island.x+island.radius*.7,
+      island.y
+    );
+
+    ctx.stroke();
+
+  }
+
+
+  /* barrier */
+
+  if(locked){
+
+    ctx.save();
+
+    ctx.globalAlpha=
+      .4+
+      Math.sin(visualTime*2)*.15;
+
+    ctx.strokeStyle="#82d7ff";
+    ctx.lineWidth=5;
+
+    ctx.shadowBlur=18;
+    ctx.shadowColor="#5bd5ff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      island.x,
+      island.y,
+      island.radius+15,
+      0,
+      Math.PI*2
+    );
+
+    ctx.stroke();
+
+    ctx.restore();
+
+  }
 
 }
 
 
-/* =========================================================
+/* =====================================================
    VILLAGE
-========================================================= */
+===================================================== */
 
 function drawVillage(){
 
   const x=WORLD_W/2;
   const y=WORLD_H/2;
 
-  drawHouse(x-300,y-220,150,120);
-  drawHouse(x+130,y-250,150,120);
-  drawHouse(x-320,y+120,150,120);
-  drawHouse(x+150,y+150,150,120);
+  drawHouse(x-310,y-230,155,125);
+  drawHouse(x+140,y-255,155,125);
+  drawHouse(x-330,y+125,155,125);
+  drawHouse(x+160,y+155,155,125);
+
 
   /* town square */
 
-  ctx.fillStyle="#8d7857";
+  ctx.fillStyle="#8d7653";
 
   ctx.fillRect(
-    x-100,
-    y-100,
-    200,
-    200
+    x-110,
+    y-105,
+    220,
+    210
   );
 
-  ctx.fillStyle="#bba27b";
+
+  ctx.fillStyle="#bda47c";
 
   ctx.beginPath();
-  ctx.arc(x,y,45,0,Math.PI*2);
+
+  ctx.arc(
+    x,
+    y,
+    48,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* fountain */
+
+  ctx.fillStyle="#6e8d99";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y,
+    35,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.fillStyle="#6bc4d7";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y,
+    25,
+    0,
+    Math.PI*2
+  );
+
   ctx.fill();
 
 }
+
+
+/* =====================================================
+   HOUSE
+===================================================== */
 
 function drawHouse(x,y,w,h){
 
-  ctx.fillStyle="#2a2523";
-  ctx.fillRect(x+8,y+15,w,h);
+  /* shadow */
 
-  ctx.fillStyle="#b55b45";
+  ctx.fillStyle="rgba(0,0,0,.3)";
+
+  ctx.fillRect(
+    x-5,
+    y+h-2,
+    w+10,
+    20
+  );
+
+
+  /* wall */
+
+  const wall=
+    ctx.createLinearGradient(
+      x,
+      y,
+      x,
+      y+h
+    );
+
+  wall.addColorStop(0,"#bd8d64");
+  wall.addColorStop(.5,"#966a47");
+  wall.addColorStop(1,"#65462f");
+
+  ctx.fillStyle=wall;
+
+  ctx.fillRect(
+    x,
+    y,
+    w,
+    h
+  );
+
+
+  /* roof */
+
+  const roof=
+    ctx.createLinearGradient(
+      x,
+      y-60,
+      x+w,
+      y+20
+    );
+
+  roof.addColorStop(0,"#aa5a4f");
+  roof.addColorStop(.5,"#733941");
+  roof.addColorStop(1,"#422832");
+
+  ctx.fillStyle=roof;
 
   ctx.beginPath();
 
-  ctx.moveTo(x-10,y+15);
-  ctx.lineTo(x+w/2,y-60);
-  ctx.lineTo(x+w+10,y+15);
+  ctx.moveTo(x-12,y+12);
+  ctx.lineTo(x+w/2,y-62);
+  ctx.lineTo(x+w+12,y+12);
 
   ctx.closePath();
+
   ctx.fill();
 
-  ctx.fillStyle="#80634c";
+
+  /* door */
+
+  ctx.fillStyle="#36251d";
 
   ctx.fillRect(
-    x+10,
-    y+15,
-    w-20,
-    h-15
+    x+w/2-21,
+    y+h-58,
+    42,
+    58
   );
 
-  ctx.fillStyle="#36291f";
+  ctx.fillStyle="#d4a84f";
 
-  ctx.fillRect(
-    x+w/2-20,
-    y+h-55,
-    40,
-    55
+  ctx.beginPath();
+
+  ctx.arc(
+    x+w/2+10,
+    y+h-28,
+    4,
+    0,
+    Math.PI*2
   );
 
-  ctx.fillStyle="#9ed4df";
+  ctx.fill();
 
-  ctx.fillRect(
-    x+25,
-    y+40,
-    25,
-    25
-  );
 
-  ctx.fillRect(
-    x+w-50,
-    y+40,
-    25,
-    25
-  );
+  /* windows */
+
+  for(const wx of [x+25,x+w-51]){
+
+    ctx.fillStyle="#23394b";
+
+    ctx.fillRect(
+      wx,
+      y+38,
+      27,
+      28
+    );
+
+    ctx.fillStyle="#9de5ee";
+
+    ctx.fillRect(
+      wx+4,
+      y+42,
+      19,
+      20
+    );
+
+    ctx.fillStyle="rgba(255,255,255,.3)";
+
+    ctx.fillRect(
+      wx+5,
+      y+43,
+      7,
+      7
+    );
+
+  }
 
 }
 
 
-/* =========================================================
+/* =====================================================
    TREE
-========================================================= */
+===================================================== */
 
 function drawTree(t){
 
@@ -1618,52 +2102,195 @@ function drawTree(t){
 
   const s=t.size;
 
-  ctx.fillStyle="#4b301e";
+
+  /* shadow */
+
+  ctx.fillStyle="rgba(0,0,0,.27)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    0,
+    36*s,
+    29*s,
+    9*s,
+    0,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* trunk */
+
+  const trunk=
+    ctx.createLinearGradient(
+      -9*s,
+      0,
+      10*s,
+      0
+    );
+
+  trunk.addColorStop(0,"#352117");
+  trunk.addColorStop(.5,"#765034");
+  trunk.addColorStop(1,"#2a1911");
+
+  ctx.fillStyle=trunk;
 
   ctx.fillRect(
     -8*s,
-    -10*s,
+    -5*s,
     16*s,
-    52*s
+    45*s
   );
 
-  ctx.fillStyle="#183f2b";
+
+  /* branches */
+
+  ctx.strokeStyle="#3e2719";
+  ctx.lineWidth=7*s;
+
+  ctx.beginPath();
+
+  ctx.moveTo(0,12*s);
+  ctx.lineTo(-18*s,-10*s);
+
+  ctx.moveTo(2*s,8*s);
+  ctx.lineTo(18*s,-13*s);
+
+  ctx.stroke();
+
+
+  /* leaves */
+
+  const leaf=
+    ctx.createRadialGradient(
+      -8*s,
+      -28*s,
+      2,
+      0,
+      -20*s,
+      40*s
+    );
+
+  leaf.addColorStop(0,"#6da95d");
+  leaf.addColorStop(.45,"#347648");
+  leaf.addColorStop(1,"#173d2a");
+
+  ctx.fillStyle=leaf;
+
+  const circles=[
+    [-20,-18,24],
+    [0,-30,30],
+    [22,-17,24],
+    [-7,0,27],
+    [15,0,22]
+  ];
+
+  for(const c of circles){
+
+    ctx.beginPath();
+
+    ctx.arc(
+      c[0]*s,
+      c[1]*s,
+      c[2]*s,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+  }
+
+
+  ctx.fillStyle="rgba(190,240,150,.2)";
 
   ctx.beginPath();
 
   ctx.arc(
-    0,
-    -20*s,
-    33*s,
+    -12*s,
+    -35*s,
+    10*s,
     0,
     Math.PI*2
   );
 
   ctx.fill();
 
-  ctx.fillStyle="#28613c";
+
+  ctx.restore();
+
+}
+
+
+/* =====================================================
+   ROCK
+===================================================== */
+
+function drawRock(r){
+
+  ctx.save();
+
+  ctx.translate(r.x,r.y);
+
+  ctx.fillStyle="rgba(0,0,0,.25)";
 
   ctx.beginPath();
 
-  ctx.arc(
-    -20*s,
-    -2*s,
-    25*s,
+  ctx.ellipse(
+    0,
+    12,
+    25,
+    8,
+    0,
     0,
     Math.PI*2
   );
 
   ctx.fill();
 
+
+  const rock=
+    ctx.createLinearGradient(
+      -20,
+      -20,
+      20,
+      20
+    );
+
+  rock.addColorStop(0,"#aeb9bf");
+  rock.addColorStop(.35,"#747f88");
+  rock.addColorStop(1,"#3f4951");
+
+  ctx.fillStyle=rock;
+
   ctx.beginPath();
 
-  ctx.arc(
-    20*s,
-    -4*s,
-    25*s,
-    0,
-    Math.PI*2
-  );
+  ctx.moveTo(-22,10);
+  ctx.lineTo(-14,-14);
+  ctx.lineTo(0,-25);
+  ctx.lineTo(19,-16);
+  ctx.lineTo(24,10);
+  ctx.lineTo(9,19);
+  ctx.lineTo(-12,17);
+
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  ctx.fillStyle="rgba(255,255,255,.18)";
+
+  ctx.beginPath();
+
+  ctx.moveTo(-12,-12);
+  ctx.lineTo(0,-20);
+  ctx.lineTo(10,-13);
+  ctx.lineTo(-5,-8);
+
+  ctx.closePath();
 
   ctx.fill();
 
@@ -1672,39 +2299,9 @@ function drawTree(t){
 }
 
 
-/* =========================================================
-   ROCK
-========================================================= */
-
-function drawRock(r){
-
-  ctx.fillStyle="#68727b";
-
-  ctx.beginPath();
-
-  ctx.moveTo(r.x-18,r.y+8);
-  ctx.lineTo(r.x-10,r.y-15);
-  ctx.lineTo(r.x+13,r.y-18);
-  ctx.lineTo(r.x+22,r.y+10);
-  ctx.closePath();
-
-  ctx.fill();
-
-  ctx.fillStyle="#87919a";
-
-  ctx.fillRect(
-    r.x-6,
-    r.y-10,
-    10,
-    6
-  );
-
-}
-
-
-/* =========================================================
+/* =====================================================
    NPC
-========================================================= */
+===================================================== */
 
 function drawNPC(n){
 
@@ -1712,122 +2309,126 @@ function drawNPC(n){
 
   ctx.translate(n.x,n.y);
 
-  ctx.fillStyle="#20222a";
-  ctx.fillRect(-12,18,24,28);
+  const glow=
+    Math.sin(
+      visualTime*2+n.x*.01
+    )*.12+.18;
+
+  ctx.shadowBlur=18;
+  ctx.shadowColor=
+    `rgba(255,220,120,${glow})`;
+
+
+  /* body */
 
   ctx.fillStyle=n.color;
-  ctx.fillRect(-16,-8,32,35);
 
-  ctx.fillStyle="#e5b48b";
+  ctx.fillRect(
+    -16,
+    -3,
+    32,
+    34
+  );
+
+
+  /* head */
+
+  ctx.fillStyle="#e2ae83";
 
   ctx.beginPath();
-  ctx.arc(0,-18,16,0,Math.PI*2);
+
+  ctx.arc(
+    0,
+    -18,
+    16,
+    0,
+    Math.PI*2
+  );
+
   ctx.fill();
 
-  ctx.fillStyle="#241c21";
 
-  ctx.fillRect(-15,-30,30,10);
+  ctx.shadowBlur=0;
 
-  ctx.fillStyle="white";
+
+  /* hair */
+
+  ctx.fillStyle="#24202a";
+
+  ctx.fillRect(
+    -15,
+    -31,
+    30,
+    9
+  );
+
+
+  /* name */
+
   ctx.font="bold 12px Arial";
   ctx.textAlign="center";
+
+  ctx.fillStyle="rgba(0,0,0,.65)";
+
+  ctx.fillText(
+    n.name,
+    1,
+    -39
+  );
+
+  ctx.fillStyle="#fff";
 
   ctx.fillText(
     n.name,
     0,
-    -42
+    -40
   );
+
+
+  /* ! */
+
+  ctx.fillStyle="#ffe28b";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    22,
+    -43,
+    9,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.fillStyle="#513c20";
+  ctx.font="bold 11px Arial";
+
+  ctx.fillText(
+    "!",
+    22,
+    -39
+  );
+
 
   ctx.restore();
 
 }
 
 
-/* =========================================================
+/* =====================================================
    MONSTER
-========================================================= */
+===================================================== */
 
 function drawMonster(m){
 
   ctx.save();
 
+  const bob=Math.sin(m.anim)*3;
+
   ctx.translate(
     m.x,
-    m.y+Math.sin(m.anim)*2
-  );
-
-  ctx.fillStyle="#281d31";
-
-  ctx.beginPath();
-  ctx.ellipse(0,8,25,28,0,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle="#794b92";
-
-  ctx.beginPath();
-  ctx.arc(0,-18,22,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle="#ff5c66";
-
-  ctx.fillRect(-11,-20,7,7);
-  ctx.fillRect(4,-20,7,7);
-
-  ctx.fillStyle="#15121b";
-
-  ctx.fillRect(-18,20,12,10);
-  ctx.fillRect(6,20,12,10);
-
-  /* HP */
-
-  ctx.fillStyle="#1c2027";
-
-  ctx.fillRect(
-    -25,
-    -52,
-    50,
-    7
-  );
-
-  ctx.fillStyle="#e34b58";
-
-  ctx.fillRect(
-    -25,
-    -52,
-    50*(m.hp/m.maxHp),
-    7
-  );
-
-  ctx.restore();
-
-}
-
-
-/* =========================================================
-   PLAYER — DETAILED
-========================================================= */
-
-function drawPlayer(){
-
-  const moving=
-    Math.abs(player.vx)+
-    Math.abs(player.vy)>10;
-
-  const bob=
-    moving
-    ? Math.sin(player.walk)*3
-    : Math.sin(player.anim*2)*1;
-
-  const legMove=
-    moving
-    ? Math.sin(player.walk)*5
-    : 0;
-
-  ctx.save();
-
-  ctx.translate(
-    player.x,
-    player.y+bob
+    m.y+bob
   );
 
 
@@ -1839,9 +2440,185 @@ function drawPlayer(){
 
   ctx.ellipse(
     0,
-    29,
+    31,
     28,
-    11,
+    9,
+    0,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* body */
+
+  const body=
+    ctx.createRadialGradient(
+      -8,
+      -15,
+      2,
+      0,
+      0,
+      35
+    );
+
+  body.addColorStop(0,"#aa6cc1");
+  body.addColorStop(.5,"#663d80");
+  body.addColorStop(1,"#2c213d");
+
+  ctx.fillStyle=body;
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    0,
+    7,
+    27,
+    31,
+    0,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* ears */
+
+  ctx.fillStyle="#70418a";
+
+  ctx.beginPath();
+
+  ctx.moveTo(-19,-14);
+  ctx.lineTo(-37,-37);
+  ctx.lineTo(-10,-27);
+
+  ctx.closePath();
+
+  ctx.fill();
+
+  ctx.beginPath();
+
+  ctx.moveTo(19,-14);
+  ctx.lineTo(37,-37);
+  ctx.lineTo(10,-27);
+
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  /* face */
+
+  ctx.fillStyle="#8d54a7";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    -12,
+    22,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* eyes */
+
+  ctx.shadowBlur=13;
+  ctx.shadowColor="#ff5368";
+
+  ctx.fillStyle="#ff596e";
+
+  ctx.fillRect(-12,-18,8,7);
+  ctx.fillRect(4,-18,8,7);
+
+  ctx.shadowBlur=0;
+
+
+  /* feet */
+
+  ctx.fillStyle="#241a2d";
+
+  ctx.fillRect(-22,23,15,12);
+  ctx.fillRect(7,23,15,12);
+
+
+  /* HP */
+
+  ctx.fillStyle="#11151d";
+
+  ctx.fillRect(
+    -28,
+    -55,
+    56,
+    8
+  );
+
+  ctx.fillStyle="#ef5260";
+
+  ctx.fillRect(
+    -28,
+    -55,
+    56*(m.hp/m.maxHp),
+    8
+  );
+
+
+  ctx.restore();
+
+}
+
+
+/* =====================================================
+   PLAYER
+===================================================== */
+
+function drawPlayer(){
+
+  const moving=
+    Math.abs(player.vx)+
+    Math.abs(player.vy)>10;
+
+  const bob=
+    moving
+      ? Math.sin(player.walk)*2
+      : Math.sin(player.anim*2)*.7;
+
+  const legMove=
+    moving
+      ? Math.sin(player.walk)*3
+      : 0;
+
+  ctx.save();
+
+  ctx.translate(
+    player.x,
+    player.y+bob
+  );
+
+  /* SMALLER CHARACTER */
+
+  ctx.scale(
+    PLAYER_SCALE,
+    PLAYER_SCALE
+  );
+
+
+  /* shadow */
+
+  ctx.fillStyle="rgba(0,0,0,.35)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    0,
+    31,
+    27,
+    9,
     0,
     0,
     Math.PI*2
@@ -1852,29 +2629,27 @@ function drawPlayer(){
 
   /* cape */
 
-  ctx.fillStyle="#211735";
+  const cape=
+    ctx.createLinearGradient(
+      -30,
+      -20,
+      30,
+      60
+    );
+
+  cape.addColorStop(0,"#513a87");
+  cape.addColorStop(.5,"#2d2050");
+  cape.addColorStop(1,"#17142c");
+
+  ctx.fillStyle=cape;
 
   ctx.beginPath();
 
   ctx.moveTo(-27,-18);
   ctx.lineTo(27,-18);
   ctx.lineTo(35,58);
-  ctx.lineTo(0,44);
+  ctx.lineTo(0,42);
   ctx.lineTo(-35,58);
-
-  ctx.closePath();
-
-  ctx.fill();
-
-  ctx.fillStyle="#463070";
-
-  ctx.beginPath();
-
-  ctx.moveTo(-21,-15);
-  ctx.lineTo(20,-15);
-  ctx.lineTo(26,44);
-  ctx.lineTo(0,34);
-  ctx.lineTo(-26,44);
 
   ctx.closePath();
 
@@ -1883,7 +2658,7 @@ function drawPlayer(){
 
   /* legs */
 
-  ctx.fillStyle="#222c3b";
+  ctx.fillStyle="#202b3b";
 
   ctx.fillRect(
     -19+legMove,
@@ -1902,120 +2677,96 @@ function drawPlayer(){
 
   /* boots */
 
-  ctx.fillStyle="#12171f";
+  ctx.fillStyle="#111720";
 
   ctx.fillRect(
     -24+legMove,
     43,
-    22,
-    13
+    23,
+    14
   );
 
   ctx.fillRect(
     2-legMove,
     43,
-    22,
-    13
-  );
-
-  ctx.fillStyle="#57677d";
-
-  ctx.fillRect(
-    -20+legMove,
-    44,
-    15,
-    5
-  );
-
-  ctx.fillRect(
-    6-legMove,
-    44,
-    15,
-    5
+    23,
+    14
   );
 
 
-  /* body */
+  /* armor */
 
-  ctx.fillStyle="#344254";
+  const armor=
+    ctx.createLinearGradient(
+      -25,
+      -30,
+      25,
+      20
+    );
+
+  armor.addColorStop(0,"#e1e9f2");
+  armor.addColorStop(.35,"#8d9caf");
+  armor.addColorStop(1,"#3d4a5d");
+
+  ctx.fillStyle=armor;
 
   ctx.fillRect(
     -28,
     -30,
     56,
-    49
+    50
   );
 
-  /* armor */
 
-  ctx.fillStyle="#9ba8b8";
+  /* shoulders */
+
+  ctx.fillStyle="#a0adbd";
 
   ctx.fillRect(
-    -23,
-    -25,
-    46,
-    29
+    -35,
+    -28,
+    14,
+    22
   );
 
-  ctx.fillStyle="#657386";
-
   ctx.fillRect(
-    -18,
-    -19,
-    36,
+    21,
+    -28,
+    14,
     22
   );
 
 
   /* armor center */
 
-  ctx.fillStyle="#d0d9e5";
+  ctx.fillStyle="#edf3f8";
 
   ctx.fillRect(
-    -3,
+    -4,
     -24,
-    6,
-    28
-  );
-
-
-  /* shoulders */
-
-  ctx.fillStyle="#748399";
-
-  ctx.fillRect(
-    -34,
-    -28,
-    12,
-    22
-  );
-
-  ctx.fillRect(
-    22,
-    -28,
-    12,
-    22
+    8,
+    29
   );
 
 
   /* belt */
 
-  ctx.fillStyle="#4b3020";
+  ctx.fillStyle="#4b2f1d";
 
   ctx.fillRect(
     -30,
     3,
     60,
-    9
+    10
   );
 
   ctx.fillStyle="#e0bd59";
 
   ctx.fillRect(
-    -7,
+    -8,
     1,
-    14,
-    13
+    16,
+    14
   );
 
 
@@ -2025,7 +2776,7 @@ function drawPlayer(){
 
   ctx.fillRect(
     -9,
-    -39,
+    -40,
     18,
     13
   );
@@ -2033,7 +2784,18 @@ function drawPlayer(){
 
   /* face */
 
-  ctx.fillStyle="#dba27d";
+  const skin=
+    ctx.createLinearGradient(
+      -20,
+      -72,
+      20,
+      -35
+    );
+
+  skin.addColorStop(0,"#f0bd91");
+  skin.addColorStop(1,"#b97052");
+
+  ctx.fillStyle=skin;
 
   ctx.fillRect(
     -24,
@@ -2042,41 +2804,25 @@ function drawPlayer(){
     38
   );
 
-  ctx.fillStyle="#efbb91";
-
-  ctx.fillRect(
-    -18,
-    -68,
-    34,
-    26
-  );
-
-
-  /* ears */
-
-  ctx.fillStyle="#bd805f";
-
-  ctx.fillRect(-29,-65,7,15);
-  ctx.fillRect(22,-65,7,15);
-
 
   /* hair */
 
-  ctx.fillStyle="#161922";
+  ctx.fillStyle="#151822";
 
   ctx.beginPath();
 
   ctx.moveTo(-27,-69);
-  ctx.lineTo(-21,-84);
-  ctx.lineTo(-7,-88);
+  ctx.lineTo(-20,-84);
+  ctx.lineTo(-7,-89);
   ctx.lineTo(3,-83);
   ctx.lineTo(17,-89);
-  ctx.lineTo(28,-75);
-  ctx.lineTo(21,-52);
-  ctx.lineTo(13,-64);
-  ctx.lineTo(4,-52);
-  ctx.lineTo(-4,-65);
-  ctx.lineTo(-16,-53);
+  ctx.lineTo(28,-74);
+  ctx.lineTo(20,-52);
+  ctx.lineTo(10,-65);
+  ctx.lineTo(2,-52);
+  ctx.lineTo(-7,-65);
+  ctx.lineTo(-17,-53);
+
   ctx.closePath();
 
   ctx.fill();
@@ -2084,7 +2830,7 @@ function drawPlayer(){
 
   /* hair highlights */
 
-  ctx.fillStyle="#353b49";
+  ctx.fillStyle="#3c4353";
 
   ctx.fillRect(
     -17,
@@ -2105,38 +2851,13 @@ function drawPlayer(){
 
   ctx.fillStyle="#101721";
 
-  ctx.fillRect(
-    -15,
-    -57,
-    7,
-    7
-  );
+  ctx.fillRect(-15,-57,7,7);
+  ctx.fillRect(8,-57,7,7);
 
-  ctx.fillRect(
-    8,
-    -57,
-    7,
-    7
-  );
+  ctx.fillStyle="#fff";
 
-
-  /* eye shine */
-
-  ctx.fillStyle="#dcefff";
-
-  ctx.fillRect(
-    -13,
-    -56,
-    2,
-    2
-  );
-
-  ctx.fillRect(
-    10,
-    -56,
-    2,
-    2
-  );
+  ctx.fillRect(-13,-56,2,2);
+  ctx.fillRect(10,-56,2,2);
 
 
   /* nose */
@@ -2153,7 +2874,7 @@ function drawPlayer(){
 
   /* mouth */
 
-  ctx.fillStyle="#703f3b";
+  ctx.fillStyle="#713e3b";
 
   ctx.fillRect(
     -7,
@@ -2165,23 +2886,17 @@ function drawPlayer(){
 
   /* sword */
 
-  let swordAngle=0;
+  let angle=0;
 
   if(player.direction==="left")
-    swordAngle=-1.2;
+    angle=-1.2;
 
   if(player.direction==="right")
-    swordAngle=1.2;
-
-  if(player.direction==="up")
-    swordAngle=0;
-
-  if(player.direction==="down")
-    swordAngle=0;
+    angle=1.2;
 
   if(player.attackTimer>0){
 
-    swordAngle=
+    angle=
       Math.sin(
         (player.attackTimer/.28)*Math.PI
       )*1.8;
@@ -2190,69 +2905,82 @@ function drawPlayer(){
 
   ctx.save();
 
-  ctx.rotate(swordAngle);
+  ctx.rotate(angle);
 
-  ctx.translate(
-    35,
-    -4
-  );
+  ctx.translate(35,-4);
 
-  /* handle */
 
-  ctx.fillStyle="#6b4529";
+  /* blade glow */
 
-  ctx.fillRect(
-    -5,
-    15,
-    10,
-    20
-  );
+  ctx.shadowBlur=12;
+  ctx.shadowColor="#bdeaff";
 
-  /* guard */
+  const blade=
+    ctx.createLinearGradient(
+      -8,
+      -80,
+      8,
+      15
+    );
 
-  ctx.fillStyle="#d2ad51";
+  blade.addColorStop(0,"#fff");
+  blade.addColorStop(.5,"#dcecff");
+  blade.addColorStop(1,"#7e94aa");
 
-  ctx.fillRect(
-    -18,
-    11,
-    36,
-    7
-  );
-
-  /* blade */
-
-  ctx.fillStyle="#dce9f7";
+  ctx.fillStyle=blade;
 
   ctx.beginPath();
 
   ctx.moveTo(-6,-80);
   ctx.lineTo(7,-80);
   ctx.lineTo(10,12);
-  ctx.lineTo(0,22);
+  ctx.lineTo(0,23);
   ctx.lineTo(-10,12);
 
   ctx.closePath();
 
   ctx.fill();
 
-  ctx.fillStyle="#ffffff";
+  ctx.shadowBlur=0;
+
+
+  /* guard */
+
+  ctx.fillStyle="#e3bd58";
 
   ctx.fillRect(
-    -2,
-    -73,
-    4,
-    67
+    -18,
+    10,
+    36,
+    8
+  );
+
+
+  /* handle */
+
+  ctx.fillStyle="#694329";
+
+  ctx.fillRect(
+    -5,
+    15,
+    10,
+    21
   );
 
   ctx.restore();
 
 
-  /* attack glow */
+  /* attack arc */
 
   if(player.attackTimer>0){
 
+    ctx.save();
+
     ctx.strokeStyle=
-      "rgba(190,225,255,.7)";
+      "rgba(185,230,255,.9)";
+
+    ctx.shadowBlur=18;
+    ctx.shadowColor="#8bd9ff";
 
     ctx.lineWidth=5;
 
@@ -2261,12 +2989,14 @@ function drawPlayer(){
     ctx.arc(
       0,
       0,
-      75,
-      -1.3,
+      78,
+      -1.4,
       .8
     );
 
     ctx.stroke();
+
+    ctx.restore();
 
   }
 
@@ -2275,66 +3005,9 @@ function drawPlayer(){
 }
 
 
-/* =========================================================
-   ISLAND INDICATORS
-========================================================= */
-
-function drawIslandIndicators(){
-
-  for(const island of islands){
-
-    if(island.unlocked)continue;
-
-    const sx=island.x-camera.x;
-    const sy=island.y-camera.y;
-
-    if(
-      sx<-300||
-      sx>W+300||
-      sy<-300||
-      sy>H+300
-    )continue;
-
-    ctx.fillStyle="rgba(0,0,0,.75)";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      sx,
-      sy,
-      70,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.fillStyle="white";
-    ctx.font="bold 16px Arial";
-    ctx.textAlign="center";
-
-    ctx.fillText(
-      "🔒 "+island.name,
-      sx,
-      sy-5
-    );
-
-    ctx.font="12px Arial";
-
-    ctx.fillText(
-      "Reach Level "+(island.id*5+3),
-      sx,
-      sy+18
-    );
-
-  }
-
-}
-
-
-/* =========================================================
+/* =====================================================
    UPDATE
-========================================================= */
+===================================================== */
 
 let last=performance.now();
 
@@ -2345,16 +3018,27 @@ function loop(now){
 
   last=now;
 
+  visualTime+=dt;
+
   if(running&&!paused){
 
     player.attackTimer=
-      Math.max(0,player.attackTimer-dt);
+      Math.max(
+        0,
+        player.attackTimer-dt
+      );
 
     player.attackCooldown=
-      Math.max(0,player.attackCooldown-dt);
+      Math.max(
+        0,
+        player.attackCooldown-dt
+      );
 
     player.dashCooldown=
-      Math.max(0,player.dashCooldown-dt);
+      Math.max(
+        0,
+        player.dashCooldown-dt
+      );
 
     updateMovement(dt);
     updateMonsters(dt);
@@ -2375,9 +3059,9 @@ function loop(now){
 requestAnimationFrame(loop);
 
 
-/* =========================================================
+/* =====================================================
    ISLAND UNLOCK
-========================================================= */
+===================================================== */
 
 function checkIslandUnlock(){
 
@@ -2393,15 +3077,16 @@ function checkIslandUnlock(){
       island.unlocked=true;
 
       message(
-        "🏝️ "+island.name+
-        " UNLOCKED!"
+        "🏝️ "+island.name+" UNLOCKED!"
       );
 
       burst(
         island.x,
         island.y,
-        50
+        70
       );
+
+      camera.shake=15;
 
     }
 
@@ -2410,57 +3095,60 @@ function checkIslandUnlock(){
 }
 
 
-/* =========================================================
+/* =====================================================
    HUD
-========================================================= */
+===================================================== */
 
 function updateHUD(){
 
   document.getElementById("level")
-  .textContent=player.level;
+    .textContent=player.level;
 
   document.getElementById("coins")
-  .textContent=player.coins;
+    .textContent=player.coins;
 
   document.getElementById("xpText")
-  .textContent=player.xp;
+    .textContent=player.xp;
 
   document.getElementById("xpMax")
-  .textContent=player.xpMax;
+    .textContent=player.xpMax;
 
   document.getElementById("hp")
-  .style.width=
-    (player.hp/player.maxHp*100)+"%";
+    .style.width=
+      (player.hp/player.maxHp*100)+"%";
 
   document.getElementById("xp")
-  .style.width=
-    (player.xp/player.xpMax*100)+"%";
+    .style.width=
+      (player.xp/player.xpMax*100)+"%";
 
 }
 
 
-/* =========================================================
+/* =====================================================
    WINDOWS
-========================================================= */
+===================================================== */
 
 function openWindow(id){
 
   document.getElementById(id)
-  .style.display="block";
+    .style.display="block";
 
 }
 
 function closeWindows(){
 
-  document.querySelectorAll(".window")
-  .forEach(w=>w.style.display="none");
+  document
+    .querySelectorAll(".window")
+    .forEach(w=>{
+      w.style.display="none";
+    });
 
 }
 
 
-/* =========================================================
+/* =====================================================
    MESSAGE
-========================================================= */
+===================================================== */
 
 let messageTimer;
 
@@ -2470,24 +3158,27 @@ function message(text){
     document.getElementById("message");
 
   el.textContent=text;
+
   el.style.display="block";
 
   clearTimeout(messageTimer);
 
   messageTimer=setTimeout(()=>{
     el.style.display="none";
-  },1800);
+  },1900);
 
 }
 
 
-/* =========================================================
+/* =====================================================
    NEW GAME
-========================================================= */
+===================================================== */
 
 function newGame(){
 
-  localStorage.removeItem("pixelRealmSave");
+  localStorage.removeItem(
+    "pixelRealmSave"
+  );
 
   player.x=WORLD_W/2;
   player.y=WORLD_H/2;
@@ -2500,6 +3191,7 @@ function newGame(){
   player.xpMax=100;
 
   player.coins=25;
+
   player.monstersKilled=0;
 
   for(let i=0;i<islands.length;i++){
@@ -2511,9 +3203,9 @@ function newGame(){
 }
 
 
-/* =========================================================
+/* =====================================================
    START
-========================================================= */
+===================================================== */
 
 function startGame(){
 
@@ -2521,44 +3213,56 @@ function startGame(){
   paused=false;
 
   document.getElementById("menu")
-  .style.display="none";
+    .style.display="none";
 
   document.getElementById("hud")
-  .style.display="block";
+    .style.display="block";
 
   document.getElementById("topButtons")
-  .style.display="flex";
+    .style.display="flex";
 
   document.getElementById("controls")
-  .style.display=
-    "ontouchstart" in window
-    ? "block"
-    : "none";
+    .style.display=
+      "ontouchstart" in window
+        ? "block"
+        : "none";
 
   generateWorld();
+
+  camera.x=player.x-W/2;
+  camera.y=player.y-H/2;
 
   saveGame();
 
 }
 
 
-/* =========================================================
+/* =====================================================
    SAVE
-========================================================= */
+===================================================== */
 
 function saveGame(){
 
   const data={
+
     x:player.x,
     y:player.y,
+
     hp:player.hp,
     maxHp:player.maxHp,
+
     level:player.level,
     xp:player.xp,
     xpMax:player.xpMax,
+
     coins:player.coins,
-    monstersKilled:player.monstersKilled,
-    islands:islands.map(i=>i.unlocked)
+
+    monstersKilled:
+      player.monstersKilled,
+
+    islands:
+      islands.map(i=>i.unlocked)
+
   };
 
   localStorage.setItem(
@@ -2569,101 +3273,120 @@ function saveGame(){
 }
 
 
-/* =========================================================
+/* =====================================================
    LOAD
-========================================================= */
+===================================================== */
 
 function loadGame(){
 
   const save=
-    localStorage.getItem("pixelRealmSave");
+    localStorage.getItem(
+      "pixelRealmSave"
+    );
 
   if(!save){
 
-    message("NO SAVE FOUND");
+    alert("NO SAVE FOUND");
 
     return;
-  }
-
-  const d=JSON.parse(save);
-
-  player.x=d.x;
-  player.y=d.y;
-
-  player.hp=d.hp;
-  player.maxHp=d.maxHp;
-
-  player.level=d.level;
-  player.xp=d.xp;
-  player.xpMax=d.xpMax;
-
-  player.coins=d.coins;
-  player.monstersKilled=
-    d.monstersKilled||0;
-
-  if(d.islands){
-
-    d.islands.forEach(
-      (v,i)=>{
-        if(islands[i])
-          islands[i].unlocked=v;
-      }
-    );
 
   }
 
-  startGame();
+  try{
+
+    const d=JSON.parse(save);
+
+    player.x=d.x;
+    player.y=d.y;
+
+    player.hp=d.hp;
+    player.maxHp=d.maxHp;
+
+    player.level=d.level;
+    player.xp=d.xp;
+    player.xpMax=d.xpMax;
+
+    player.coins=d.coins;
+
+    player.monstersKilled=
+      d.monstersKilled||0;
+
+    if(d.islands){
+
+      d.islands.forEach(
+        (v,i)=>{
+          if(islands[i])
+            islands[i].unlocked=v;
+        }
+      );
+
+    }
+
+    startGame();
+
+  }catch(e){
+
+    alert("SAVE DATA IS CORRUPTED");
+
+  }
 
 }
 
 
-/* autosave */
+/* =====================================================
+   AUTO SAVE
+===================================================== */
 
 setInterval(()=>{
+
   if(running&&!paused)
     saveGame();
+
 },5000);
 
 
-/* =========================================================
+/* =====================================================
    PAUSE
-========================================================= */
+===================================================== */
 
 function pauseGame(){
 
   paused=!paused;
 
-  if(paused){
-
-    message("PAUSED");
-
-  }
+  message(
+    paused
+      ? "⏸ GAME PAUSED"
+      : "▶ GAME RESUMED"
+  );
 
 }
 
 
-/* =========================================================
+/* =====================================================
    CONTROLS
-========================================================= */
+===================================================== */
 
 function showControls(){
 
   alert(
-`CONTROLS
+`PIXEL REALM
 
-WASD / ARROWS
+W / A / S / D
+Move
+
+ARROW KEYS
 Move
 
 SPACE
 Attack
 
-E
-Talk to NPC
-
 SHIFT
 Dash
 
-Mobile:
+E
+Talk to NPC
+
+MOBILE
 Joystick = Move
 ⚔️ = Attack
 💨 = Dash`
@@ -2672,9 +3395,9 @@ Joystick = Move
 }
 
 
-/* =========================================================
-   INITIAL
-========================================================= */
+/* =====================================================
+   INITIAL WORLD
+===================================================== */
 
 generateWorld();
 
