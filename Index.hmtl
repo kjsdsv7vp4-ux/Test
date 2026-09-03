@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pixel Quest</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #080b25;
+  font-family: monospace;
+}
+
+body {
+  image-rendering: pixelated;
+}
+
+/* =========================
+   STARTSCHERM
+========================= */
+
+#menu {
+  position: fixed;
+  inset: 0;
+
+  background:
+    #080b25
+    url("startscherm.png")
+    center center / cover
+    no-repeat;
+}
+
+/* =========================
+   MENU KNOPPEN
+========================= */
+
+button {
+  font-family: monospace;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  border: 0;
+  text-shadow: 2px 2px #10101a;
+}
+
+.menuBtn {
+  position: absolute;
+
+  left: 5.2%;
+  width: 19%;
+  min-width: 180px;
+  height: 6.2%;
+
+  background: linear-gradient(
+    #3b4058,
+    #202334
+  );
+
+  border: 4px solid #151827;
+  border-radius: 10px;
+
+  box-shadow:
+    0 0 0 3px #72768b inset,
+    0 5px 0 #090b13;
+
+  letter-spacing: 1px;
+}
+
+.menuBtn:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+}
+
+/* Start */
+
+#start {
+  top: 38%;
+
+  background:
+    linear-gradient(
+      #1c78bd,
+      #15528c
+    );
+
+  border-color: #07182a;
+
+  box-shadow:
+    0 0 0 3px #5ad9ff inset,
+    0 5px 0 #07101d;
+}
+
+/* Andere knoppen */
+
+#worlds {
+  top: 45.6%;
+}
+
+#settings {
+  top: 53%;
+}
+
+#extras {
+  top: 60.4%;
+}
+
+#quit {
+  top: 67.8%;
+}
+
+/* =========================
+   WERELDEN
+========================= */
+
+.world {
+  position: absolute;
+
+  width: 17%;
+  height: 6%;
+
+  min-width: 190px;
+  min-height: 45px;
+
+  background:
+    linear-gradient(
+      #202a3b,
+      #0d1321
+    );
+
+  border: 4px solid #11131d;
+  border-radius: 10px;
+
+  box-shadow:
+    0 0 0 3px #7a6a61 inset,
+    0 5px 0 #070911;
+
+  font-size: clamp(
+    12px,
+    1.35vw,
+    22px
+  );
+}
+
+.world:hover {
+  filter: brightness(1.3);
+  transform: scale(1.02);
+}
+
+/* Bovenste rij */
+
+#w1 {
+  left: 35%;
+  top: 41.2%;
+}
+
+#w2 {
+  left: 54.7%;
+  top: 41.2%;
+}
+
+#w3 {
+  left: 74.5%;
+  top: 41.2%;
+}
+
+/* Onderste rij */
+
+#w4 {
+  left: 34.5%;
+  top: 76%;
+}
+
+#w5 {
+  left: 54.5%;
+  top: 76%;
+}
+
+#w6 {
+  left: 74.5%;
+  top: 76%;
+}
+
+/* =========================
+   PRESTATIES
+========================= */
+
+#achievement {
+  position: absolute;
+
+  left: 41.5%;
+  bottom: 4.3%;
+
+  width: 20%;
+  min-width: 250px;
+  height: 9%;
+
+  background:
+    linear-gradient(
+      #172238,
+      #0c1320
+    );
+
+  border: 4px solid #10131d;
+  border-radius: 10px;
+
+  box-shadow:
+    0 0 0 3px #6d625c inset,
+    0 5px 0 #06080d;
+
+  color: white;
+  text-align: center;
+
+  padding: 10px;
+
+  font-size: clamp(
+    11px,
+    1.1vw,
+    18px
+  );
+
+  font-weight: bold;
+}
+
+#achievement b {
+  font-size: 1.25em;
+}
+
+/* =========================
+   POPUP
+========================= */
+
+#status {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  display: none;
+
+  background: #0d1425ee;
+
+  border: 4px solid #8890a5;
+  border-radius: 10px;
+
+  padding: 24px;
+
+  color: white;
+  text-align: center;
+
+  z-index: 10;
+
+  min-width: 300px;
+}
+
+#status button {
+  margin-top: 15px;
+
+  padding: 10px 25px;
+
+  background: #185e9c;
+
+  border: 3px solid #65dfff;
+
+  border-radius: 7px;
+}
+
+/* =========================
+   GAME
+========================= */
+
+#game {
+  display: none;
+
+  position: fixed;
+  inset: 0;
+
+  background: #10182b;
+  color: white;
+}
+
+canvas {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  image-rendering: pixelated;
+}
+
+/* HUD */
+
+#hud {
+  position: absolute;
+
+  top: 12px;
+  left: 12px;
+  right: 12px;
+
+  display: flex;
+  justify-content: space-between;
+
+  pointer-events: none;
+
+  font-weight: bold;
+  font-size: 18px;
+
+  text-shadow: 2px 2px #000;
+}
+
+/* Menu knop */
+
+#back {
+  position: absolute;
+
+  right: 15px;
+  bottom: 15px;
+
+  padding: 10px 18px;
+
+  background: #20283a;
+
+  border: 3px solid #8490a8;
+
+  border-radius: 7px;
+}
+
+/* =========================
+   MOBIELE KNOPPEN
+========================= */
+
+#touch {
+  display: none;
+
+  position: absolute;
+
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+
+  justify-content: space-between;
+
+  pointer-events: none;
+}
+
+.touchGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.touch {
+  pointer-events: auto;
+
+  width: 58px;
+  height: 58px;
+
+  border-radius: 10px;
+
+  background: #18243bdd;
+
+  border: 3px solid #a8b6cf;
+
+  font-size: 25px;
+}
+
+/* =========================
+   MOBIEL
+========================= */
+
+@media(max-width:700px) {
+
+  .menuBtn {
+    min-width: 130px;
+    width: 29%;
+    left: 3%;
+    height: 6%;
+  }
+
+  .world {
+    min-width: 110px;
+    width: 24%;
+    height: 5.5%;
+
+    font-size: 10px;
+  }
+
+  #w1 {
+    left: 34%;
+  }
+
+  #w2 {
+    left: 59%;
+  }
+
+  #w3 {
+    left: 84%;
+    width: 15%;
+  }
+
+  #w4 {
+    left: 34%;
+  }
+
+  #w5 {
+    left: 59%;
+  }
+
+  #w6 {
+    left: 84%;
+    width: 15%;
+  }
+
+  #achievement {
+    left: 38%;
+    width: 28%;
+    min-width: 160px;
+  }
+
+  #touch {
+    display: flex;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     MENU
+========================= -->
+
+<div id="menu">
+
+  <button id="start" class="menuBtn">
+    ▶ START
+  </button>
+
+  <button id="worlds" class="menuBtn">
+    WERELDEN
+  </button>
+
+  <button id="settings" class="menuBtn">
+    INSTELLINGEN
+  </button>
+
+  <button id="extras" class="menuBtn">
+    EXTRA'S
+  </button>
+
+  <button id="quit" class="menuBtn">
+    AFSLUITEN
+  </button>
+
+
+  <!-- Werelden -->
+
+  <button class="world" id="w1">
+    🌱 1. GRASLAND
+  </button>
+
+  <button class="world" id="w2">
+    ☀️ 2. WOESTIJN
+  </button>
+
+  <button class="world" id="w3">
+    ❄️ 3. IJSBERG
+  </button>
+
+  <button class="world" id="w4">
+    🟣 4. DONKER BOS
+  </button>
+
+  <button class="world" id="w5">
+    🔥 5. VULKAAN
+  </button>
+
+  <button class="world" id="w6">
+    ✨ 6. HEMELRIJK
+  </button>
+
+
+  <!-- Prestaties -->
+
+  <div id="achievement">
+
+    🏆
+    <b>PRESTATIES</b>
+
+    <br>
+
+    <span id="ach">
+      12 / 48 ONTGRENDELD
+    </span>
+
+  </div>
+
+
+  <!-- Popup -->
+
+  <div id="status">
+
+    <div id="statusText"></div>
+
+    <button onclick="closeStatus()">
+      SLUITEN
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     GAME
+========================= -->
+
+<div id="game">
+
+  <canvas id="canvas"></canvas>
+
+  <div id="hud">
+
+    <span id="worldName">
+      GRASLAND
+    </span>
+
+    <span>
+      ❤️❤️❤️
+      &nbsp;
+      🪙
+      <span id="coins">
+        0
+      </span>
+    </span>
+
+  </div>
+
+
+  <button id="back">
+    MENU
+  </button>
+
+
+  <!-- Mobiele besturing -->
+
+  <div id="touch">
+
+    <div class="touchGroup">
+
+      <button class="touch" id="left">
+        ◀
+      </button>
+
+      <button class="touch" id="right">
+        ▶
+      </button>
+
+    </div>
+
+    <button class="touch" id="jump">
+      ▲
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   BASIS
+========================= */
+
+const menu =
+  document.getElementById("menu");
+
+const game =
+  document.getElementById("game");
+
+const canvas =
+  document.getElementById("canvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+
+let W;
+let H;
+
+let world = 1;
+
+let running = false;
+
+let keys = {};
+
+let coinCount = 0;
+
+let cam = 0;
+
+let raf = 0;
+
+
+/* =========================
+   WERELD KLEUREN
+========================= */
+
+const themes = {
+
+  1: {
+    name: "GRASLAND",
+    sky: "#5ca7d8",
+    ground: "#315d2b",
+    accent: "#75c94b"
+  },
+
+  2: {
+    name: "WOESTIJN",
+    sky: "#e8ad5c",
+    ground: "#8b5426",
+    accent: "#e6c05d"
+  },
+
+  3: {
+    name: "IJSBERG",
+    sky: "#77bce0",
+    ground: "#315e83",
+    accent: "#e9fbff"
+  },
+
+  4: {
+    name: "DONKER BOS",
+    sky: "#17213b",
+    ground: "#173728",
+    accent: "#7b4cff"
+  },
+
+  5: {
+    name: "VULKAAN",
+    sky: "#6e2930",
+    ground: "#25252c",
+    accent: "#ff642c"
+  },
+
+  6: {
+    name: "HEMELRIJK",
+    sky: "#8dbce8",
+    ground: "#6683ad",
+    accent: "#fff1a3"
+  }
+
+};
+
+
+/* =========================
+   SPELER
+========================= */
+
+const player = {
+
+  x: 120,
+  y: 0,
+
+  w: 34,
+  h: 48,
+
+  vx: 0,
+  vy: 0,
+
+  onGround: false
+
+};
+
+
+let platforms = [];
+
+let coins = [];
+
+
+/* =========================
+   SCHERM
+========================= */
+
+function resize() {
+
+  W = canvas.width =
+    innerWidth;
+
+  H = canvas.height =
+    innerHeight;
+
+}
+
+addEventListener(
+  "resize",
+  resize
+);
+
+resize();
+
+
+/* =========================
+   LEVEL MAKEN
+========================= */
+
+function makeLevel() {
+
+  platforms = [
+
+    {
+      x: 0,
+      y: H - 90,
+      w: 700,
+      h: 90
+    },
+
+    {
+      x: 780,
+      y: H - 180,
+      w: 230,
+      h: 35
+    },
+
+    {
+      x: 1080,
+      y: H - 280,
+      w: 240,
+      h: 35
+    },
+
+    {
+      x: 1400,
+      y: H - 170,
+      w: 250,
+      h: 35
+    },
+
+    {
+      x: 1740,
+      y: H - 310,
+      w: 220,
+      h: 35
+    },
+
+    {
+      x: 2070,
+      y: H - 220,
+      w: 300,
+      h: 35
+    },
+
+    {
+      x: 2500,
+      y: H - 100,
+      w: 600,
+      h: 100
+    }
+
+  ];
+
+
+  coins = Array.from(
+    { length: 12 },
+    (_, i) => ({
+
+      x: 520 + i * 170,
+
+      y:
+        H -
+        180 -
+        (i % 3) * 75,
+
+      r: 9,
+
+      got: false
+
+    })
+  );
+
+
+  player.x = 120;
+
+  player.y =
+    H - 160;
+
+  player.vx = 0;
+
+  player.vy = 0;
+
+  cam = 0;
+
+  coinCount = 0;
+
+}
+
+
+/* =========================
+   BOOM
+========================= */
+
+function drawPixelTree(x, y) {
+
+  ctx.fillStyle =
+    "#6b3e22";
+
+  ctx.fillRect(
+    x - 10,
+    y - 70,
+    20,
+    70
+  );
+
+
+  ctx.fillStyle =
+    themes[world].accent;
+
+  ctx.fillRect(
+    x - 42,
+    y - 95,
+    84,
+    45
+  );
+
+  ctx.fillRect(
+    x - 28,
+    y - 120,
+    56,
+    35
+  );
+
+
+  ctx.fillStyle =
+    "#2b7a3a";
+
+  ctx.fillRect(
+    x - 34,
+    y - 82,
+    68,
+    20
+  );
+
+}
+
+
+/* =========================
+   TEKENEN
+========================= */
+
+function draw() {
+
+  const t =
+    themes[world];
+
+
+  /* lucht */
+
+  ctx.fillStyle =
+    t.sky;
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+
+  /* wolken */
+
+  ctx.fillStyle =
+    "rgba(255,255,255,.65)";
+
+
+  for (
+    let i = 0;
+    i < 8;
+    i++
+  ) {
+
+    let x =
+      (i * 360 -
+       cam * .15)
+      % (W + 400)
+      - 100;
+
+    let y =
+      80 +
+      (i % 3) * 70;
+
+
+    ctx.fillRect(
+      x,
+      y,
+      110,
+      25
+    );
+
+    ctx.fillRect(
+      x + 25,
+      y - 18,
+      60,
+      35
+    );
+
+    ctx.fillRect(
+      x + 70,
+      y + 5,
+      60,
+      20
+    );
+
+  }
+
+
+  /* bergen */
+
+  ctx.fillStyle =
+    "rgba(30,60,80,.45)";
+
+
+  for (
+    let x = -200;
+    x < W + 400;
+    x += 220
+  ) {
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      x,
+      H - 130
+    );
+
+    ctx.lineTo(
+      x + 110,
+      H - 300
+    );
+
+    ctx.lineTo(
+      x + 220,
+      H - 130
+    );
+
+    ctx.fill();
+
+  }
+
+
+  ctx.save();
+
+  ctx.translate(
+    -cam,
+    0
+  );
+
+
+  /* platformen */
+
+  platforms.forEach(
+    p => {
+
+      ctx.fillStyle =
+        t.ground;
+
+      ctx.fillRect(
+        p.x,
+        p.y,
+        p.w,
+        p.h
+      );
+
+
+      ctx.fillStyle =
+        t.accent;
+
+      ctx.fillRect(
+        p.x,
+        p.y,
+        p.w,
+        10
+      );
+
+
+      for (
+        let x = p.x;
+        x < p.x + p.w;
+        x += 28
+      ) {
+
+        ctx.fillStyle =
+          "rgba(0,0,0,.18)";
+
+        ctx.fillRect(
+          x,
+          p.y + 10,
+          14,
+          10
+        );
+
+      }
+
+    }
+  );
+
+
+  /* bomen */
+
+  for (
+    let i = 0;
+    i < 5;
+    i++
+  ) {
+
+    drawPixelTree(
+      300 + i * 560,
+      H - 90
+    );
+
+  }
+
+
+  /* munten */
+
+  coins.forEach(c => {
+
+    if (c.got)
+      return;
+
+
+    ctx.fillStyle =
+      "#ffd23d";
+
+    ctx.fillRect(
+      c.x - 8,
+      c.y - 10,
+      16,
+      20
+    );
+
+
+    ctx.fillStyle =
+      "#fff09a";
+
+    ctx.fillRect(
+      c.x - 3,
+      c.y - 7,
+      4,
+      14
+    );
+
+  });
+
+
+  /* speler */
+
+  ctx.fillStyle =
+    "#24314d";
+
+  ctx.fillRect(
+    player.x,
+    player.y,
+    player.w,
+    player.h
+  );
+
+
+  /* hoofd */
+
+  ctx.fillStyle =
+    "#8b5a32";
+
+  ctx.fillRect(
+    player.x + 7,
+    player.y - 12,
+    22,
+    16
+  );
+
+
+  /* cape */
+
+  ctx.fillStyle =
+    "#2d6ab1";
+
+  ctx.fillRect(
+    player.x - 7,
+    player.y + 13,
+    13,
+    27
+  );
+
+
+  /* zwaard */
+
+  ctx.fillStyle =
+    "#d9e6ef";
+
+  ctx.fillRect(
+    player.x + 25,
+    player.y + 17,
+    5,
+    30
+  );
+
+
+  /* oog */
+
+  ctx.fillStyle =
+    "#111";
+
+  ctx.fillRect(
+    player.x + 22,
+    player.y + 4,
+    4,
+    4
+  );
+
+
+  ctx.restore();
+
+}
+
+
+/* =========================
+   GAME UPDATE
+========================= */
+
+function update() {
+
+  if (!running)
+    return;
+
+
+  const speed = .65;
+
+
+  /* links */
+
+  if (
+    keys.ArrowLeft ||
+    keys.a
+  ) {
+
+    player.vx -= speed;
+
+  }
+
+
+  /* rechts */
+
+  if (
+    keys.ArrowRight ||
+    keys.d
+  ) {
+
+    player.vx += speed;
+
+  }
+
+
+  player.vx *= .82;
+
+
+  player.vx =
+    Math.max(
+      -6,
+      Math.min(
+        6,
+        player.vx
+      )
+    );
+
+
+  /* springen */
+
+  if (
+    (
+      keys.ArrowUp ||
+      keys.w ||
+      keys[" "]
+    )
+    &&
+    player.onGround
+  ) {
+
+    player.vy = -13;
+
+    player.onGround =
+      false;
+
+  }
+
+
+  /* zwaartekracht */
+
+  player.vy += .65;
+
+
+  player.x +=
+    player.vx;
+
+  player.y +=
+    player.vy;
+
+
+  player.onGround =
+    false;
+
+
+  /* platform collision */
+
+  for (
+    const p of platforms
+  ) {
+
+    if (
+
+      player.x +
+      player.w >
+      p.x
+
+      &&
+
+      player.x <
+      p.x + p.w
+
+      &&
+
+      player.y +
+      player.h >=
+      p.y
+
+      &&
+
+      player.y +
+      player.h <=
+      p.y + 22
+
+      &&
+
+      player.vy >= 0
+
+    ) {
+
+      player.y =
+        p.y -
+        player.h;
+
+      player.vy = 0;
+
+      player.onGround =
+        true;
+
+    }
+
+  }
+
+
+  /* munten */
+
+  coins.forEach(
+    c => {
+
+      if (
+        !c.got &&
+
+        Math.abs(
+          player.x +
+          player.w / 2 -
+          c.x
+        ) < 25 &&
+
+        Math.abs(
+          player.y +
+          player.h / 2 -
+          c.y
+        ) < 35
+
+      ) {
+
+        c.got = true;
+
+        coinCount++;
+
+        document
+          .getElementById(
+            "coins"
+          )
+          .textContent =
+          coinCount;
+
+      }
+
+    }
+  );
+
+
+  /* reset */
+
+  if (
+    player.y >
+    H + 200
+  ) {
+
+    player.x = 120;
+
+    player.y =
+      H - 160;
+
+    player.vy = 0;
+
+  }
+
+
+  /* camera */
+
+  cam +=
+    (
+      player.x -
+      W * .35 -
+      cam
+    ) * .08;
+
+
+  cam =
+    Math.max(
+      0,
+      Math.min(
+        cam,
+        2200
+      )
+    );
+
+
+  draw();
+
+
+  raf =
+    requestAnimationFrame(
+      update
+    );
+
+}
+
+
+/* =========================
+   GAME STARTEN
+========================= */
+
+function startGame(n = 1) {
+
+  world = n;
+
+
+  document
+    .getElementById(
+      "worldName"
+    )
+    .textContent =
+    themes[world].name;
+
+
+  menu.style.display =
+    "none";
+
+  game.style.display =
+    "block";
+
+
+  running = true;
+
+
+  makeLevel();
+
+
+  cancelAnimationFrame(
+    raf
+  );
+
+
+  update();
+
+}
+
+
+/* =========================
+   TERUG NAAR MENU
+========================= */
+
+function backMenu() {
+
+  running = false;
+
+  cancelAnimationFrame(
+    raf
+  );
+
+  game.style.display =
+    "none";
+
+  menu.style.display =
+    "block";
+
+}
+
+
+/* =========================
+   POPUP
+========================= */
+
+function showStatus(text) {
+
+  document
+    .getElementById(
+      "statusText"
+    )
+    .textContent =
+    text;
+
+
+  document
+    .getElementById(
+      "status"
+    )
+    .style.display =
+    "block";
+
+}
+
+
+function closeStatus() {
+
+  document
+    .getElementById(
+      "status"
+    )
+    .style.display =
+    "none";
+
+}
+
+
+/* =========================
+   KNOPPEN
+========================= */
+
+document
+  .getElementById("start")
+  .onclick =
+  () => startGame(1);
+
+
+document
+  .getElementById("worlds")
+  .onclick =
+  () =>
+    showStatus(
+      "Kies hieronder een wereld om direct te spelen."
+    );
+
+
+document
+  .getElementById("settings")
+  .onclick =
+  () =>
+    showStatus(
+      "INSTELLINGEN\n\n" +
+      "Pijltjes / A-D = bewegen\n" +
+      "Spatie / W / ▲ = springen"
+    );
+
+
+document
+  .getElementById("extras")
+  .onclick =
+  () =>
+    showStatus(
+      "EXTRA'S\n\n" +
+      "Pixel Quest • 6 werelden • 48 prestaties"
+    );
+
+
+document
+  .getElementById("quit")
+  .onclick =
+  () =>
+    showStatus(
+      "Je kunt dit tabblad nu sluiten."
+    );
+
+
+document
+  .getElementById("back")
+  .onclick =
+  backMenu;
+
+
+/* Werelden */
+
+[1,2,3,4,5,6]
+.forEach(
+  n => {
+
+    document
+      .getElementById(
+        "w" + n
+      )
+      .onclick =
+      () =>
+        startGame(n);
+
+  }
+);
+
+
+/* =========================
+   TOETSENBORD
+========================= */
+
+addEventListener(
+  "keydown",
+  e => {
+
+    keys[e.key] =
+      true;
+
+    if (
+      [
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        " "
+      ].includes(e.key)
+    ) {
+
+      e.preventDefault();
+
+    }
+
+  }
+);
+
+
+addEventListener(
+  "keyup",
+  e => {
+
+    keys[e.key] =
+      false;
+
+  }
+);
+
+
+/* =========================
+   MOBIELE BESTURING
+========================= */
+
+function hold(
+  id,
+  key
+) {
+
+  const b =
+    document.getElementById(
+      id
+    );
+
+
+  [
+    "pointerdown",
+    "touchstart"
+  ]
+  .forEach(
+    ev =>
+      b.addEventListener(
+        ev,
+        e => {
+
+          e.preventDefault();
+
+          keys[key] = true;
+
+        }
+      )
+  );
+
+
+  [
+    "pointerup",
+    "pointercancel",
+    "pointerleave",
+    "touchend"
+  ]
+  .forEach(
+    ev =>
+      b.addEventListener(
+        ev,
+        e => {
+
+          e.preventDefault();
+
+          keys[key] = false;
+
+        }
+      )
+  );
+
+}
+
+
+hold(
+  "left",
+  "ArrowLeft"
+);
+
+hold(
+  "right",
+  "ArrowRight"
+);
+
+hold(
+  "jump",
+  "ArrowUp"
+);
+
+</script>
+
+</body>
+</html>
