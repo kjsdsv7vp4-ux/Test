@@ -2,1069 +2,1640 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Realm of Legends</title>
-
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
+*{box-sizing:border-box}
 html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#080914;
-    font-family:monospace;
+ margin:0;width:100%;height:100%;overflow:hidden;
+ background:#090b14;font-family:Arial,sans-serif;
 }
-
-body{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
+body{touch-action:none}
 canvas{
-    image-rendering:pixelated;
-    image-rendering:crisp-edges;
-    width:100vw;
-    height:100vh;
-    object-fit:contain;
-    background:#101522;
-}
-
-button{
-    font-family:monospace;
+ display:block;width:100vw;height:100vh;
+ image-rendering:pixelated;
+ image-rendering:crisp-edges;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="game" width="480" height="270"></canvas>
+<canvas id="game" width="960" height="540"></canvas>
 
 <script>
 "use strict";
 
-/* =========================================================
-   REALM OF LEGENDS
-   16-BIT JRPG PIXEL STYLE
-   ========================================================= */
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+ctx.imageSmoothingEnabled=false;
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const W=960,H=540;
 
-ctx.imageSmoothingEnabled = false;
+let screen="title";
+let selected=0;
+let room="island";
+let message="";
+let msgTime=0;
 
-const W = canvas.width;
-const H = canvas.height;
+const keys={};
 
-let screen = "title";
-let selectedCharacter = 0;
-let gameStarted = false;
-
-let keys = {};
-
-let player = {
-    x: 240,
-    y: 190,
-    speed: 1.55,
-    dir: 0,
-    frame: 0
-};
-
-const characters = [
-    {
-        name:"WARRIOR",
-        color:"#4e7cff",
-        hair:"#542d23",
-        armor:"#4269a9",
-        weapon:"#d9dce5",
-        desc:"Sterke krijger met een zwaar zwaard."
-    },
-    {
-        name:"MAGE",
-        color:"#a65cff",
-        hair:"#211833",
-        armor:"#633da0",
-        weapon:"#7be8ff",
-        desc:"Meester van krachtige magie."
-    },
-    {
-        name:"ARCHER",
-        color:"#51c66b",
-        hair:"#633b27",
-        armor:"#39784b",
-        weapon:"#c69b58",
-        desc:"Snelle boogschutter uit het bos."
-    },
-    {
-        name:"KNIGHT",
-        color:"#d8b34d",
-        hair:"#493a32",
-        armor:"#78818f",
-        weapon:"#e7eaf0",
-        desc:"Ridder met zware verdediging."
-    }
+const heroes=[
+ {name:"Warrior",color:"#3b75c7",hp:150,mp:55},
+ {name:"Mage",color:"#8149bd",hp:105,mp:100},
+ {name:"Archer",color:"#3b9b63",hp:115,mp:75},
+ {name:"Knight",color:"#b88a32",hp:175,mp:45}
 ];
 
-/* =========================================================
-   INPUT
-   ========================================================= */
+/* =========================
+   SWORDS
+========================= */
 
-window.addEventListener("keydown",e=>{
-    keys[e.key.toLowerCase()] = true;
+const swords=[
 
-    if(screen==="title"){
-        if(e.key==="Enter" || e.key===" "){
-            screen="select";
-        }
-    }
-    else if(screen==="select"){
-        if(e.key==="ArrowLeft" || e.key.toLowerCase()==="a"){
-            selectedCharacter--;
-            if(selectedCharacter<0) selectedCharacter=characters.length-1;
-        }
+ {
+  name:"Iron Sword",
+  rarity:"Common",
+  color:"#d7d7d7",
+  damage:8,
+  ability:"Power Slash"
+ },
 
-        if(e.key==="ArrowRight" || e.key.toLowerCase()==="d"){
-            selectedCharacter++;
-            if(selectedCharacter>=characters.length) selectedCharacter=0;
-        }
+ {
+  name:"Forest Blade",
+  rarity:"Uncommon",
+  color:"#58b86a",
+  damage:13,
+  ability:"Vine Strike"
+ },
 
-        if(e.key==="Enter" || e.key===" "){
-            startGame();
-        }
-    }
-});
+ {
+  name:"Crystal Sword",
+  rarity:"Rare",
+  color:"#5dc8ff",
+  damage:19,
+  ability:"Crystal Burst"
+ },
 
-window.addEventListener("keyup",e=>{
-    keys[e.key.toLowerCase()] = false;
-});
+ {
+  name:"Shadow Blade",
+  rarity:"Epic",
+  color:"#b66cff",
+  damage:27,
+  ability:"Shadow Dash"
+ },
 
-canvas.addEventListener("click",e=>{
-    if(screen==="title"){
-        screen="select";
-    }
-});
+ {
+  name:"Dragon Sword",
+  rarity:"Legendary",
+  color:"#ffd34e",
+  damage:39,
+  ability:"Dragon Flame"
+ },
 
-/* =========================================================
-   COLORS
-   ========================================================= */
+ {
+  name:"Celestial Blade",
+  rarity:"Mythic",
+  color:"#ff75d1",
+  damage:55,
+  ability:"Heavenly Strike"
+ }
 
-const C = {
-    black:"#090b16",
-    dark:"#151a2b",
-    deep:"#22263d",
-    sky1:"#f29b78",
-    sky2:"#c85f70",
-    sky3:"#6e4b72",
-    mountain:"#26263b",
-    mountain2:"#35344e",
-    forestDark:"#102b27",
-    forest:"#174436",
-    forestLight:"#286248",
-    grass:"#3c7950",
-    grass2:"#57975a",
-    water:"#245a7b",
-    waterLight:"#397e9d",
-    sand:"#d6b878",
-    stone:"#737889",
-    stoneDark:"#45495b",
-    gold:"#f1cb63",
-    white:"#fff2cf",
-    red:"#c94747"
+];
+
+let owned=[0];
+let equipped=0;
+
+/* =========================
+   PLAYER
+========================= */
+
+let player={
+ x:470,
+ y:320,
+ hp:150,
+ mp:55
 };
 
-/* =========================================================
-   UTILS
-   ========================================================= */
+let enemies=[
+ {x:650,y:260,hp:50,max:50,type:"slime"},
+ {x:760,y:350,hp:70,max:70,type:"wolf"},
+ {x:350,y:180,hp:45,max:45,type:"slime"}
+];
 
-function rect(x,y,w,h,c){
-    ctx.fillStyle=c;
-    ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));
+/* =========================
+   DRAW HELPERS
+========================= */
+
+function rect(x,y,w,h,color){
+ ctx.fillStyle=color;
+ ctx.fillRect(x,y,w,h);
 }
 
-function px(x,y,c){
-    rect(x,y,1,1,c);
+function text(t,x,y,size=16,color="#fff"){
+ ctx.font="bold "+size+"px Arial";
+ ctx.fillStyle=color;
+ ctx.fillText(t,x,y);
 }
 
-function text(str,x,y,size=8,color=C.white,align="left"){
-    ctx.font=`bold ${size}px monospace`;
-    ctx.textAlign=align;
-    ctx.textBaseline="middle";
-    ctx.fillStyle=color;
-    ctx.fillText(str,x,y);
+function panel(x,y,w,h,color="#151a28",stroke="#c9a85b"){
+ rect(x,y,w,h,color);
+ ctx.strokeStyle=stroke;
+ ctx.lineWidth=3;
+ ctx.strokeRect(x,y,w,h);
 }
 
-function shadowText(str,x,y,size=8,color=C.white,align="left"){
-    text(str,x+1,y+1,size,C.black,align);
-    text(str,x,y,size,color,align);
+function stars(){
+
+ for(let i=0;i<100;i++){
+
+  let sx=(i*83)%960;
+  let sy=(i*47)%280;
+
+  rect(
+   sx,
+   sy,
+   2,
+   2,
+   i%3 ? "#f5e8a8" : "#fff"
+  );
+
+ }
+
 }
 
-function clamp(v,a,b){
-    return Math.max(a,Math.min(b,v));
+/* =========================
+   TITLE SCREEN
+========================= */
+
+function title(){
+
+ let gradient=ctx.createLinearGradient(0,0,0,H);
+
+ gradient.addColorStop(0,"#111c45");
+ gradient.addColorStop(.55,"#7b4663");
+ gradient.addColorStop(1,"#e59b52");
+
+ ctx.fillStyle=gradient;
+ ctx.fillRect(0,0,W,H);
+
+ stars();
+
+ /* mountains */
+
+ ctx.fillStyle="#28375c";
+
+ ctx.beginPath();
+ ctx.moveTo(0,390);
+ ctx.lineTo(160,245);
+ ctx.lineTo(280,370);
+ ctx.lineTo(430,215);
+ ctx.lineTo(590,370);
+ ctx.lineTo(760,230);
+ ctx.lineTo(960,380);
+ ctx.lineTo(960,540);
+ ctx.lineTo(0,540);
+ ctx.fill();
+
+ /* forest */
+
+ ctx.fillStyle="#162b31";
+
+ ctx.beginPath();
+ ctx.moveTo(0,450);
+ ctx.lineTo(170,350);
+ ctx.lineTo(300,430);
+ ctx.lineTo(450,330);
+ ctx.lineTo(600,430);
+ ctx.lineTo(760,335);
+ ctx.lineTo(960,425);
+ ctx.lineTo(960,540);
+ ctx.lineTo(0,540);
+ ctx.fill();
+
+ /* ground */
+
+ rect(0,430,960,110,"#2d653b");
+
+ for(let i=0;i<100;i++){
+
+  rect(
+   (i*97)%960,
+   430+(i*29)%100,
+   3,
+   3,
+   i%2 ? "#75a94e" : "#b8c76b"
+  );
+
+ }
+
+ /* castle */
+
+ drawCastle(640,310,1);
+
+ /* hero looking away */
+
+ drawHero(500,430,1.7,true);
+
+ /* logo */
+
+ panel(40,35,350,95,"#11182a","#e3c26b");
+
+ text(
+  "REALM OF",
+  63,72,22,
+  "#e9d18b"
+ );
+
+ text(
+  "LEGENDS",
+  63,105,35,
+  "#fff4c7"
+ );
+
+ /* menu */
+
+ panel(45,155,250,245,"#111827","#c9a85b");
+
+ text("START",80,205,28,"#ffe58b");
+ text("WERELDEN",80,250,22);
+ text("INVENTORY",80,290,22);
+ text("INSTELLINGEN",80,330,18);
+ text("EXTRA'S",80,365,18);
+
+ text(
+  "Tik of druk ENTER",
+  65,435,16,
+  "#ffe58b"
+ );
+
 }
 
-/* =========================================================
-   PIXEL CLOUDS
-   ========================================================= */
+/* =========================
+   CHARACTER SELECT
+========================= */
 
-function cloud(x,y,s=1){
-    rect(x,y,24*s,4*s,"#f6c5ae");
-    rect(x+5*s,y-3*s,13*s,4*s,"#f6c5ae");
-    rect(x+11*s,y-5*s,8*s,3*s,"#f6c5ae");
+function selectScreen(){
+
+ rect(0,0,W,H,"#10192a");
+
+ stars();
+
+ text(
+  "KIES JE HELD",
+  310,55,30,
+  "#ffe6a0"
+ );
+
+ for(let i=0;i<4;i++){
+
+  let xx=35+i*230;
+
+  panel(
+   xx,90,205,290,
+   i===selected ? "#263653" : "#151d2e",
+   i===selected ? "#ffd45c" : "#57627a"
+  );
+
+  drawHero(
+   xx+102,
+   190,
+   1.5,
+   false,
+   i
+  );
+
+  text(
+   heroes[i].name,
+   xx+45,
+   330,
+   20,
+   i===selected ? "#ffe48a" : "#fff"
+  );
+
+  text(
+   "HP "+heroes[i].hp+
+   "  MP "+heroes[i].mp,
+   xx+30,
+   360,
+   14,
+   "#bcd4ff"
+  );
+
+ }
+
+ panel(
+  300,415,360,75,
+  "#202d46","#e7bd55"
+ );
+
+ text(
+  "START GAME",
+  402,462,25,
+  "#fff0a5"
+ );
+
 }
 
-/* =========================================================
-   TREE
-   ========================================================= */
-
-function tree(x,y,s=1){
-    // shadow
-    rect(x-7*s,y+19*s,18*s,4*s,"#0d241f");
-
-    // trunk
-    rect(x,y+9*s,5*s,14*s,"#533627");
-    rect(x+4*s,y+11*s,3*s,12*s,"#39271f");
-
-    // dark foliage
-    rect(x-8*s,y-2*s,20*s,15*s,C.forestDark);
-    rect(x-5*s,y-7*s,14*s,9*s,C.forestDark);
-    rect(x-11*s,y+2*s,9*s,8*s,C.forestDark);
-
-    // main foliage
-    rect(x-5*s,y-4*s,14*s,12*s,C.forest);
-    rect(x-9*s,y+1*s,7*s,7*s,C.forest);
-    rect(x+6*s,y+2*s,7*s,7*s,C.forest);
-
-    // highlights
-    rect(x-3*s,y-3*s,5*s,3*s,C.forestLight);
-    rect(x-7*s,y+2*s,4*s,3*s,C.forestLight);
-    rect(x+3*s,y+1*s,4*s,4*s,C.forestLight);
-}
-
-/* =========================================================
-   MOUNTAIN
-   ========================================================= */
-
-function mountain(x,y,w,h){
-    ctx.fillStyle=C.mountain;
-    ctx.beginPath();
-    ctx.moveTo(x,y+h);
-    ctx.lineTo(x+w*0.48,y);
-    ctx.lineTo(x+w,y+h);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle=C.mountain2;
-    ctx.beginPath();
-    ctx.moveTo(x+w*0.48,y);
-    ctx.lineTo(x+w*0.29,y+h*0.4);
-    ctx.lineTo(x+w*0.42,y+h*0.35);
-    ctx.lineTo(x+w*0.55,y+h*0.58);
-    ctx.lineTo(x+w*0.69,y+h*0.38);
-    ctx.lineTo(x+w,y+h);
-    ctx.lineTo(x,y+h);
-    ctx.closePath();
-    ctx.fill();
-}
-
-/* =========================================================
-   CASTLE
-   ========================================================= */
-
-function castle(x,y,s=1){
-    // giant shadow
-    rect(x-34*s,y+48*s,76*s,6*s,"#25243a");
-
-    // main castle
-    rect(x-29*s,y+4*s,58*s,45*s,"#77798a");
-    rect(x-23*s,y-7*s,13*s,56*s,"#858796");
-    rect(x+10*s,y-12*s,15*s,61*s,"#8b8d9b");
-
-    // towers
-    rect(x-34*s,y-13*s,15*s,62*s,"#656877");
-    rect(x+23*s,y-18*s,15*s,67*s,"#666a79");
-
-    // roofs
-    ctx.fillStyle="#343649";
-
-    ctx.beginPath();
-    ctx.moveTo(x-37*s,y-13*s);
-    ctx.lineTo(x-26*s,y-25*s);
-    ctx.lineTo(x-16*s,y-13*s);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(x+20*s,y-18*s);
-    ctx.lineTo(x+30*s,y-31*s);
-    ctx.lineTo(x+41*s,y-18*s);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(x+7*s,y-12*s);
-    ctx.lineTo(x+17*s,y-25*s);
-    ctx.lineTo(x+28*s,y-12*s);
-    ctx.closePath();
-    ctx.fill();
-
-    // windows
-    rect(x-30*s,y+1*s,4*s,8*s,C.gold);
-    rect(x+28*s,y-4*s,4*s,8*s,C.gold);
-    rect(x+14*s,y-1*s,4*s,8*s,C.gold);
-
-    // gate
-    rect(x-7*s,y+29*s,14*s,20*s,"#282837");
-    rect(x-4*s,y+32*s,8*s,17*s,"#151722");
-
-    // flag
-    rect(x+17*s,y-38*s,2*s,18*s,C.gold);
-    rect(x+19*s,y-37*s,11*s,6*s,C.red);
-}
-
-/* =========================================================
-   WEAPON ON GROUND
-   ========================================================= */
-
-function groundSword(x,y,s=1){
-    // shadow
-    rect(x-2*s,y+4*s,28*s,3*s,"#181728");
-
-    // blade
-    rect(x+3*s,y-2*s,21*s,3*s,"#d9e1ea");
-    rect(x+7*s,y-5*s,17*s,2*s,"#f4f5f8");
-    rect(x+23*s,y-2*s,4*s,2*s,"#b8c2cc");
-
-    // guard
-    rect(x+1*s,y-4*s,3*s,9*s,C.gold);
-    rect(x-2*s,y-1*s,7*s,3*s,C.gold);
-
-    // handle
-    rect(x-8*s,y-1*s,8*s,3*s,"#70462c");
-    rect(x-10*s,y-2*s,3*s,5*s,"#3b2922");
-}
-
-/* =========================================================
-   CHARACTER BACK SPRITE
-   ========================================================= */
-
-function heroBack(x,y,type=0,scale=1,anim=0){
-    const ch=characters[type];
-
-    // shadow
-    rect(x-8*scale,y+17*scale,16*scale,4*scale,"#191827");
-
-    // cape/back
-    if(type===1){
-        rect(x-7*scale,y-2*scale,14*scale,18*scale,ch.armor);
-        rect(x-5*scale,y+1*scale,10*scale,12*scale,"#3d246c");
-    }else{
-        rect(x-7*scale,y-1*scale,14*scale,16*scale,ch.armor);
-    }
-
-    // legs
-    rect(x-6*scale,y+13*scale,5*scale,7*scale,"#292b39");
-    rect(x+2*scale,y+13*scale,5*scale,7*scale,"#292b39");
-
-    if(anim%2===1){
-        rect(x-7*scale,y+18*scale,6*scale,3*scale,"#171821");
-        rect(x+2*scale,y+17*scale,6*scale,3*scale,"#171821");
-    }
-
-    // shoulders
-    rect(x-10*scale,y+1*scale,4*scale,8*scale,ch.armor);
-    rect(x+6*scale,y+1*scale,4*scale,8*scale,ch.armor);
-
-    // neck
-    rect(x-3*scale,y-5*scale,6*scale,5*scale,"#d49b72");
-
-    // hair
-    rect(x-7*scale,y-12*scale,14*scale,10*scale,ch.hair);
-    rect(x-5*scale,y-15*scale,10*scale,4*scale,ch.hair);
-    rect(x-9*scale,y-8*scale,3*scale,6*scale,ch.hair);
-    rect(x+6*scale,y-8*scale,3*scale,6*scale,ch.hair);
-
-    // armor details
-    rect(x-4*scale,y+2*scale,2*scale,7*scale,ch.color);
-    rect(x+2*scale,y+2*scale,2*scale,7*scale,ch.color);
-
-    // weapon depending class
-    if(type===0 || type===3){
-        rect(x+9*scale,y+3*scale,2*scale,15*scale,ch.weapon);
-        rect(x+7*scale,y+3*scale,6*scale,2*scale,C.gold);
-    }
-
-    if(type===1){
-        rect(x+9*scale,y-1*scale,2*scale,12*scale,ch.weapon);
-        rect(x+7*scale,y+7*scale,7*scale,2*scale,ch.weapon);
-    }
-
-    if(type===2){
-        // bow
-        ctx.strokeStyle=ch.weapon;
-        ctx.lineWidth=Math.max(1,scale);
-        ctx.beginPath();
-        ctx.arc(x+9*scale,y+6*scale,7*scale,-1.3,1.3);
-        ctx.stroke();
-    }
-}
-
-/* =========================================================
-   START SCENE
-   ========================================================= */
-
-function drawStartScene(){
-
-    // sky gradient
-    const grad=ctx.createLinearGradient(0,0,0,190);
-    grad.addColorStop(0,"#403c72");
-    grad.addColorStop(.35,"#8d5575");
-    grad.addColorStop(.7,"#d76d70");
-    grad.addColorStop(1,"#f1a06f");
-
-    ctx.fillStyle=grad;
-    ctx.fillRect(0,0,W,H);
-
-    // moon/sun
-    ctx.fillStyle="#ffd78b";
-    ctx.beginPath();
-    ctx.arc(385,55,24,0,Math.PI*2);
-    ctx.fill();
-
-    // clouds
-    cloud(40,39,1);
-    cloud(115,68,1);
-    cloud(300,30,1);
-    cloud(405,92,1);
-
-    // distant mountains
-    mountain(-40,108,180,90);
-    mountain(80,98,190,100);
-    mountain(220,105,200,95);
-    mountain(350,96,180,100);
-
-    // distant island
-    rect(0,166,480,104,C.grass);
-
-    // water strips
-    rect(0,157,480,9,C.water);
-    rect(0,162,480,5,C.waterLight);
-
-    // distant forest
-    for(let x=-10;x<490;x+=13){
-        let yy=148+Math.sin(x*.12)*7;
-        tree(x,yy,.72);
-    }
-
-    // castle
-    castle(330,111,1.15);
-
-    // castle path
-    ctx.fillStyle="#a18b67";
-    ctx.beginPath();
-    ctx.moveTo(313,164);
-    ctx.lineTo(346,164);
-    ctx.lineTo(245,225);
-    ctx.lineTo(215,225);
-    ctx.closePath();
-    ctx.fill();
-
-    // forests foreground
-    for(let x=0;x<210;x+=16){
-        tree(x,178+Math.sin(x)*3,.95);
-    }
-
-    for(let x=360;x<490;x+=16){
-        tree(x,177+Math.sin(x)*3,.95);
-    }
-
-    // foreground mountain ledge
-    ctx.fillStyle="#242438";
-    ctx.beginPath();
-    ctx.moveTo(0,220);
-    ctx.lineTo(70,205);
-    ctx.lineTo(125,215);
-    ctx.lineTo(178,199);
-    ctx.lineTo(235,215);
-    ctx.lineTo(300,203);
-    ctx.lineTo(360,217);
-    ctx.lineTo(420,207);
-    ctx.lineTo(480,218);
-    ctx.lineTo(480,270);
-    ctx.lineTo(0,270);
-    ctx.closePath();
-    ctx.fill();
-
-    // mountain grass pixels
-    for(let x=0;x<480;x+=9){
-        let y=214+Math.sin(x*.09)*5;
-        rect(x,y,4,2,C.forestLight);
-    }
-
-    // hero
-    const heroX=238;
-    const heroY=210;
-
-    heroBack(
-        heroX,
-        heroY,
-        selectedCharacter,
-        2.0,
-        Math.floor(performance.now()/400)
-    );
-
-    // sword
-    groundSword(255,232,1.35);
-
-    // title
-    shadowText(
-        "REALM OF LEGENDS",
-        W/2,
-        24,
-        18,
-        C.gold,
-        "center"
-    );
-
-    shadowText(
-        "THE LOST ISLAND",
-        W/2,
-        43,
-        7,
-        C.white,
-        "center"
-    );
-
-    // start box
-    rect(164,245,152,20,"#121524");
-    rect(166,247,148,16,"#242a42");
-
-    shadowText(
-        "▶  START",
-        W/2,
-        255,
-        10,
-        C.gold,
-        "center"
-    );
-
-    text(
-        "ENTER / TAP",
-        W/2,
-        267,
-        5,
-        "#d8d5c7",
-        "center"
-    );
-}
-
-/* =========================================================
-   CHARACTER SELECTION
-   ========================================================= */
-
-function drawSelection(){
-
-    // background
-    ctx.fillStyle="#101628";
-    ctx.fillRect(0,0,W,H);
-
-    // pixel background
-    for(let y=0;y<H;y+=6){
-        rect(0,y,W,1,"#151d32");
-    }
-
-    shadowText(
-        "CHOOSE YOUR HERO",
-        W/2,
-        25,
-        16,
-        C.gold,
-        "center"
-    );
-
-    text(
-        "←  A   D  →",
-        W/2,
-        43,
-        7,
-        "#aaaec3",
-        "center"
-    );
-
-    // cards
-    for(let i=0;i<characters.length;i++){
-
-        const x=60+i*120;
-        const active=i===selectedCharacter;
-
-        rect(
-            x-39,
-            62,
-            78,
-            135,
-            active ? "#343b61" : "#1d2338"
-        );
-
-        rect(
-            x-36,
-            65,
-            72,
-            129,
-            active ? "#252c4b" : "#171d30"
-        );
-
-        if(active){
-            rect(x-32,68,64,3,C.gold);
-            rect(x-32,191,64,3,C.gold);
-        }
-
-        // character
-        heroBack(
-            x,
-            135,
-            i,
-            3,
-            Math.floor(performance.now()/350)
-        );
-
-        shadowText(
-            characters[i].name,
-            x,
-            176,
-            8,
-            active ? C.gold : C.white,
-            "center"
-        );
-    }
-
-    // description
-    rect(92,207,296,28,"#161b2d");
-    text(
-        characters[selectedCharacter].desc,
-        W/2,
-        219,
-        6,
-        "#d9d8cf",
-        "center"
-    );
-
-    shadowText(
-        "ENTER / TAP TO SELECT",
-        W/2,
-        250,
-        8,
-        C.gold,
-        "center"
-    );
-
-    text(
-        "SELECTED: "+characters[selectedCharacter].name,
-        W/2,
-        263,
-        5,
-        "#aaaec3",
-        "center"
-    );
-}
-
-/* =========================================================
+/* =========================
    WORLD
-   ========================================================= */
+========================= */
 
-const worldTrees=[];
+function world(){
 
-function generateWorld(){
+ rect(0,0,W,H,"#4b8f58");
 
-    worldTrees.length=0;
+ /* river */
 
-    for(let i=0;i<180;i++){
+ rect(0,250,960,80,"#2b7fa3");
 
-        const x=Math.random()*900;
-        const y=Math.random()*650;
+ for(let i=0;i<960;i+=38){
 
-        // keep central village open
-        if(x>300&&x<620&&y>220&&y<430) continue;
+  rect(
+   i,
+   270+(i%3)*8,
+   24,
+   3,
+   "#75d0d1"
+  );
 
-        worldTrees.push({
-            x,
-            y,
-            s:.7+Math.random()*.7
-        });
-    }
+ }
+
+ /* grass */
+
+ for(let i=0;i<180;i++){
+
+  let xx=(i*67)%960;
+  let yy=(i*41)%500;
+
+  if(yy>245 && yy<340) continue;
+
+  rect(
+   xx,
+   yy,
+   3,
+   3,
+   i%3 ? "#356b3c" : "#a3bd5a"
+  );
+
+ }
+
+ /* paths */
+
+ rect(0,370,960,35,"#b38b55");
+ rect(450,0,40,540,"#b38b55");
+
+ /* bridge */
+
+ rect(425,245,90,90,"#744d31");
+
+ for(let yy=250;yy<335;yy+=15){
+
+  rect(
+   430,
+   yy,
+   80,
+   7,
+   "#c08b4f"
+  );
+
+ }
+
+ /* trees */
+
+ for(let i=0;i<35;i++){
+
+  let tx=(i*137)%930;
+  let ty=70+(i*83)%390;
+
+  if(tx>410 && tx<530) continue;
+
+  tree(tx,ty);
+
+ }
+
+ /* houses */
+
+ house(120,120,"#c46c48");
+ house(710,90,"#b85d4e");
+
+ shop(790,405);
+
+ /* castle */
+
+ drawCastle(455,35,1);
+
+ /* cave */
+
+ rect(80,425,100,70,"#433d45");
+
+ ctx.fillStyle="#171722";
+
+ ctx.beginPath();
+ ctx.arc(130,495,43,Math.PI,0);
+ ctx.fill();
+
+ /* player */
+
+ drawHero(
+  player.x,
+  player.y,
+  1,
+  false
+ );
+
+ /* enemies */
+
+ for(const enemy of enemies){
+
+  if(enemy.hp>0){
+
+   drawEnemy(
+    enemy.x,
+    enemy.y,
+    enemy.type
+   );
+
+  }
+
+ }
+
+ HUD();
+
+ prompt();
+
 }
 
-generateWorld();
+/* =========================
+   TREES
+========================= */
 
-/* =========================================================
-   WORLD MAP
-   ========================================================= */
+function tree(x,y){
 
-function drawWorld(){
+ rect(
+  x+17,y+30,
+  14,38,
+  "#70492c"
+ );
 
-    ctx.fillStyle=C.water;
-    ctx.fillRect(0,0,W,H);
+ for(let q=0;q<5;q++){
 
-    const camX=player.x-W/2;
-    const camY=player.y-H/2;
+  let ox=(q%3)*18-18;
+  let oy=(q%2)*16-18;
 
-    // island
-    ctx.save();
-    ctx.translate(-camX,-camY);
+  rect(
+   x+ox+18,
+   y+oy+25,
+   35,35,
+   "#245c35"
+  );
 
-    // island base
-    ctx.fillStyle=C.grass;
-    ctx.beginPath();
-    ctx.ellipse(450,330,430,300,0,0,Math.PI*2);
-    ctx.fill();
+  rect(
+   x+ox+24,
+   y+oy+18,
+   24,18,
+   "#367c43"
+  );
 
-    // beach
-    ctx.strokeStyle=C.sand;
-    ctx.lineWidth=16;
-    ctx.beginPath();
-    ctx.ellipse(450,330,405,275,0,0,Math.PI*2);
-    ctx.stroke();
+  rect(
+   x+ox+30,
+   y+oy+12,
+   12,12,
+   "#5b9a4d"
+  );
 
-    // mountains
-    mountain(50,60,250,230);
-    mountain(620,40,250,260);
-    mountain(340,20,250,240);
+ }
 
-    // rivers
-    ctx.strokeStyle=C.water;
-    ctx.lineWidth=14;
-
-    ctx.beginPath();
-    ctx.moveTo(460,0);
-    ctx.bezierCurveTo(430,120,500,190,430,300);
-    ctx.bezierCurveTo(370,400,420,500,350,650);
-    ctx.stroke();
-
-    ctx.strokeStyle=C.waterLight;
-    ctx.lineWidth=3;
-
-    ctx.beginPath();
-    ctx.moveTo(460,0);
-    ctx.bezierCurveTo(430,120,500,190,430,300);
-    ctx.bezierCurveTo(370,400,420,500,350,650);
-    ctx.stroke();
-
-    // castle
-    castle(450,225,1.8);
-
-    // village houses
-    drawHouse(270,360);
-    drawHouse(330,390);
-    drawHouse(570,350);
-    drawHouse(620,395);
-
-    // trees
-    for(const t of worldTrees){
-        if(
-            t.x>player.x-500 &&
-            t.x<player.x+500 &&
-            t.y>player.y-400 &&
-            t.y<player.y+400
-        ){
-            tree(t.x,t.y,t.s);
-        }
-    }
-
-    // cave
-    drawCave(170,150);
-    drawCave(760,470);
-
-    // bridge
-    drawBridge(425,285);
-
-    // player
-    heroBack(
-        player.x,
-        player.y,
-        selectedCharacter,
-        1.25,
-        Math.floor(player.frame)
-    );
-
-    ctx.restore();
-
-    drawHUD();
 }
 
-/* =========================================================
-   HOUSE
-   ========================================================= */
+/* =========================
+   HOUSES
+========================= */
 
-function drawHouse(x,y){
+function house(x,y,color){
 
-    rect(x,y,50,35,"#9d6247");
-    rect(x+4,y+6,42,29,"#b77453");
+ rect(
+  x,y,
+  130,85,
+  "#76533b"
+ );
 
-    ctx.fillStyle="#673e35";
-    ctx.beginPath();
-    ctx.moveTo(x-5,y+7);
-    ctx.lineTo(x+25,y-15);
-    ctx.lineTo(x+55,y+7);
-    ctx.closePath();
-    ctx.fill();
+ ctx.fillStyle=color;
 
-    rect(x+20,y+20,10,15,"#33262c");
-    rect(x+7,y+13,8,7,"#f0c96d");
-    rect(x+35,y+13,8,7,"#f0c96d");
+ ctx.beginPath();
+
+ ctx.moveTo(x-10,y);
+ ctx.lineTo(x+65,y-45);
+ ctx.lineTo(x+140,y);
+
+ ctx.fill();
+
+ rect(
+  x+50,
+  y+40,
+  30,
+  45,
+  "#3b2a28"
+ );
+
+ rect(
+  x+15,
+  y+20,
+  25,20,
+  "#a9d5c9"
+ );
+
 }
 
-/* =========================================================
-   CAVE
-   ========================================================= */
+/* =========================
+   SHOP
+========================= */
 
-function drawCave(x,y){
+function shop(x,y){
 
-    ctx.fillStyle="#303243";
-    ctx.beginPath();
-    ctx.arc(x,y,24,Math.PI,Math.PI*2);
-    ctx.lineTo(x+24,y+25);
-    ctx.lineTo(x-24,y+25);
-    ctx.closePath();
-    ctx.fill();
+ house(
+  x,y,
+  "#d29a48"
+ );
 
-    ctx.fillStyle="#10121d";
-    ctx.beginPath();
-    ctx.arc(x,y+3,14,Math.PI,Math.PI*2);
-    ctx.lineTo(x+14,y+25);
-    ctx.lineTo(x-14,y+25);
-    ctx.closePath();
-    ctx.fill();
+ text(
+  "SHOP",
+  x+35,
+  y+30,
+  12,
+  "#fff0a0"
+ );
 
-    text("CAVE",x,y+34,5,C.white,"center");
 }
 
-/* =========================================================
-   BRIDGE
-   ========================================================= */
+/* =========================
+   CASTLE
+========================= */
 
-function drawBridge(x,y){
+function drawCastle(x,y,s){
 
-    for(let i=-2;i<=2;i++){
-        rect(x+i*10,y-8,8,24,"#754b32");
-    }
+ rect(
+  x+55,
+  y+55,
+  170*s,
+  105*s,
+  "#606675"
+ );
 
-    rect(x-28,y-12,56,4,"#4c3528");
-    rect(x-28,y+13,56,4,"#4c3528");
+ for(let i=0;i<3;i++){
+
+  rect(
+   x+i*65,
+   y+20,
+   48,
+   140,
+   "#717888"
+  );
+
+  rect(
+   x+i*65+12,
+   y+2,
+   24,
+   35,
+   "#8c93a2"
+  );
+
+ }
+
+ ctx.fillStyle="#9c3941";
+
+ ctx.beginPath();
+
+ ctx.moveTo(x+50,y+55);
+ ctx.lineTo(x+140,y+10);
+ ctx.lineTo(x+230,y+55);
+
+ ctx.fill();
+
+ rect(
+  x+128,
+  y+100,
+  25,
+  60,
+  "#292631"
+ );
+
 }
 
-/* =========================================================
+/* =========================
+   HERO
+========================= */
+
+function drawHero(x,y,s,back=false,type=selected){
+
+ /* shadow */
+
+ rect(
+  x-18*s,
+  y+24*s,
+  36*s,
+  8*s,
+  "#17221b"
+ );
+
+ /* cape */
+
+ rect(
+  x-15*s,
+  y-18*s,
+  30*s,
+  48*s,
+  heroes[type].color
+ );
+
+ if(back){
+
+  rect(
+   x-12*s,
+   y-45*s,
+   24*s,
+   28*s,
+   "#6e4933"
+  );
+
+  rect(
+   x-15*s,
+   y-50*s,
+   30*s,
+   10*s,
+   "#26364d"
+  );
+
+  rect(
+   x-24*s,
+   y+8*s,
+   8*s,
+   28*s,
+   "#5d412f"
+  );
+
+ }else{
+
+  rect(
+   x-12*s,
+   y-45*s,
+   24*s,
+   25*s,
+   "#754b32"
+  );
+
+  rect(
+   x-10*s,
+   y-42*s,
+   5*s,
+   4*s,
+   "#fff"
+  );
+
+  rect(
+   x+5*s,
+   y-42*s,
+   5*s,
+   4*s,
+   "#fff"
+  );
+
+  rect(
+   x-20*s,
+   y-4*s,
+   8*s,
+   27*s,
+   "#67482f"
+  );
+
+  rect(
+   x+12*s,
+   y-4*s,
+   8*s,
+   27*s,
+   "#67482f"
+  );
+
+ }
+
+ /* sword */
+
+ ctx.save();
+
+ ctx.translate(
+  x+20*s,
+  y
+ );
+
+ ctx.rotate(-.55);
+
+ rect(
+  0,
+  -35*s,
+  6*s,
+  35*s,
+  swords[equipped].color
+ );
+
+ rect(
+  -3*s,
+  0,
+  12*s,
+  5*s,
+  "#8a633b"
+ );
+
+ ctx.restore();
+
+}
+
+/* =========================
+   ENEMIES
+========================= */
+
+function drawEnemy(x,y,type){
+
+ rect(
+  x-20,
+  y+18,
+  40,7,
+  "#17221b"
+ );
+
+ if(type==="slime"){
+
+  rect(
+   x-20,
+   y-10,
+   40,30,
+   "#4fc46c"
+  );
+
+  rect(
+   x-12,
+   y-20,
+   24,15,
+   "#75e083"
+  );
+
+  rect(
+   x-10,
+   y-4,
+   5,5,
+   "#17221b"
+  );
+
+  rect(
+   x+5,
+   y-4,
+   5,5,
+   "#17221b"
+  );
+
+ }else{
+
+  rect(
+   x-25,
+   y-10,
+   50,28,
+   "#6d4c63"
+  );
+
+  rect(
+   x-18,
+   y-25,
+   36,20,
+   "#855b75"
+  );
+
+  rect(
+   x-10,
+   y-20,
+   5,5,
+   "#ffdf63"
+  );
+
+  rect(
+   x+5,
+   y-20,
+   5,5,
+   "#ffdf63"
+  );
+
+ }
+
+}
+
+/* =========================
    HUD
-   ========================================================= */
+========================= */
 
-function drawHUD(){
+function HUD(){
 
-    rect(8,8,130,32,"#101322");
-    rect(11,11,124,26,"#242a40");
+ panel(
+  12,12,
+  245,74,
+  "#101722",
+  "#c6a354"
+ );
 
-    text(
-        characters[selectedCharacter].name,
-        17,
-        17,
-        7,
-        C.gold
-    );
+ text(
+  heroes[selected].name,
+  25,37,18,
+  "#ffe4a0"
+ );
 
-    rect(17,24,80,6,"#432b35");
-    rect(17,24,63,6,C.red);
+ rect(
+  25,48,
+  150,10,
+  "#39252a"
+ );
 
-    text("HP",103,27,5,C.white);
+ rect(
+  25,48,
+  150*(player.hp/hero().hp),
+  10,
+  "#d64f55"
+ );
 
-    rect(W-150,8,142,38,"#101322");
-    rect(W-147,11,136,32,"#242a40");
+ text(
+  "HP "+Math.max(0,player.hp)+
+  "/"+hero().hp,
+  183,57,12
+ );
 
-    text(
-        "THE LOST ISLAND",
-        W-79,
-        19,
-        7,
-        C.white,
-        "center"
-    );
+ rect(
+  25,64,
+  150,7,
+  "#20253a"
+ );
 
-    text(
-        "WASD / ARROWS",
-        W-79,
-        33,
-        5,
-        "#bfc3d2",
-        "center"
-    );
+ rect(
+  25,64,
+  150*(player.mp/hero().mp),
+  7,
+  "#4f9ddd"
+ );
+
+ text(
+  "MP",
+  183,71,11
+ );
+
+ /* sword panel */
+
+ panel(
+  735,12,
+  213,76,
+  "#101722",
+  "#c6a354"
+ );
+
+ text(
+  swords[equipped].name,
+  748,36,16,
+  swords[equipped].color
+ );
+
+ text(
+  swords[equipped].rarity,
+  748,58,14,
+  swords[equipped].color
+ );
+
+ text(
+  "DMG "+swords[equipped].damage,
+  840,58,13
+ );
+
 }
 
-/* =========================================================
-   MOVEMENT
-   ========================================================= */
+/* =========================
+   INVENTORY
+========================= */
 
-function updateGame(){
+function inventory(){
 
-    let dx=0;
-    let dy=0;
+ rect(
+  0,0,W,H,
+  "#0b101b"
+ );
 
-    if(keys["w"] || keys["arrowup"]) dy-=1;
-    if(keys["s"] || keys["arrowdown"]) dy+=1;
-    if(keys["a"] || keys["arrowleft"]) dx-=1;
-    if(keys["d"] || keys["arrowright"]) dx+=1;
+ text(
+  "INVENTORY",
+  40,48,30,
+  "#ffe29a"
+ );
 
-    if(dx!==0 || dy!==0){
+ panel(
+  35,70,
+  890,410,
+  "#131c2b",
+  "#c7a85b"
+ );
 
-        const length=Math.hypot(dx,dy);
+ text(
+  "ZWAARDEN",
+  60,105,21,
+  "#fff"
+ );
 
-        dx/=length;
-        dy/=length;
+ owned.forEach((id,index)=>{
 
-        player.x+=dx*player.speed;
-        player.y+=dy*player.speed;
+  const sword=swords[id];
+  const y=125+index*52;
 
-        player.x=clamp(player.x,50,850);
-        player.y=clamp(player.y,40,620);
+  panel(
+   55,y,
+   520,43,
+   id===equipped ? "#293b58" : "#1b2638",
+   id===equipped ? "#ffd35c" : "#53627b"
+  );
 
-        player.frame+=0.18;
-    }
+  text(
+   sword.name,
+   70,y+28,17,
+   sword.color
+  );
+
+  text(
+   sword.rarity,
+   280,y+28,14,
+   sword.color
+  );
+
+  text(
+   "DMG "+sword.damage,
+   380,y+28,13
+  );
+
+  text(
+   sword.ability,
+   460,y+28,13,
+   "#d8e7ff"
+  );
+
+ });
+
+ text(
+  "GESELECTEERD",
+  610,125,17,
+  "#ffe29a"
+ );
+
+ panel(
+  610,150,
+  270,170,
+  "#1a2638",
+  "#806a3c"
+ );
+
+ const sword=swords[equipped];
+
+ text(
+  sword.name,
+  635,185,21,
+  sword.color
+ );
+
+ text(
+  "RARITY: "+sword.rarity,
+  635,213,15,
+  sword.color
+ );
+
+ text(
+  "DAMAGE: "+sword.damage,
+  635,240,15
+ );
+
+ text(
+  "ABILITY:",
+  635,270,14
+ );
+
+ text(
+  sword.ability,
+  635,295,16,
+  "#ffe6a0"
+ );
+
+ panel(
+  350,430,
+  260,48,
+  "#27364e",
+  "#d5ae55"
+ );
+
+ text(
+  "TERUG  •  I",
+  438,461,16,
+  "#fff1b0"
+ );
+
 }
 
-/* =========================================================
-   MOBILE CONTROLS
-   ========================================================= */
+/* =========================
+   COMBAT
+========================= */
 
-const touchButtons=[];
+function attack(){
 
-function createTouchControls(){
+ if(screen!=="game")return;
 
-    if(document.getElementById("touchControls")) return;
+ for(const enemy of enemies){
 
-    const div=document.createElement("div");
-    div.id="touchControls";
+  if(
+   enemy.hp>0 &&
+   Math.hypot(
+    enemy.x-player.x,
+    enemy.y-player.y
+   )<95
+  ){
 
-    div.style.position="fixed";
-    div.style.left="0";
-    div.style.bottom="15px";
-    div.style.width="100%";
-    div.style.height="130px";
-    div.style.pointerEvents="none";
+   enemy.hp=Math.max(
+    0,
+    enemy.hp-swords[equipped].damage
+   );
 
-    const make=(txt,left,bottom,key)=>{
+   toast(
+    swords[equipped].name+
+    " • "+
+    swords[equipped].ability
+   );
 
-        const b=document.createElement("button");
+  }
 
-        b.innerText=txt;
+ }
 
-        b.style.position="absolute";
-        b.style.left=left;
-        b.style.bottom=bottom;
-        b.style.width="52px";
-        b.style.height="42px";
-        b.style.background="#171b2d";
-        b.style.border="2px solid #777e9e";
-        b.style.color="#fff";
-        b.style.fontSize="18px";
-        b.style.pointerEvents="auto";
-        b.style.opacity=".8";
-
-        b.addEventListener("touchstart",e=>{
-            e.preventDefault();
-            keys[key]=true;
-        });
-
-        b.addEventListener("touchend",e=>{
-            e.preventDefault();
-            keys[key]=false;
-        });
-
-        div.appendChild(b);
-    };
-
-    make("▲","70px","78px","w");
-    make("◀","15px","36px","a");
-    make("▼","70px","36px","s");
-    make("▶","125px","36px","d");
-
-    document.body.appendChild(div);
 }
 
-createTouchControls();
+function ability(){
 
-/* =========================================================
-   START GAME
-   ========================================================= */
+ if(player.mp<12){
+
+  toast("Niet genoeg MP!");
+  return;
+
+ }
+
+ player.mp-=12;
+
+ for(const enemy of enemies){
+
+  if(
+   enemy.hp>0 &&
+   Math.hypot(
+    enemy.x-player.x,
+    enemy.y-player.y
+   )<150
+  ){
+
+   enemy.hp=Math.max(
+    0,
+    enemy.hp-swords[equipped].damage*2
+   );
+
+  }
+
+ }
+
+ toast(
+  "✦ "+
+  swords[equipped].ability
+ );
+
+}
+
+/* =========================
+   INTERACT
+========================= */
+
+function interact(){
+
+ if(
+  Math.hypot(
+   player.x-145,
+   player.y-450
+  )<100
+ ){
+
+  room="cave";
+
+  toast(
+   "Je gaat de grot binnen!"
+  );
+
+ }
+
+ else if(
+  player.x>90 &&
+  player.x<260 &&
+  player.y<230
+ ){
+
+  room="house";
+
+  toast(
+   "Huis binnengaan..."
+  );
+
+ }
+
+ else if(
+  player.x>680 &&
+  player.x<850 &&
+  player.y<210
+ ){
+
+  room="shop";
+
+  toast(
+   "Winkel binnengaan..."
+  );
+
+ }
+
+ else if(
+  player.x>430 &&
+  player.x<700 &&
+  player.y<190
+ ){
+
+  room="castle";
+
+  toast(
+   "Kasteel binnengaan..."
+  );
+
+ }
+
+}
+
+/* =========================
+   START
+========================= */
 
 function startGame(){
 
-    screen="game";
-    gameStarted=true;
+ screen="game";
 
-    player.x=450;
-    player.y=330;
+ player.hp=heroes[selected].hp;
+ player.mp=heroes[selected].mp;
+
+ player.x=470;
+ player.y=320;
+
 }
 
-/* =========================================================
-   LOOP
-   ========================================================= */
+/* =========================
+   INTERIORS
+========================= */
+
+function interior(){
+
+ rect(
+  0,0,W,H,
+  "#7c624b"
+ );
+
+ rect(
+  45,45,870,450,
+  "#b99a6d"
+ );
+
+ for(let i=0;i<8;i++){
+
+  rect(
+   65+i*105,
+   65,
+   85,410,
+   "#8c684d"
+  );
+
+ }
+
+ rect(
+  360,400,
+  240,95,
+  "#5b3b2d"
+ );
+
+ text(
+  room==="shop" ? "WINKEL" :
+  room==="castle" ? "KASTEELZAAL" :
+  room==="cave" ? "GROT" :
+  "HUIS",
+  390,100,28,
+  "#fff0b0"
+ );
+
+ rect(
+  440,450,
+  80,45,
+  "#3b2a27"
+ );
+
+ text(
+  "E",
+  470,478,18
+ );
+
+ text(
+  "Ga naar de deur om terug te gaan",
+  315,525,14,
+  "#fff2bd"
+ );
+
+ drawHero(
+  480,
+  350,
+  1,
+  false
+ );
+
+}
+
+/* =========================
+   PROMPT
+========================= */
+
+function prompt(){
+
+ text(
+  "E: onderzoek / ga naar binnen",
+  350,520,14,
+  "#fff2bd"
+ );
+
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+function toast(t){
+
+ message=t;
+ msgTime=120;
+
+}
+
+/* =========================
+   MAIN LOOP
+========================= */
 
 function loop(){
 
-    if(screen==="title"){
-        drawStartScene();
-    }
+ if(screen==="title")
+  title();
 
-    if(screen==="select"){
-        drawSelection();
-    }
+ else if(screen==="select")
+  selectScreen();
 
-    if(screen==="game"){
-        updateGame();
-        drawWorld();
-    }
+ else if(screen==="inventory")
+  inventory();
 
-    requestAnimationFrame(loop);
+ else if(screen==="game"){
+
+  if(room==="island")
+   world();
+  else
+   interior();
+
+ }
+
+ if(msgTime>0){
+
+  panel(
+   300,465,
+   360,42,
+   "#101722",
+   "#d5ae55"
+  );
+
+  text(
+   message,
+   320,492,14,
+   "#ffe9a8"
+  );
+
+  msgTime--;
+
+ }
+
+ requestAnimationFrame(loop);
+
 }
 
+/* =========================
+   MOVEMENT
+========================= */
+
+function move(){
+
+ if(
+  screen!=="game" ||
+  room!=="island"
+ )
+  return;
+
+ let speed=2.8;
+
+ let dx=0;
+ let dy=0;
+
+ if(keys.w||keys.ArrowUp)
+  dy=-1;
+
+ if(keys.s||keys.ArrowDown)
+  dy=1;
+
+ if(keys.a||keys.ArrowLeft)
+  dx=-1;
+
+ if(keys.d||keys.ArrowRight)
+  dx=1;
+
+ if(dx&&dy){
+
+  dx*=.707;
+  dy*=.707;
+
+ }
+
+ player.x=Math.max(
+  25,
+  Math.min(
+   935,
+   player.x+dx*speed
+  )
+ );
+
+ player.y=Math.max(
+  35,
+  Math.min(
+   500,
+   player.y+dy*speed
+  )
+}
+
+/* =========================
+   KEYBOARD
+========================= */
+
+addEventListener(
+ "keydown",
+ e=>{
+
+  keys[e.key]=true;
+
+  if(
+   e.key==="Enter" &&
+   screen==="title"
+  ){
+
+   screen="select";
+
+  }
+
+  else if(
+   e.key==="Enter" &&
+   screen==="select"
+  ){
+
+   startGame();
+
+  }
+
+  else if(
+   e.key==="i" ||
+   e.key==="I"
+  ){
+
+   if(screen==="game")
+    screen="inventory";
+
+   else if(screen==="inventory")
+    screen="game";
+
+  }
+
+  else if(e.key==="1")
+   attack();
+
+  else if(e.key==="2")
+   ability();
+
+  else if(
+   e.key==="e" ||
+   e.key==="E"
+  ){
+
+   if(screen==="game")
+    interact();
+
+  }
+
+ });
+
+addEventListener(
+ "keyup",
+ e=>{
+  keys[e.key]=false;
+ }
+);
+
+/* =========================
+   TOUCH / MOUSE
+========================= */
+
+canvas.addEventListener(
+ "pointerdown",
+ e=>{
+
+  const r=canvas.getBoundingClientRect();
+
+  const mx=
+   (e.clientX-r.left)/
+   r.width*W;
+
+  const my=
+   (e.clientY-r.top)/
+   r.height*H;
+
+  /* TITLE */
+
+  if(screen==="title"){
+
+   screen="select";
+
+  }
+
+  /* SELECT */
+
+  else if(screen==="select"){
+
+   for(let i=0;i<4;i++){
+
+    let xx=35+i*230;
+
+    if(
+     mx>=xx &&
+     mx<=xx+205 &&
+     my>=90 &&
+     my<=380
+    ){
+
+     selected=i;
+
+     player.hp=heroes[i].hp;
+     player.mp=heroes[i].mp;
+
+     return;
+
+    }
+
+   }
+
+   if(
+    mx>=300 &&
+    mx<=660 &&
+    my>=405
+   ){
+
+    startGame();
+
+   }
+
+  }
+
+  /* GAME */
+
+  else if(screen==="game"){
+
+   if(
+    mx>800 &&
+    my>400
+   ){
+
+    attack();
+
+   }
+
+   else if(
+    mx>700 &&
+    my>440
+   ){
+
+    screen="inventory";
+
+   }
+
+  }
+
+  /* INVENTORY */
+
+  else if(screen==="inventory"){
+
+   for(
+    let i=0;
+    i<owned.length;
+    i++
+   ){
+
+    let y=125+i*52;
+
+    if(
+     my>=y &&
+     my<=y+43 &&
+     mx>=55 &&
+     mx<=575
+    ){
+
+     equipped=owned[i];
+
+     toast(
+      "Geëquipeerd: "+
+      swords[equipped].name
+     );
+
+    }
+
+   }
+
+   if(my>420)
+    screen="game";
+
+  }
+
+ });
+
+/* =========================
+   ENEMY / SWORD DROPS
+========================= */
+
+setInterval(()=>{
+
+ if(
+  screen==="game" &&
+  enemies.every(e=>e.hp<=0)
+ ){
+
+  enemies=[
+   {
+    x:650,
+    y:260,
+    hp:50,
+    max:50,
+    type:"slime"
+   },
+   {
+    x:760,
+    y:350,
+    hp:70,
+    max:70,
+    type:"wolf"
+   },
+   {
+    x:350,
+    y:180,
+    hp:45,
+    max:45,
+    type:"slime"
+   }
+  ];
+
+  let next=Math.min(
+   swords.length-1,
+   owned.length
+  );
+
+  if(!owned.includes(next)){
+
+   owned.push(next);
+
+   toast(
+    "Nieuwe sword gevonden: "+
+    swords[next].name+
+    " ["+
+    swords[next].rarity+
+    "]"
+   );
+
+  }
+
+ }
+
+},1000);
+
+/* =========================
+   START
+========================= */
+
+setInterval(move,16);
+
 loop();
-
-/* =========================================================
-   TOUCH START BUTTON
-   ========================================================= */
-
-canvas.addEventListener("touchstart",e=>{
-
-    if(screen==="title"){
-        screen="select";
-        return;
-    }
-
-    if(screen==="select"){
-
-        const touch=e.touches[0];
-
-        if(touch.clientX<window.innerWidth/2){
-            selectedCharacter--;
-            if(selectedCharacter<0)
-                selectedCharacter=characters.length-1;
-        }else{
-            selectedCharacter++;
-            if(selectedCharacter>=characters.length)
-                selectedCharacter=0;
-        }
-
-        if(e.touches.length>1){
-            startGame();
-        }
-    }
-
-},{passive:false});
-
-canvas.addEventListener("dblclick",()=>{
-    if(screen==="select"){
-        startGame();
-    }
-});
 
 </script>
 
